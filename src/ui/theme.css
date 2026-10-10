@@ -1,0 +1,59 @@
+@import '@fontsource/nunito/latin-400.css';
+@import '@fontsource/nunito/latin-700.css';
+@import '@fontsource/nunito/latin-800.css';
+@import '@fontsource/nunito/vietnamese-400.css';
+@import '@fontsource/nunito/vietnamese-700.css';
+@import '@fontsource/nunito/vietnamese-800.css';
+
+:root {
+  /* Bảng màu – docs/01_SPEC.md mục 12 */
+  --color-bg: #fff8ec;
+  --color-sky: #4fc3f7;
+  --color-green: #66bb6a;
+  --color-yellow: #ffd54f;
+  --color-orange: #ff8a65;
+  --color-purple: #9575cd;
+  --color-text: #263238;
+
+  /* Cỡ chữ tối thiểu: thân 18px, nút 22px, tiêu đề 28px */
+  --font-body: 18px;
+  --font-button: 22px;
+  --font-title: 28px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: var(--font-body);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  min-height: 100dvh;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
