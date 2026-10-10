@@ -1,0 +1,640 @@
+/* Nhiệm vụ, hộp quà, album, trang phục, hình nền, màn nghỉ (TASK-06). Biến màu/cỡ chữ ở theme.css + app.css. */
+
+/* ---------- Nhiệm vụ trên Home ---------- */
+.mission-check {
+  display: grid;
+  place-items: center;
+}
+.mission-check svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 4;
+}
+.mission.is-done {
+  box-shadow: 0 4px 0 rgb(38 50 56 / 0.25);
+  animation: pop 0.5s ease-out;
+}
+.mission.is-done .mission-check {
+  border-style: solid;
+  background: linear-gradient(180deg, #7ff0a0, var(--color-green));
+  color: var(--ink);
+}
+.gift-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 8px 14px 8px 8px;
+  border: var(--border);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff, #ffeaf5);
+  box-shadow: var(--shadow);
+}
+.gift-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.gift-info-text {
+  margin: 0;
+  font-weight: 800;
+}
+.gift-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 64px;
+  min-height: 64px;
+  padding: 4px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.gift-chip:disabled {
+  cursor: default;
+  opacity: 0.5;
+  filter: grayscale(0.6);
+}
+.gift-chip:focus-visible {
+  outline: 4px solid var(--color-purple);
+  outline-offset: 2px;
+}
+.gift-chip-art {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+.gift-chip.has-gifts .gift-chip-art {
+  animation: gift-bob 1.4s ease-in-out infinite;
+}
+.gift-chip-num {
+  position: absolute;
+  top: -4px;
+  right: -10px;
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: var(--border);
+  border-radius: 999px;
+  background: var(--color-yellow);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+.gift-chip-text {
+  font-size: 18px;
+  font-weight: 800;
+}
+.home-badge {
+  display: inline-flex;
+  line-height: 0;
+}
+.avatar-framed {
+  filter: drop-shadow(0 2px 0 rgb(38 50 56 / 0.25));
+}
+
+/* ---------- Hình nền trên Home ---------- */
+.home-hello.has-scene {
+  position: relative;
+  min-height: 150px;
+  padding: 8px 16px;
+  overflow: hidden;
+  border: var(--border);
+  border-radius: 26px;
+  box-shadow: var(--shadow);
+}
+.hello-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.home-hello.has-scene > .mascot,
+.home-hello.has-scene > .title {
+  position: relative;
+  z-index: 1;
+}
+.home-hello.has-scene .title {
+  padding: 4px 14px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.88);
+}
+
+/* ---------- Kết quả: thưởng ---------- */
+.result-mission,
+.result-note {
+  margin: 0;
+  max-width: 480px;
+  font-size: 20px;
+  font-weight: 800;
+}
+.reward-unlock {
+  font-size: 22px;
+}
+.gift-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 20px 6px 10px;
+  border: var(--border);
+  border-radius: 22px;
+  background: linear-gradient(90deg, #ffd6ec, #fff0a8);
+  box-shadow: var(--shadow);
+  font-size: 22px;
+  font-weight: 800;
+  animation: pop 0.6s ease-out;
+}
+
+/* ---------- Cửa sổ mở hộp quà ---------- */
+.gift-overlay {
+  z-index: 400;
+  gap: 12px;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% 38%, #6b4dd6 0%, #2e1a78 75%);
+  color: #ffffff;
+}
+.gift-title,
+.gift-name {
+  margin: 0;
+  color: #ffffff;
+  font-size: var(--font-title);
+  font-weight: 800;
+  text-align: center;
+}
+.gift-hint {
+  margin: 0;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+}
+.gift-count {
+  margin: 0;
+  color: #ffe066;
+  font-size: 20px;
+  font-weight: 800;
+}
+.gift-note {
+  margin: 0;
+  color: #ffe9a8;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+}
+.gift-close {
+  position: absolute;
+  top: calc(var(--safe-top) + 12px);
+  right: calc(var(--safe-right) + 12px);
+  font-size: 26px;
+  line-height: 1;
+}
+.gift-box-btn {
+  padding: 0;
+  border: 0;
+  border-radius: 40px;
+  background: transparent;
+  line-height: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.gift-box-btn:focus-visible {
+  outline: 4px solid #ffe066;
+  outline-offset: 4px;
+}
+.gift-box-btn:disabled {
+  cursor: default;
+}
+.gift-box-btn .gift-art {
+  transform-origin: 50% 92%;
+  animation: gift-wiggle 1.2s ease-in-out infinite;
+}
+.gift-box-btn.is-bursting .gift-art {
+  animation: gift-shake 0.12s linear infinite;
+}
+.gift-art .gift-lid {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition:
+    transform 0.5s cubic-bezier(0.3, 1.7, 0.5, 1),
+    opacity 0.45s 0.25s;
+}
+.gift-art.is-open .gift-lid {
+  transform: translate(22px, -56px) rotate(26deg);
+  opacity: 0;
+}
+.gift-glow {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: gift-glow 1s ease-out both;
+}
+.rarity-chip {
+  display: inline-block;
+  padding: 4px 20px;
+  border: var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 3px 0 rgb(38 50 56 / 0.3);
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 800;
+}
+.rarity-rare {
+  background: linear-gradient(90deg, #cfeaff, #8fd0ff);
+}
+.rarity-legendary {
+  background: linear-gradient(90deg, #fff0a0, #ffc02e);
+}
+.gift-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 250px;
+  height: 250px;
+}
+.gift-rays {
+  position: absolute;
+  inset: -50px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgb(255 230 120 / 0.6) 0 9deg, transparent 9deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 28%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 28%, transparent 68%);
+  animation: gift-spin 16s linear infinite;
+}
+.gift-sticker {
+  position: relative;
+  z-index: 1;
+  line-height: 0;
+  animation: gift-reveal 0.75s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+.gift-badge {
+  margin: 0;
+  padding: 6px 20px;
+  border: var(--border);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+}
+.gift-new {
+  background: linear-gradient(90deg, #b7f5c9, #3ddc6e);
+}
+.gift-dup {
+  background: linear-gradient(90deg, #fff3a8, #ffd93d);
+}
+.gift-unlock {
+  background: linear-gradient(90deg, var(--color-pink-soft), var(--color-purple-soft));
+}
+.gift-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* ---------- Màn nghỉ ---------- */
+.rest-claim {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  width: min(100%, 360px);
+  padding: 12px;
+  border: var(--border);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+.rest-hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+.rest-reward {
+  margin: 0;
+  padding: 8px 20px;
+  border: var(--border);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b7f5c9, #fff3a8);
+  font-size: 20px;
+  font-weight: 800;
+  animation: pop 0.6s ease-out;
+}
+.rest-gifts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Album ---------- */
+.album-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.album-top .title {
+  flex: 1;
+}
+.album-gift {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border: var(--border);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff, #efe6ff);
+  box-shadow: var(--shadow);
+}
+.album-goal {
+  margin: 0;
+  font-weight: 800;
+}
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+.tab {
+  min-height: 52px;
+  padding: 6px 10px;
+  border: var(--border);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 4px 0 rgb(38 50 56 / 0.25);
+  color: var(--ink);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tab.is-active {
+  background: linear-gradient(180deg, #d9ccff, #b59cff);
+  box-shadow: 0 1px 0 rgb(38 50 56 / 0.25);
+  transform: translateY(3px);
+}
+.tab:focus-visible {
+  outline: 4px solid var(--color-purple);
+  outline-offset: 2px;
+}
+.album-summary {
+  margin: 4px 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+}
+.album-empty {
+  margin: 0 0 10px;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 12px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sticker-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.sticker-btn {
+  display: block;
+  min-width: 76px;
+  min-height: 76px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+div.sticker-btn {
+  cursor: default;
+}
+.sticker-btn:focus-visible {
+  outline: 4px solid var(--color-purple);
+  outline-offset: 2px;
+  border-radius: 24px;
+}
+.sticker-count {
+  position: absolute;
+  top: -4px;
+  right: 2px;
+  padding: 0 8px;
+  border: var(--border);
+  border-radius: 999px;
+  background: var(--color-yellow);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.sticker-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.zoom-overlay {
+  z-index: 400;
+  background: rgb(46 26 120 / 0.92);
+  color: #ffffff;
+}
+.zoom-name {
+  margin: 0;
+  color: #ffffff;
+  font-size: var(--font-title);
+  font-weight: 800;
+}
+.zoom-count {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+.reward-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.reward-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  border: var(--border);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.reward-preview {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 110px;
+}
+.reward-card.is-locked .reward-preview {
+  filter: grayscale(1) brightness(0.75);
+  opacity: 0.45;
+}
+.reward-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.reward-lock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 800;
+}
+.reward-note {
+  margin: 0;
+  font-weight: 700;
+}
+.reward-scene {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border: var(--border);
+  border-radius: 16px;
+  background: #ffffff;
+}
+.reward-scene-none {
+  background: var(--bg-gradient);
+}
+
+/* ---------- Hiệu ứng ---------- */
+@keyframes gift-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  20% {
+    transform: rotate(-5deg) scale(1.03);
+  }
+  40% {
+    transform: rotate(5deg) scale(1.03);
+  }
+  60% {
+    transform: rotate(-3deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+@keyframes gift-shake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+  25% {
+    transform: translateX(-7px) rotate(-4deg);
+  }
+  75% {
+    transform: translateX(7px) rotate(4deg);
+  }
+}
+@keyframes gift-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes gift-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes gift-reveal {
+  0% {
+    transform: scale(0.1) rotate(-25deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes gift-glow {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0.85;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gift-rays,
+  .gift-box-btn .gift-art,
+  .gift-chip.has-gifts .gift-chip-art,
+  .sticker-glints {
+    animation: none !important;
+  }
+}
+
+/* ---------- Sửa tràn ngang / tương phản ---------- */
+/* Thanh đầu Home: tổng sao 3 chữ số + huy hiệu + 3 nút không vừa 360px → cho xuống dòng thay vì tràn */
+.home-top {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+.home-player {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.home-actions {
+  margin-left: auto;
+}
+/* Nút “mờ” trong cửa sổ nền tím phải có chữ sáng */
+.gift-overlay .btn-ghost,
+.zoom-overlay .btn-ghost {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* ---------- Tinh chỉnh sau khi xem ảnh 3 khung hình ---------- */
+.reward-card .btn {
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+.sticker.is-locked {
+  opacity: 0.4;
+}
+@media (min-width: 700px) {
+  .home-hello.has-scene {
+    min-height: 200px;
+    padding: 12px 28px;
+  }
+}

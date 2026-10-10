@@ -4,10 +4,26 @@ import type { RoundResult } from '../games/common/types';
 import { applyRound, type KidChoice, type LevelChange } from './adaptive';
 import { createAudio } from './audio';
 import { generateId, getDeviceClass } from './device';
+import { E2E, TIME_SCALE } from './e2e';
 import { createHaptics } from './haptics';
 import { applyRoundToMath } from './mathFacts';
 import { MAX_PROFILES, createProfile, dateKey, emptyDay, type NewProfileInput } from './profile';
+import {
+  addStars,
+  applyRoundRewards,
+  canEquip,
+  claimRestReward,
+  grantParentBoxes,
+  missionGroupOf,
+  openBox,
+  syncUnlocks,
+  type BoxOpening,
+  type RoundRewards,
+  type StarGrant,
+} from './rewards';
+import { freshSeed, mulberry32 } from './rng';
 import { starsForScore } from './scoring';
+import { isOutOfTime } from './session';
 import { storage } from './storage';
 import type {
   AppState,
@@ -19,7 +35,22 @@ import type {
   RoundRecord,
 } from './types';
 
-export const appState = signal<AppState>(storage.loadState());
+/** Đối chiếu mốc mở khóa theo tổng sao (hồ sơ có sẵn từ trước TASK-06 cũng được mở phần thưởng đã đủ sao). */
+function reconcileUnlocks(state: AppState): AppState {
+  let changed = false;
+  const profiles = state.profiles.map((p) => {
+    const r = syncUnlocks(p);
+    if (r.unlocked.length > 0) changed = true;
+    return r.profile;
+  });
+  return changed ? { ...state, profiles } : state;
+}
+
+const loadedState = storage.loadState();
+const startState = reconcileUnlocks(loadedState);
+if (startState !== loadedState) storage.saveState(startState);
+
+export const appState = signal<AppState>(startState);
 /** true nếu localStorage không dùng được → đang chạy bằng bộ nhớ tạm. */
 export const storageWarning = signal<boolean>(storage.isDegraded());
 export const toast = signal<string | null>(null);
@@ -117,6 +148,8 @@ export interface LastResult {
   newLevel: number;
   /** Lượt kết thúc vì đã hết giờ trong ngày → sau đó sang màn nghỉ. */
   outOfTime: boolean;
+  /** Nhiệm vụ, hộp quà, mở khóa phát sinh từ lượt này. */
+  rewards: RoundRewards;
 }
 export const lastResult = signal<LastResult | null>(null);
 
@@ -141,6 +174,7 @@ export function recordRound(args: RecordRoundArgs): {
   record: RoundRecord;
   change: LevelChange;
   newLevel: number;
+  rewards: RoundRewards;
 } {
   const stars = starsForScore(args.result.score);
   const record: RoundRecord = {
@@ -164,24 +198,21 @@ export function recordRound(args: RecordRoundArgs): {
   const key = dateKey(args.startedAt);
   let change: LevelChange = 'none';
   let newLevel = args.level;
+  let rewards!: RoundRewards;
   updateProfile(args.profileId, (p) => {
     const day = p.days[key] ?? emptyDay();
     const before = p.games[args.gameId];
     const applied = applyRound(before, args.result.score, args.countsForAdaptive);
     change = applied.change;
     newLevel = applied.progress.level;
-    return {
+    const played: Profile = {
       ...p,
       // G6: cập nhật sổ lỗi (F19); lastSeenRound = số thứ tự lượt G6
       math:
         args.gameId === 'G6'
           ? applyRoundToMath(p.math, args.result.extra, before.plays + 1)
           : p.math,
-      totalStars: p.totalStars + stars, // không bao giờ giảm
-      days: {
-        ...p.days,
-        [key]: { ...day, playMs: day.playMs + args.playedMs, starsToday: day.starsToday + stars },
-      },
+      days: { ...p.days, [key]: { ...day, playMs: day.playMs + args.playedMs } },
       games: {
         ...p.games,
         [args.gameId]: {
@@ -191,6 +222,107 @@ export function recordRound(args: RecordRoundArgs): {
         },
       },
     };
+    // Nhiệm vụ nhóm, cộng sao (không bao giờ giảm), hộp quà, mở khóa – TASK-06
+    const granted = applyRoundRewards(played, missionGroupOf(args.gameId), stars, key);
+    rewards = granted.rewards;
+    return granted.profile;
   });
-  return { stars, record, change, newLevel };
+  return { stars, record, change, newLevel, rewards };
+}
+
+// ---- Hộp quà, trang phục, nghỉ đúng giờ (TASK-06) ----
+
+/** Cửa sổ hộp quà đang mở (modal dùng chung cho Home / Kết quả / Nghỉ / Album). */
+export const giftModalOpen = signal(false);
+
+export function openGiftModal(): void {
+  const p = activeProfile.value;
+  if (p && p.boxes.pending > 0) giftModalOpen.value = true;
+}
+
+export function closeGiftModal(): void {
+  giftModalOpen.value = false;
+}
+
+/** Mở 1 hộp quà đang chờ của người chơi hiện tại và lưu ngay (bé tắt app giữa chừng vẫn giữ sticker). */
+export function openGift(): BoxOpening | null {
+  const p = activeProfile.value;
+  if (!p) return null;
+  // Chạy e2e: dãy hộp tái lập được; chơi thật: seed ngẫu nhiên.
+  const seed = E2E.enabled ? (E2E.seed + p.boxes.openedTotal * 7919) >>> 0 : freshSeed();
+  const res = openBox(p, mulberry32(seed), dateKey(new Date()));
+  if (!res) return null;
+  updateProfile(p.id, () => res.profile);
+  return res;
+}
+
+/** Chọn trang phục / hình nền (chỉ món đã mở khóa, đúng loại). `null` = bỏ mặc. */
+export function equipReward(kind: 'outfit' | 'background', id: string | null): void {
+  const p = activeProfile.value;
+  if (!p || !canEquip(p, kind, id)) return;
+  updateProfile(p.id, (q) =>
+    kind === 'outfit' ? { ...q, outfitId: id } : { ...q, backgroundId: id },
+  );
+}
+
+/** Cửa sổ 30 giây của “Con nghỉ đây” (F20): chỉ mở khi vừa hết giờ và bé vào màn Nghỉ. */
+/** 30 giây (chạy e2e ?e2e=1 thì rút ×10 để test không phải chờ). */
+export const REST_WINDOW_MS = 30_000 / TIME_SCALE;
+/** Vừa chơi hết giờ → lần mở màn Nghỉ kế tiếp được tính là “nghỉ đúng giờ”. */
+export const restPending = signal(false);
+export const restWindowEndsAt = signal<number | null>(null);
+
+/** Gọi khi màn Nghỉ hiện ra. */
+export function startRestWindow(now = Date.now()): void {
+  if (!restPending.value) return;
+  restPending.value = false;
+  restWindowEndsAt.value = now + REST_WINDOW_MS;
+}
+
+export function restWindowOpen(now = Date.now()): boolean {
+  const end = restWindowEndsAt.value;
+  return end !== null && now <= end;
+}
+
+/** “Con nghỉ đây”: +2 sao, 1 lần/ngày, chỉ trong cửa sổ 30 giây và khi đã hết giờ chơi. */
+export function claimRest(): StarGrant | null {
+  const p = activeProfile.value;
+  if (!p) return null;
+  const key = dateKey(new Date());
+  if (!restWindowOpen() || !isOutOfTime(p, key)) return null;
+  const res = claimRestReward(p, key);
+  if (!res) return null;
+  updateProfile(p.id, () => res.profile);
+  restWindowEndsAt.value = null;
+  return res;
+}
+
+// ---- Công cụ thử cho ?debug=1 (chỉ gọi từ DebugRewards, không có trong bản deploy) ----
+
+export function debugAddStars(n: number): void {
+  const p = activeProfile.value;
+  if (p) updateProfile(p.id, (q) => addStars(q, n, dateKey(new Date())).profile);
+}
+
+export function debugAddBox(): void {
+  const p = activeProfile.value;
+  if (p) updateProfile(p.id, (q) => grantParentBoxes(q, 1));
+}
+
+/** Làm mới ngày hôm nay: nhiệm vụ, số hộp đã nhận, thưởng nghỉ đúng giờ. */
+export function debugResetDay(): void {
+  const p = activeProfile.value;
+  if (!p) return;
+  const key = dateKey(new Date());
+  updateProfile(p.id, (q) => {
+    const day = q.days[key] ?? emptyDay();
+    const fresh = emptyDay();
+    return {
+      ...q,
+      days: {
+        ...q.days,
+        [key]: { ...day, missions: fresh.missions, boxesEarned: 0, restOnTimeRewarded: false },
+      },
+    };
+  });
 }

@@ -1,4 +1,5 @@
 import { vi } from '../../i18n/vi';
+import { OutfitBack, OutfitBody, OutfitDefs, OutfitHead } from './Outfits';
 
 // Linh vật “Sóc Bo” – SVG tự vẽ, 5 biểu cảm (SPEC mục 12).
 export type MascotMood = 'wave' | 'happy' | 'cheer' | 'surprised' | 'sleep';
@@ -106,10 +107,13 @@ export function Mascot({
   mood = 'happy',
   size = 160,
   label,
+  outfit = null,
 }: {
   mood?: MascotMood;
   size?: number;
   label?: string;
+  /** Trang phục đã mở khóa đang mặc (id trong rewards.ts), null = không mặc. */
+  outfit?: string | null;
 }) {
   return (
     <svg
@@ -120,6 +124,8 @@ export function Mascot({
       role="img"
       aria-label={label ?? vi.app.mascot}
     >
+      {outfit && <OutfitDefs />}
+      {outfit && <OutfitBack outfit={outfit} />}
       {/* đuôi to */}
       <path
         d="M132 168 C 206 160, 212 70, 160 52 C 178 86, 152 104, 128 112 Z"
@@ -146,6 +152,7 @@ export function Mascot({
         stroke-width="2.5"
       />
       <ellipse cx="100" cy="158" rx="28" ry="26" fill="#FFE0B8" />
+      {outfit && <OutfitBody outfit={outfit} />}
       <Arms mood={mood} />
       {/* tai */}
       <circle cx="62" cy="46" r="15" fill="#FF9A52" stroke={OUTLINE} stroke-width="2.5" />
@@ -166,6 +173,7 @@ export function Mascot({
           <path d="M110 62 Q120 56 130 62" />
         </g>
       )}
+      {outfit && <OutfitHead outfit={outfit} />}
       {mood === 'sleep' && (
         <g
           class="mascot-zzz"

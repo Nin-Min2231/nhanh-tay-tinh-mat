@@ -1,22 +1,27 @@
 import { vi } from '../../i18n/vi';
 import { navigate } from '../../app/router';
-import { dateKey } from '../../app/profile';
+import { getDay, dateKey } from '../../app/profile';
+import { MISSION_GROUPS, boxRoomToday, starsToNextBox, BOX_EVERY_STARS } from '../../app/rewards';
 import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
 import { activeProfile, updateAvailable } from '../../app/store';
 import type { GameId } from '../../app/types';
 import { GAME_GROUPS, isGameAvailable } from '../../games/registry';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
+import { DebugRewards } from '../components/DebugRewards';
 import { GameIcon } from '../components/GameIcon';
-import { IconAlbum, IconLock, IconSwitch } from '../components/Icons';
+import { GiftButton } from '../components/GiftButton';
+import { IconAlbum, IconCheck, IconLock, IconSwitch } from '../components/Icons';
 import { Mascot } from '../components/Mascot';
 import { ProgressBar } from '../components/ProgressBar';
+import { BadgeGold } from '../components/RewardIcons';
+import { Scene } from '../components/Scenes';
 
-const MISSIONS = [
-  { key: 'reflex', icon: 'G1' },
-  { key: 'focus', icon: 'G2' },
-  { key: 'learn', icon: 'G6' },
-] as const;
+const MISSION_ICON: Record<(typeof MISSION_GROUPS)[number], GameId> = {
+  reflex: 'G1',
+  focus: 'G2',
+  learn: 'G6',
+};
 
 function GameCard({ id, locked }: { id: GameId; locked: boolean }) {
   const p = activeProfile.value;
@@ -58,15 +63,23 @@ export function Home() {
   const remaining = dayRemainingMs(p, key);
   const allowance = dayAllowanceMs(p, key);
   const out = remaining <= 0;
+  const day = getDay(p, key);
+  const boxesFull = boxRoomToday(p, key) === 0;
+  const toNext = starsToNextBox(p);
 
   return (
     <main class="screen home">
       <header class="home-top">
         <div class="home-player">
-          <Avatar id={p.avatarId} size={48} />
+          <Avatar id={p.avatarId} size={48} frame={p.unlocked.includes('frame-rainbow')} />
           <span class="home-stars" data-testid="total-stars">
             ★ {vi.home.totalStars(p.totalStars)}
           </span>
+          {p.unlocked.includes('badge-gold') && (
+            <span class="home-badge" data-testid="home-badge">
+              <BadgeGold size={40} />
+            </span>
+          )}
         </div>
         <nav class="home-actions">
           <Button
@@ -74,6 +87,7 @@ export function Home() {
             class="tone-purple"
             aria-label={vi.home.album}
             onClick={() => navigate('/album')}
+            data-testid="open-album"
           >
             <IconAlbum />
           </Button>
@@ -98,8 +112,16 @@ export function Home() {
 
       {updateAvailable.value && <div class="banner banner-info">{vi.home.updateAvailable}</div>}
 
-      <section class="home-hello">
-        <Mascot mood="wave" size={132} />
+      <section
+        class={`home-hello${p.backgroundId ? ' has-scene' : ''}`}
+        data-bg={p.backgroundId ?? ''}
+      >
+        {p.backgroundId && (
+          <div class="hello-scene" data-testid="home-scene">
+            <Scene id={p.backgroundId} />
+          </div>
+        )}
+        <Mascot mood="wave" size={132} outfit={p.outfitId} />
         <h1 class="title" data-testid="greeting">
           {vi.home.greeting(p.name)}
         </h1>
@@ -126,14 +148,41 @@ export function Home() {
           {vi.home.missionsTitle}
         </h2>
         <ul class="mission-row">
-          {MISSIONS.map((m) => (
-            <li key={m.key} class={`mission mission-${m.key}`} data-testid={`mission-${m.key}`}>
-              <GameIcon id={m.icon} size={40} />
-              <span>{vi.home.missions[m.key]}</span>
-              <span class="mission-check" aria-hidden="true" />
-            </li>
-          ))}
+          {MISSION_GROUPS.map((m) => {
+            const done = day.missions[m];
+            return (
+              <li
+                key={m}
+                class={`mission mission-${m}${done ? ' is-done' : ''}`}
+                data-testid={`mission-${m}`}
+                data-done={done ? '1' : '0'}
+              >
+                <GameIcon id={MISSION_ICON[m]} size={40} />
+                <span>{vi.home.missions[m]}</span>
+                <span
+                  class="mission-check"
+                  role="img"
+                  aria-label={done ? vi.home.missionDone : vi.home.missionTodo}
+                >
+                  {done && <IconCheck />}
+                </span>
+              </li>
+            );
+          })}
         </ul>
+        <div class="gift-row" data-testid="gift-row">
+          <GiftButton />
+          <div class="gift-info">
+            <ProgressBar
+              value={(BOX_EVERY_STARS - toNext) / BOX_EVERY_STARS}
+              label={vi.home.nextBoxIn(toNext)}
+              tone="green"
+            />
+            <p class="gift-info-text" data-testid="gift-info">
+              {boxesFull ? vi.home.boxLimit : vi.home.nextBoxIn(toNext)}
+            </p>
+          </div>
+        </div>
       </section>
 
       {GAME_GROUPS.map(({ group, games }) => (
@@ -146,6 +195,8 @@ export function Home() {
           </div>
         </section>
       ))}
+
+      <DebugRewards />
     </main>
   );
 }

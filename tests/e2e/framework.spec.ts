@@ -217,7 +217,7 @@ test.describe('TC-033 – nút Quay lại của Android', () => {
     await expect(page.getByTestId('greeting')).toBeVisible();
 
     await page.getByRole('button', { name: vi.home.album }).click();
-    await expect(page.getByTestId('wip')).toBeVisible();
+    await expect(page.getByTestId('album')).toBeVisible();
     await page.goBack();
     await expect(page.getByTestId('greeting')).toBeVisible();
     await expect(page.getByTestId('toast')).toHaveCount(0);

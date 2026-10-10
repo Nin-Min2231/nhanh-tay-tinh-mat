@@ -16,6 +16,7 @@ import {
   lastResult,
   pendingPlay,
   recordRound,
+  restPending,
 } from '../../app/store';
 import type { GameId, RoundMode } from '../../app/types';
 import { Countdown } from '../../games/common/Countdown';
@@ -74,7 +75,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
       settledRef.current = true;
       if (result) {
         clock.finish();
-        const { stars, change, newLevel } = recordRound({
+        const { stars, change, newLevel, rewards } = recordRound({
           profileId: profile.id,
           gameId,
           level,
@@ -94,7 +95,10 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
           leveledUp: change === 'up',
           newLevel,
           outOfTime: clock.remainingMs <= 0,
+          rewards,
         };
+        // Vừa hết giờ: màn Nghỉ kế tiếp được tính “nghỉ đúng giờ” (F20)
+        restPending.value = clock.remainingMs <= 0;
         setStack(['/home', '/result']);
       } else {
         clock.abort(); // thoát: không lưu lượt, nhưng thời gian đã chơi vẫn tính vào giới hạn ngày

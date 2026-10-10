@@ -1180,3 +1180,34 @@
     background: var(--color-green);
   }
 }
+
+/* ---------- Sticker ---------- */
+.sticker {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 3px 0 rgb(38 50 56 / 0.28));
+}
+.sticker.is-locked {
+  filter: grayscale(1) brightness(0.5) contrast(0.8);
+  opacity: 0.3;
+}
+.sticker-legendary:not(.is-locked) {
+  filter: drop-shadow(0 0 7px rgb(255 190 40 / 0.85)) drop-shadow(0 3px 0 rgb(38 50 56 / 0.28));
+}
+.sticker-glints {
+  animation: twinkle 1.8s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

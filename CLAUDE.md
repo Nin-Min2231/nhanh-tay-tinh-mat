@@ -87,6 +87,7 @@ src/
   i18n/vi.ts               # TẤT CẢ chuỗi giao diện (không hard-code chuỗi trong component)
   ui/
     components/            # Button, BigCard, Modal, StarBurst, Confetti, Mascot (SVG), ProgressBar...
+    stickers/              # 40 sticker SVG: Sticker.tsx (khung) + animals/fruits/space/vehicles.tsx (hình vẽ)
     screens/               # ProfileSelect, Home, GameIntro, Result, Album, Rest, ParentGate, parent/*
     theme.css              # biến màu, cỡ chữ, safe-area
   games/

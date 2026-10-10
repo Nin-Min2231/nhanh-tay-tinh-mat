@@ -3,6 +3,7 @@ import './ui/theme.css';
 import './ui/app.css';
 import './ui/games.css';
 import './ui/games2.css';
+import './ui/rewards.css';
 import { installBackButton } from './app/backButton';
 import { initRouter, replace, route } from './app/router';
 import { appState, audio, selectProfile, showToast } from './app/store';
@@ -31,4 +32,16 @@ installBackButton({ onExitHint: () => showToast(vi.toast.exitHint) });
 // Mở khóa AudioContext ở lần chạm đầu tiên
 document.addEventListener('pointerdown', () => audio.unlock(), { capture: true });
 
-render(<App />, document.getElementById('app')!);
+const root = document.getElementById('app')!;
+const galleryParams = new URLSearchParams(location.search);
+if ((import.meta.env.DEV || import.meta.env.VITE_E2E === 'true') && galleryParams.has('gallery')) {
+  // Trang xem trước sticker cho dev (không có trong bản deploy thật).
+  void import('./ui/stickers/Gallery').then(({ StickerGallery }) =>
+    render(
+      <StickerGallery theme={galleryParams.get('theme')} view={galleryParams.get('view')} />,
+      root,
+    ),
+  );
+} else {
+  render(<App />, root);
+}

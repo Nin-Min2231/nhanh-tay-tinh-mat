@@ -12,7 +12,7 @@
 | TASK-03 G1 + G2 + độ khó | Xong | 2026-10-10 | lint, 100 unit test, build, 90 e2e (30 × 3 khung hình) đều pass; kèm bảng màu mới rực rỡ; cần anh thử cảm giác chơi + FPS trên tablet |
 | TASK-04 G3 + G4 + G5 | Xong | 2026-10-10 | lint, 170 unit test, build, 135 e2e (45 × 3 khung hình) đều pass; cần anh thử TC-007 (2 ngón thật), TC-032 và cảm giác chơi/FPS trên tablet |
 | TASK-05 G6 + G7 | Xong | 2026-10-10 | lint, 373 unit test, build, 204 e2e (68 × 3 khung hình) đều pass; cần anh **duyệt nội dung mẫu** `docs/samples/` + thử cảm giác chơi trên máy thật |
-| TASK-06 Thưởng | Chưa bắt đầu | | |
+| TASK-06 Thưởng | Xong | 2026-10-10 | lint, 409 unit test, build, 267 e2e (89 × 3 khung hình) đều pass; **đã gộp vào `main`**; cần anh **duyệt 40 sticker + trang phục/hình nền** và thử hộp quà/album trên máy thật |
 | TASK-07 Khu phụ huynh | Chưa bắt đầu | | |
 | TASK-08 PWA + deploy | Chưa bắt đầu | | |
 | TASK-09 QA | Chưa bắt đầu | | |
@@ -22,8 +22,15 @@
 
 - Không còn câu hỏi chặn. R23–R25 (mới v1.2) áp dụng theo đề xuất; chủ dự án có thể góp ý trong quá trình làm.
 - **Duyệt nội dung mẫu G6/G7** trong `docs/samples/` (câu nào quá khó/dễ với bé lớp 2?).
+- **Duyệt hình thưởng TASK-06**: 40 sticker (tên + độ hiếm), 2 trang phục, 2 hình nền – xem bằng `npm run dev` rồi mở `http://localhost:5173/?gallery=1` (thêm `&theme=animal|fruit|space|vehicle` để xem to) và `?gallery=1&view=rewards`. Hình nào chưa ưng thì báo số `stk-xx` để em vẽ lại.
+- **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
 
 ## Đề xuất (ngoài phạm vi, để sau)
+
+- **Bộ âm thanh Nhạc Cụ Gõ + Linh vật Cú Mèo** (mốc 80 và 230 sao): cần tổng hợp âm mới (`audio.ts` có thêm “bộ âm” để chọn) và vẽ Cú Mèo 5 biểu cảm như Sóc Bo → TASK-10 nếu anh muốn. Hiện chỉ mở khóa + hiện trong Album.
+- **Kích thước JS** tăng lên ≈ 98 KB gzip (từ ≈ 64 KB): 40 sticker + 2 hình nền + trang phục ≈ +33 KB. Vẫn thấp hơn nhiều giới hạn 350 KB; khi làm PWA (TASK-08) nên tách Album/sticker/hình nền thành gói tải sau (dynamic import) cùng với gói từng game.
+- Chữ tên sticker dưới mỗi ô Album đang 16px (nhỏ hơn mức 18px của SPEC) để vừa 4 cột trên điện thoại 360px; nếu anh thấy khó đọc thì chuyển sang bấm vào ô để xem tên (đã có).
+- Tỷ lệ độ hiếm thật sau “bảo đảm Hiếm” là ≈ **66 / 28,3 / 5,7** (Thường / Hiếm / Siêu hiếm), không phải đúng 70/25/5 (xem nhật ký TASK-06). Muốn đúng 70/25/5 thì phải bỏ bảo đảm; muốn giữ bảo đảm mà gần 70/25/5 hơn thì hạ xác suất Hiếm ở lần tung gốc – chỉnh trong `rollRarity` (`rewards.ts`) nếu anh muốn.
 
 - Home tablet ngang: xếp 3 nhóm game cạnh nhau để đỡ phải cuộn (TASK-10 nếu anh thấy cần).
 - Kích thước JS tăng từ ≈ 33 KB lên ≈ 64 KB (gzip) vì có thêm bộ sinh câu G6/G7: nên tách mỗi game thành gói tải sau (dynamic import) khi làm PWA (TASK-08) để lần mở đầu nhẹ hơn.
@@ -33,6 +40,40 @@
 - Hai test e2e cũ phụ thuộc thời gian thực – G1 TC-004 và G3 TC-013 – thỉnh thoảng chập chờn khi máy bận và chạy 4 luồng song song (một lần chạy đầy đủ có 2 lỗi, chạy riêng từng test đều pass; chạy đầy đủ lại bằng `--workers=3` được 204/204). TASK-09 (QA) nên ổn định hóa (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
 
 ## Nhật ký
+
+### 2026-10-10 – TASK-06
+- Đã làm:
+  - **Logic thuần `app/rewards.ts` + 36 unit test** (`rewards.test.ts`): nhiệm vụ 3 nhóm/ngày (`missionGroupOf`, khớp registry) → 1 hộp; hộp mỗi lần `totalStars` vượt bội số 15 (`addStars`, cũng áp cho +3 sao sticker trùng và +2 sao nghỉ đúng giờ); giới hạn hộp/ngày (`maxBoxesPerDay` 0–5, hộp nhiệm vụ + hộp theo sao đều tính, hộp vượt giới hạn **mất luôn**, báo “Mai con nhận tiếp nhé!”); hộp PH tặng (`grantParentBoxes`, cho TASK-07) không tính giới hạn; `rollRarity` 70/25/5 + bảo đảm Hiếm khi `sinceLastRare ≥ 5`; trùng → +3 sao và `×2`; 8 mốc mở khóa theo sao (`syncUnlocks`, đọc mốc từ `levels.json`); `claimRestReward` (+2 sao, 1 lần/ngày). Danh mục 40 sticker `stk-01…stk-40` (4 chủ đề × 10: 6 Thường, 3 Hiếm, 1 Siêu hiếm → 24/12/4 khớp JSON).
+  - **Kiểm tỷ lệ** (mô phỏng 10.000 hộp, RNG có seed): lần tung gốc đúng 70/25/5 (±2%); tỷ lệ thật **sau “bảo đảm Hiếm” là ≈ 66,0 / 28,3 / 5,7** – khớp phân tích Markov trong test (±2%) và chuỗi Thường liên tiếp không bao giờ quá 5. Hai yêu cầu của SPEC (“70/25/5” và “bảo đảm Hiếm sau 5 hộp”) không thể cùng đúng tuyệt đối; em giữ cả hai và ghi tỷ lệ thật (xem “Đề xuất”).
+  - **Store** (`store.ts`): `recordRound` gọi `applyRoundRewards` (nhiệm vụ + sao + hộp + mở khóa) và trả `rewards` cho màn Kết quả; mới: `openGift` (lưu ngay khi mở, seed theo `openedTotal` khi chạy e2e), `equipReward`, `claimRest` + cửa sổ 30 giây (`restPending`/`startRestWindow`, rút ×10 khi `?e2e=1`), `giftModalOpen`, các hàm thử `debug*`. Khi mở app, hồ sơ có sẵn sao được đối chiếu mốc mở khóa và lưu lại (không cần migration: cấu trúc dữ liệu không đổi).
+  - **Home**: 3 ô nhiệm vụ đánh dấu thật; hàng **Hộp quà** (số hộp đang chờ, thanh “còn N sao nữa có hộp”, hoặc “Hôm nay con nhận đủ hộp quà rồi. Mai con nhận tiếp nhé!”); Sóc Bo mặc trang phục + **hình nền** sau lưng; khung avatar Cầu Vồng (10 sao); huy hiệu vàng (300 sao). Sửa luôn lỗi cũ: thanh đầu Home tràn ngang 13px ở 360px khi tổng sao 3 chữ số (nay xuống dòng).
+  - **Kết quả**: “Xong nhiệm vụ …! Nhiệm vụ hôm nay: n/3”, “Con mở khóa: …!”, biểu ngữ **“Con nhận được hộp quà!” + nút Mở hộp quà**, hoặc “Mai con nhận tiếp nhé!” khi vượt giới hạn.
+  - **Cửa sổ mở hộp** (`GiftBox.tsx`, dùng chung Home/Kết quả/Nghỉ/Album): hộp quà SVG bóng bẩy lắc nhẹ → bé **chạm để mở** → nắp bật, tỏa sáng → sticker xoay hiện ra kèm nhãn Thường/Hiếm/Siêu hiếm, “Sticker mới!” hoặc “×2 +3 sao”, thông báo mở khóa; Hiếm/Siêu hiếm có tia sáng quay + pháo giấy + fanfare; “Mở tiếp (còn n)”, “Xem Album”, “Xong”; Esc / ✕ / nút Quay lại Android đều đóng. **Mở được cả khi đã hết giờ.**
+  - **Album** (`screens/Album.tsx`): 4 tab – Sticker (40 ô, ô chưa có là bóng mờ, “×n”, chạm để phóng to), Trang phục, Hình nền, Đặc biệt; dòng “Còn N sao nữa để mở: …”.
+  - **Hình vẽ mới (đều tự thiết kế, chuyển sắc + vệt sáng + viền INK như phong cách cũ)**: 40 sticker (`ui/stickers/*`: khung theo độ hiếm – trắng ngọc / bạc xanh / vàng lấp lánh; nền theo chủ đề; 4 file vẽ riêng), trang phục **Mũ Phi Công** (mũ da + kính + khăn) và **Áo Siêu Nhân Sóc** (mặt nạ + áo xanh có huy hiệu hạt dẻ + áo choàng đỏ) tách 3 lớp trong `Mascot` (`components/Outfits.tsx`), hình nền **Rừng Kẹo** và **Đáy Biển** (`components/Scenes.tsx`), huy hiệu vàng, biểu tượng Nhạc Cụ Gõ.
+  - **Màn nghỉ**: nút **“Con nghỉ đây!”** + thanh đếm 30 giây (+2 sao, 1 lần/ngày), hết 30 giây thì nút biến mất lặng lẽ (không lời chê), mở hộp quà còn lại, Xem Album, gợi ý vận động giữ nguyên.
+  - Công cụ dev: `?gallery=1[&theme=…|&view=rewards]` xem toàn bộ sticker/trang phục/hình nền (không có trong bản deploy – đã kiểm `dist/`); bảng `?debug=1` ở Home có **+1 hộp quà, +10 sao, +15 sao, Làm mới ngày hôm nay** để thử không phải chơi nhiều lượt.
+- Test case tự kiểm (Playwright 3 khung hình + unit): **TC-021 Pass** (G1 + G2 + G6 → 3 ô tick, 1 hộp, mở hộp có hoạt ảnh, sticker vào album) · **TC-022 Pass** (đã 3 hộp → 15 sao không thêm hộp, “Mai con nhận tiếp nhé!”; giới hạn 0 → không hộp) · **TC-030 Pass** (“Con nghỉ đây” +2 sao một lần/ngày; để quá 30 giây → không nhận, không phạt; vào góc nghỉ từ Home → không có nút). Thêm: bảo đảm Hiếm sau 5 hộp; sticker trùng +3 sao; hết giờ vẫn mở hộp; lưu ngay khi mở (tải lại vẫn còn); hộp/album tách riêng từng hồ sơ; mở khóa 10 sao → khung Cầu Vồng; hồ sơ cũ có sẵn 130 sao tự mở khóa; mặc/cởi trang phục, đặt/bỏ hình nền, mục bị khóa không chọn được; không tràn ngang ở cả 3 khung hình.
+- Unit test: **409 test** (+36 ở `rewards.test.ts`). E2E: **267** (89 × 3 khung hình; +21 test mới ở `rewards.spec.ts`; test TC-033 cũ được sửa vì Album không còn là trang “Đang xây dựng”). Một lần chạy đầy đủ `--workers=3` ≈ 9 phút, không có test chập chờn.
+- Cách thử thủ công (điện thoại/tablet cùng wifi, `npm run dev`, địa chỉ `http://192.168.x.x:5173/?debug=1`):
+  1. **Xem hình:** thêm `?gallery=1` (bản dev) – duyệt 40 sticker; hoặc mở Album sau khi dùng nút debug.
+  2. **Hộp quà:** Home (có `?debug=1`) → cuộn xuống cuối → bấm **+1 hộp quà** → chạm nút **Hộp quà** → chạm hộp để mở → thử **Mở tiếp**, **Xem Album**, vuốt Quay lại (phải đóng hộp, chưa mở thì hộp vẫn còn).
+  3. **Nhiệm vụ thật:** chơi 1 lượt G1, 1 lượt G2, 1 lượt G6 → xem 3 ô tick và hộp quà ở màn Kết quả; “Làm mới ngày hôm nay” để thử lại.
+  4. **Giới hạn ngày:** bấm “+15 sao” liên tục → sau 3 hộp trong ngày, Home báo “Hôm nay con nhận đủ hộp quà rồi”.
+  5. **Mốc sao:** bấm “+10 sao” vài lần: 10 sao (khung Cầu Vồng), 25 (Mũ Phi Công tự mặc), 50 (Rừng Kẹo tự đặt), 120 (Áo Siêu Nhân), 170 (Đáy Biển), 300 (huy hiệu). Vào Album → Trang phục/Hình nền để đổi.
+  6. **Nghỉ đúng giờ:** cần hết 15 phút chơi (hoặc đặt giới hạn thấp ở khu PH khi có – TASK-07). Khi hết giờ giữa lượt: Kết quả → Tiếp tục → màn Nghỉ → bấm **Con nghỉ đây!** trong 30 giây (+2 sao).
+  7. **Tablet Samsung:** kiểm Album 40 ô (nhiều cột), cửa sổ hộp quà, hình nền ở Home có che mất tên/linh vật không.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - Hộp vượt giới hạn ngày **mất luôn** (không để dành); hộp nhiệm vụ **đã hoàn thành nhưng vượt giới hạn** vẫn được đánh dấu “đã thưởng” (không báo lại).
+  - Sticker trùng (+3 sao) và nghỉ đúng giờ (+2 sao) có thể đẩy tổng sao qua bội số 15 → có thêm hộp (vẫn theo giới hạn ngày).
+  - Cửa sổ 30 giây của “Con nghỉ đây” **bắt đầu khi bé vào màn Nghỉ ngay sau khi hết giờ** (đi qua Kết quả → Tiếp tục). Vào góc nghỉ từ Home thì không có nút thưởng. Tải lại trang giữa chừng thì mất cửa sổ (không lưu).
+  - Ô trang phục / hình nền đang trống thì **tự mặc** món vừa mở khóa đầu tiên (bé thấy ngay); không đè lên thứ bé đã chọn.
+  - Bé phải **chạm hộp để mở** (không tự mở). Hộp lưu ngay khi chạm, không phụ thuộc hoạt ảnh.
+  - Khung avatar Cầu Vồng và Huy hiệu Vàng **tự áp dụng** (không có nút bật/tắt). Bộ âm Nhạc Cụ Gõ và Cú Mèo: chỉ mở khóa + hiện ở Album (xem “Câu hỏi mở”).
+  - Hình nền chỉ hiện sau lưng linh vật ở Home (không phủ cả trang) để chữ vẫn dễ đọc.
+  - 4 chủ đề sticker: Động vật · Trái cây · Vũ trụ · Phương tiện; mỗi chủ đề 6 Thường (đơn giản), 3 Hiếm (nhiều chi tiết + lấp lánh), 1 Siêu hiếm (công phu nhất, viền vàng phát sáng).
+- Còn lại / nợ kỹ thuật: Khu phụ huynh/Khóa PH vẫn “Đang xây dựng” (TASK-07: nút tặng hộp/thời gian dùng `grantParentBoxes`, đã có sẵn + test); `updateAvailable`/SW (TASK-08); Cú Mèo + Nhạc Cụ Gõ (xem “Đề xuất”); tách gói tải sau (xem “Đề xuất”).
+- Commit: `feat: daily missions, gift boxes, 40-sticker album, outfits and backgrounds, rest-on-time reward`
 
 ### 2026-10-10 – TASK-05
 - Đã làm:

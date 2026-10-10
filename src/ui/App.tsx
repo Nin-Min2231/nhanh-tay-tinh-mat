@@ -5,7 +5,9 @@ import { dateKey } from '../app/profile';
 import { isOutOfTime } from '../app/session';
 import { activeProfile, appState, lastResult, pendingPlay } from '../app/store';
 import { isGameAvailable } from '../games/registry';
+import { GiftModal } from './components/GiftBox';
 import { StorageBanner, TooSmallOverlay, Toast } from './components/Overlays';
+import { Album } from './screens/Album';
 import { GameIntro } from './screens/GameIntro';
 import { Home } from './screens/Home';
 import { PlayScreen } from './screens/Play';
@@ -55,7 +57,7 @@ function Screen() {
     case 'rest':
       return <Rest />;
     case 'album':
-      return <UnderConstruction title={vi.wip.album} />;
+      return <Album />;
     case 'parent-gate':
       return <UnderConstruction title={vi.wip.parentGate} />;
     case 'parent':
@@ -75,6 +77,7 @@ export function App() {
     <div class="app">
       <StorageBanner />
       {redirect ? null : <Screen />}
+      <GiftModal />
       <Toast />
       <TooSmallOverlay />
     </div>

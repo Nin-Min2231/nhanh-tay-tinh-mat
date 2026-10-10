@@ -327,19 +327,44 @@ export function isAvatarId(id: string): id is AvatarId {
   return (AVATAR_IDS as readonly string[]).includes(id);
 }
 
-export function Avatar({ id, size = 72 }: { id: string; size?: number }) {
+/** Khung Cầu Vồng (mở khóa ở 10 sao): 6 vòng màu quanh hình đại diện. */
+const RAINBOW = ['#FF4D5E', '#FF9F43', '#FFD93D', '#3DDC6E', '#29B6F6', '#8E6CF0'] as const;
+
+export function Avatar({
+  id,
+  size = 72,
+  frame = false,
+}: {
+  id: string;
+  size?: number;
+  frame?: boolean;
+}) {
   const key: AvatarId = isAvatarId(id) ? id : 'cat';
   return (
     <svg
-      class="avatar"
+      class={`avatar${frame ? ' avatar-framed' : ''}`}
       width={size}
       height={size}
       viewBox="0 0 100 100"
       role="img"
       aria-label={vi.avatars[key] ?? key}
     >
-      <circle cx="50" cy="50" r="50" fill={BACKGROUNDS[key]} />
-      <Art id={key} />
+      {frame &&
+        RAINBOW.map((c, i) => (
+          <circle
+            key={c}
+            cx="50"
+            cy="50"
+            r={48.5 - i * 2.6}
+            fill="none"
+            stroke={c}
+            stroke-width="3"
+          />
+        ))}
+      <g transform={frame ? 'translate(11 11) scale(0.78)' : undefined}>
+        <circle cx="50" cy="50" r="50" fill={BACKGROUNDS[key]} />
+        <Art id={key} />
+      </g>
     </svg>
   );
 }
