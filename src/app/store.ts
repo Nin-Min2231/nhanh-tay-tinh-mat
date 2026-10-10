@@ -5,6 +5,7 @@ import { applyRound, type KidChoice, type LevelChange } from './adaptive';
 import { createAudio } from './audio';
 import { generateId, getDeviceClass } from './device';
 import { createHaptics } from './haptics';
+import { applyRoundToMath } from './mathFacts';
 import { MAX_PROFILES, createProfile, dateKey, emptyDay, type NewProfileInput } from './profile';
 import { starsForScore } from './scoring';
 import { storage } from './storage';
@@ -171,6 +172,11 @@ export function recordRound(args: RecordRoundArgs): {
     newLevel = applied.progress.level;
     return {
       ...p,
+      // G6: cập nhật sổ lỗi (F19); lastSeenRound = số thứ tự lượt G6
+      math:
+        args.gameId === 'G6'
+          ? applyRoundToMath(p.math, args.result.extra, before.plays + 1)
+          : p.math,
       totalStars: p.totalStars + stars, // không bao giờ giảm
       days: {
         ...p.days,

@@ -30,6 +30,16 @@ export function pick<T>(rng: Rng, items: readonly T[]): T {
   return items[Math.floor(rng() * items.length)] as T;
 }
 
+/** Xáo trộn Fisher–Yates, trả về mảng mới (không đổi mảng gốc). */
+export function shuffle<T>(rng: Rng, items: readonly T[]): T[] {
+  const out = items.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [out[i], out[j]] = [out[j] as T, out[i] as T];
+  }
+  return out;
+}
+
 /** Seed ngẫu nhiên cho lượt chơi thật (không cần tái lập). */
 export function freshSeed(): number {
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {

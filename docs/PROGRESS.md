@@ -11,7 +11,7 @@
 | TASK-02 Khung app | Xong | 2026-10-10 | lint, 42 unit test, build, 51 e2e (17 × 3 khung hình) đều pass; cần anh thử TC-034/035 trên tablet Samsung |
 | TASK-03 G1 + G2 + độ khó | Xong | 2026-10-10 | lint, 100 unit test, build, 90 e2e (30 × 3 khung hình) đều pass; kèm bảng màu mới rực rỡ; cần anh thử cảm giác chơi + FPS trên tablet |
 | TASK-04 G3 + G4 + G5 | Xong | 2026-10-10 | lint, 170 unit test, build, 135 e2e (45 × 3 khung hình) đều pass; cần anh thử TC-007 (2 ngón thật), TC-032 và cảm giác chơi/FPS trên tablet |
-| TASK-05 G6 + G7 | Chưa bắt đầu | | |
+| TASK-05 G6 + G7 | Xong | 2026-10-10 | lint, 373 unit test, build, 204 e2e (68 × 3 khung hình) đều pass; cần anh **duyệt nội dung mẫu** `docs/samples/` + thử cảm giác chơi trên máy thật |
 | TASK-06 Thưởng | Chưa bắt đầu | | |
 | TASK-07 Khu phụ huynh | Chưa bắt đầu | | |
 | TASK-08 PWA + deploy | Chưa bắt đầu | | |
@@ -25,8 +25,45 @@
 ## Đề xuất (ngoài phạm vi, để sau)
 
 - Home tablet ngang: xếp 3 nhóm game cạnh nhau để đỡ phải cuộn (TASK-10 nếu anh thấy cần).
+- Kích thước JS tăng từ ≈ 33 KB lên ≈ 64 KB (gzip) vì có thêm bộ sinh câu G6/G7: nên tách mỗi game thành gói tải sau (dynamic import) khi làm PWA (TASK-08) để lần mở đầu nhẹ hơn.
+- G6: M11 (nhân/chia số 2–3 chữ số) ở dạng tìm số thiếu ra số khá lớn (vd `? : 5 = 57`); đây là chủ đề lớp 3, không bật mặc định – nếu anh thấy khó quá thì giới hạn dạng tìm số thiếu cho M11 ở TASK-10.
+- G7 cấp 5 (mẫu 2 thuộc tính): khi sai hiện tô sáng cả dãy 6 ô; có thể làm lời giải thích riêng “màu lặp 2 nhịp, hình lặp 3 nhịp” nếu anh muốn (TASK-10).
+- G6 hình minh họa khi sai hiện 1,5 giây đúng SPEC; nếu thấy bé chưa kịp nhìn thì tăng hằng số `SHOW_MS` (`games/g6-math/view.ts`).
+- Hai test e2e cũ phụ thuộc thời gian thực – G1 TC-004 và G3 TC-013 – thỉnh thoảng chập chờn khi máy bận và chạy 4 luồng song song (một lần chạy đầy đủ có 2 lỗi, chạy riêng từng test đều pass; chạy đầy đủ lại bằng `--workers=3` được 204/204). TASK-09 (QA) nên ổn định hóa (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
 
 ## Nhật ký
+
+### 2026-10-10 – TASK-05
+- Đã làm:
+  - **G6 Hái Táo Tính Nhẩm** (`games/g6-math`, DOM thuần): bộ sinh câu cho **M01–M14** (`topics.ts`; mỗi chủ đề có `gen` + `inRange`), cấp 1–3 dùng phạm vi “nửa dễ”, từ cấp 8 có dạng **tìm số thiếu** (20/30/40% câu; M13 luôn tìm số thiếu; M03, M14 không có), M03 luôn 3 quả `>` `<` `=`. **Đáp án nhiễu** (`question.ts`): ±1, ±2, ±10 (quên nhớ), đảo chữ số, phép tính nhầm (cộng ↔ trừ), `a×(b±1)` cho phép nhân; lọc ≥ 0, không trùng, bổ sung số gần nếu thiếu. **Hình minh họa khi sai** (`illustrations.ts`): khung 10 ô chấm tròn (cộng/trừ ≤ 20), lưới chấm hàng × cột (nhân/chia), đặt tính dọc có chip “nhớ” màu cam (số lớn; phép chia lớn hiện dạng kiểm tra bằng phép nhân), khối chục/đơn vị (so sánh). Cây táo, táo 4 màu bóng bẩy, giỏ đan, Sóc Bo (cười / reo) tự vẽ SVG/CSS; táo đung đưa (chỉ thân hình động, nút chạm giữ nguyên ≥ 72px); thanh thời gian `secPerQ` chạy theo `dt` (tạm dừng chuẩn), chế độ `timer: off`; đúng → táo rơi vào giỏ, sai/hết giờ → táo đúng phát sáng + hình minh họa 1,5 giây (không âm chê; hết giờ im lặng).
+  - **Sổ lỗi (F19)** (`app/mathFacts.ts`, dùng chung với `store.recordRound`): khóa `"8+7"`, `"15-9"`, `"7x8"`, `"35:5"`, `"47?74"`; câu sai chèn lại **sau 2–4 câu** trong lượt (thay một ô còn lại nên lượt vẫn đủ 10 câu, tối đa 1 lần/phép tính/lượt), tối đa **2 câu đầu lượt sau** lấy từ phép tính từng sai chưa thuộc (ưu tiên streak thấp, lâu chưa gặp); đúng liên tiếp 3 lần → `mastered`; sai lại → bỏ trạng thái thuộc. `profile.math.facts` được cập nhật sau mỗi lượt G6 (`lastSeenRound` = số thứ tự lượt G6), giữ tối đa 300 phép tính. Metrics: `accuracy`, `avgTimeMs`, `timeouts`, `masteredCount` (+ `correct`).
+  - **G7 Tìm Quy Luật** (`games/g7-patterns`, DOM + SVG): 18 dạng câu trải 10 cấp (AB màu · AB/AAB/ABB · ABC, to–nhỏ · dãy số +1/+2/+5/+10, mũi tên xoay 90° · mẫu 2 thuộc tính · dãy giảm, đếm cách 3/4, tăng dần chấm · ma trận 2×2 · ma trận 3×3 · khác loại, ×2 · xen kẽ, ma trận 3×3 hai quy luật); ô “?” có thể ở giữa dãy từ cấp 5. **Bộ giải độc lập** (`solve.ts`) liệt kê mọi phần tử lấp được vào ô “?”; câu chỉ được dùng khi tập đó có **đúng 1 phần tử** và đúng 1 thẻ đáp án thỏa quy luật. Đáp án nhiễu khác đáp án đúng **đúng 1 thuộc tính**. Phần tử vẽ SVG (5 hình + mũi tên, cỡ S/M/L, xoay 0/90/180/270, 1–6 chấm), **mỗi màu có hoa văn riêng** (sọc chéo, chấm, lưới, sọc ngang, lượn sóng). Sai: **tô sáng đơn vị lặp** / mũi tên bước (`+2`, `×2`, `↻90°`) / hàng chứa “?” / ba hình cùng thuộc tính; cấp 1–5 cho **thử lại, đúng lần 2 được ½ điểm**, cấp 6+ hiện đáp án. Tùy chọn phụ huynh: `groups` (Hình/Số/Ma trận), `timer` (không giới hạn / 30 giây).
+  - Dùng chung: `shuffle` (rng.ts), Home mở khóa thẻ G6/G7 (biểu tượng táo/hình khối bóng bẩy), hình động giới thiệu riêng cho G6 (chạm táo → rơi vào giỏ) và G7 (chạm hình → lấp vào ô “?”), dòng kết quả (`vi.games.G6/G7.lines`), tùy chọn trong `?debug=1`, CSS mới `ui/games2.css`.
+  - **Mẫu nội dung để anh duyệt:** `npm run samples` sinh `docs/samples/G6.md` (14 chủ đề × 25 câu: 10 nửa dễ + 10 đầy đủ + 5 tìm số thiếu), `docs/samples/G7.md` (18 dạng × 20 câu, ghi bằng chữ) và `docs/samples/G7.html` (cùng nội dung có **hình thật**, bấm đúp để mở bằng trình duyệt; thẻ viền xanh lá là đáp án đúng).
+  - `docs/HANDOVER.md` (bàn giao sang phiên sau) được đưa vào repo và cập nhật.
+- Test case tự kiểm (Playwright 3 khung hình + unit): **TC-018 Pass** (Lớp 2 mặc định: 10 câu thuộc M02/M05/M06/M07/M08, 4 táo không trùng, mỗi câu đúng 1 đáp án đúng; sai 1 câu → hình minh họa + táo đúng phát sáng; được hỏi lại sau 2–4 câu; sổ lỗi ghi `seen 2 · correct 1 · streak 1`) · **TC-019 Pass** (không chạm đến hết giờ: tính chưa đúng, hiện đáp án + hình minh họa, sang câu 2, lời nhắc trung tính, giỏ vẫn 0) · **TC-020 Pass** (G7 cấp 3: sai → tô sáng phần lặp + thẻ sai mờ đi, chọn lại đúng → câu đó ½ điểm, cả lượt 7,5/8). Thêm: tạm dừng thì đồng hồ câu dừng; chế độ không giới hạn thời gian; sổ lỗi → `mastered` + dòng “Con thuộc thêm 1 phép tính rồi!”; cấp 10 có 6 táo đung đưa, nút không đổi kích thước; M03 luôn 3 quả; G7 cấp 6+ không thử lại; G7 hết 30 giây; nhóm Số/Ma trận của phụ huynh; chạm ngoài thẻ đáp án không bị tính; bố cục các cấp 2, 5, 8, 10 không tràn màn hình, thẻ ≥ 64px.
+- Unit test: **373 test** (+203): G6 115 (**1.000 câu mỗi chủ đề × phạm vi dễ/đủ**, **1.000 câu × 3/4/6 đáp án**: đúng 1 đáp án thỏa phép tính, nhiễu không trùng, ≥ 0, trong phạm vi chủ đề, không số âm, chia hết, tỷ lệ tìm số thiếu, vị trí đáp án đều, luật chèn lại/sổ lỗi, hình minh họa, đặt tính dọc) · G7 78 (**1.000 câu × 18 dạng × 2 số đáp án**: đúng 1 lời giải, đúng 1 thẻ thỏa quy luật, nhiễu khác đúng 1 thuộc tính, dãy số không âm, ≤ 7 ô, “?” giữa dãy chỉ từ cấp 5, bộ giải loại câu mơ hồ như `1 2 4 ?`, thử lại ½ điểm, nhóm bị tắt) · sổ lỗi 10.
+- Cách thử thủ công (điện thoại/tablet cùng wifi, `npm run dev`, địa chỉ `http://192.168.x.x:5173/`; thêm `?debug=1` để chọn chủ đề/cấp/đồng hồ):
+  1. **Duyệt nội dung (việc quan trọng nhất):** mở `docs/samples/G6.md` và `docs/samples/G7.html`; đánh dấu câu nào quá khó/dễ hay lạ với bé lớp 2 rồi báo tôi (chủ đề mặc định lớp 2: M02, M05, M06, M07, M08).
+  2. Home → “Hái Táo Tính Nhẩm” → Bắt đầu: chạm quả táo đúng (táo rơi vào giỏ); cố ý chạm sai 1 câu (táo đúng phát sáng + hình minh họa, rồi câu đó quay lại sau 2–4 câu); để im một câu cho hết giờ (không lời chê).
+  3. `?debug=1`: chọn Cố định, Cấp 8–10 (6 táo, có `? + 8 = 15`, táo đung đưa → thử chạm vào táo khi đang đung đưa), chọn chủ đề M06/M09/M10 để xem đặt tính dọc có chữ số nhớ và lưới chấm.
+  4. Chơi 2–3 lượt G6 liền với vài câu sai, rồi xem lượt sau: tối đa 2 câu đầu là phép tính đã sai (sổ lỗi). Đúng 3 lần liên tiếp thì Kết quả hiện “Con thuộc thêm … phép tính rồi!”.
+  5. “Tìm Quy Luật”: cấp 1–5 chọn sai (phải tô sáng phần lặp và cho chọn lại, đúng lần 2 vẫn được sao nhưng ít điểm hơn); cấp 6+ chọn sai (hiện đáp án rồi sang câu sau); cấp 7–8 ma trận; cấp 9 “khác loại”. Màn hình tablet ngang: ma trận ở bên trái, thẻ đáp án 2×2 bên phải.
+  6. Hình ảnh: kiểm tra mỗi màu có hoa văn riêng (sọc/chấm/lưới/ngang/lượn sóng) – chụp màn hình đổi sang đen trắng vẫn phân biệt được.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - Câu hỏi lại **thay thế** một câu chưa làm (lượt vẫn đủ 10 câu, tính điểm bình thường); sai ở 2 câu cuối thì không còn chỗ chèn (phép tính đó vẫn nằm trong sổ lỗi và quay lại đầu lượt sau). Phép tính đang là câu hỏi lại mà sai tiếp thì không chèn lần nữa.
+  - Sổ lỗi chỉ ghi phép tính **từng sai** (làm đúng ngay lần đầu thì không lưu) và giữ tối đa 300 phép tính để không làm phình `localStorage`; câu hỏi từ sổ lỗi chỉ lấy khi còn thuộc chủ đề đang bật.
+  - So sánh (M03) có thêm hình **khối chục / đơn vị** (SPEC chưa nêu hình cho M03).
+  - Đáp án nhiễu “phép tính nhầm” (vd cộng thay vì trừ) chỉ được dùng khi không quá xa đáp án (tránh `138` cho `72 − 66`).
+  - G6 hết giờ: không phát âm “bụp” (chỉ chạm sai mới có âm nhẹ); nhịp phản hồi giữ nguyên 1,5 giây (`SHOW_MS`).
+  - G6/G7 `finish()` (hết giờ trong ngày quá 90 giây): kết thúc **ngay** với kết quả hiện có, câu đang dở tính chưa làm (để bé không bị kẹt ở câu G7 không giới hạn thời gian).
+  - G7 hết 30 giây: tính sai, hiện đáp án, không cho thử lại. `accuracy` = số câu đúng **ngay lần đầu** / 8; `highestTypeCorrect` = cấp cao nhất của dạng câu đã giải đúng (kể cả đúng sau khi thử lại); thêm `firstTry`, `correct`.
+  - G7: mỗi cấp chỉ dùng đúng các dạng ghi trong bảng cấp độ; nếu phụ huynh tắt nhóm có dạng đó thì dùng dạng của nhóm còn bật có cấp gần nhất (ưu tiên cấp thấp hơn). Thêm hình **mũi tên** (hình thứ 6) chỉ để làm dạng “xoay 90°”.
+  - G7 xem đáp án + giải thích khi hết cơ hội: 2,8 giây (đủ để bé đọc); khen khi đúng: 1 giây.
+  - Giỏ táo đặt ở **chân cây** (táo rơi xuống giỏ), bóng nói + Sóc Bo ở trên; màn hình thấp (điện thoại nằm ngang) tự thu gọn: ẩn bớt linh vật, thu nhỏ thẻ minh họa vừa khung.
+  - Khi chạy e2e (`?e2e=1`): thời gian mỗi câu G6/G7 rút ×10, nhịp phản hồi chỉ rút xuống tối thiểu 40% để test còn kịp kiểm tra hình minh họa.
+- Còn lại / nợ kỹ thuật: Album/Khu phụ huynh vẫn “Đang xây dựng”; chưa có nhiệm vụ/hộp quà (TASK-06); biểu tượng thẻ G1, G2 vẫn phẳng hơn G3–G7; chưa tách gói tải sau cho từng game (xem “Đề xuất”).
+- Commit: `feat: G6 apple math with error book, G7 pattern puzzles with unique-answer solver`
 
 ### 2026-10-10 – TASK-04
 - Đã làm:

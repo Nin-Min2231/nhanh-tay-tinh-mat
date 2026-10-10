@@ -387,3 +387,78 @@ export async function g5Bot(page: Page, from = 0, to = Infinity) {
     { from, to },
   );
 }
+
+// ---------------------------------------------------------------- G6 / G7
+
+export interface QuestionHook {
+  i: number;
+  key?: string;
+  topic?: string;
+  text?: string;
+  options?: number[];
+  correct: number;
+  hidden?: string;
+  retry?: boolean;
+  type?: string;
+  typeLevel?: number;
+  layout?: string;
+  cells?: number;
+  hole?: number;
+  retryable?: boolean;
+  wrong?: number[];
+}
+
+/** Đọc trạng thái câu hiện tại của G6/G7 (game ghi ra data-q, data-phase, data-stats). */
+export async function questionState(page: Page): Promise<{
+  phase: string;
+  q: QuestionHook;
+  stats: Record<string, number>;
+}> {
+  return page.evaluate(() => {
+    const h = document.querySelector<HTMLElement>('[data-testid="game-host"]');
+    return {
+      phase: h?.dataset.phase ?? '',
+      q: JSON.parse(h?.dataset.q ?? '{"i":-1,"correct":-1}'),
+      stats: JSON.parse(h?.dataset.stats ?? '{}'),
+    };
+  });
+}
+
+/** Đợi tới khi game đang chờ bé trả lời câu thứ `index` (phase = ask). */
+export async function waitForAsk(page: Page, index: number, timeout = 15_000) {
+  await expect
+    .poll(
+      async () => {
+        const s = await questionState(page);
+        return s.phase === 'ask' ? s.q.i : -1;
+      },
+      { timeout, intervals: [10, 20, 50] },
+    )
+    .toBe(index);
+  return (await questionState(page)).q;
+}
+
+/** Chạm (Pointer Events thật qua touchscreen) vào phần tử đầu tiên khớp selector. */
+export async function tapSelector(page: Page, selector: string, nth = 0) {
+  const box = await page.locator(selector).nth(nth).boundingBox();
+  if (!box) throw new Error(`Không thấy ${selector}`);
+  await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+}
+
+/** Tính đáp án của đề dạng “a ⊕ b = ?” (G6) từ chữ hiển thị. null nếu không phải dạng đơn giản. */
+export function solveDisplayedText(text: string): number | null {
+  const m = /^([\d\u00a0]+) ([+−×:]) ([\d\u00a0]+) = \?$/.exec(text);
+  if (!m) return null;
+  const a = Number((m[1] as string).replace(/\u00a0/g, ''));
+  const b = Number((m[3] as string).replace(/\u00a0/g, ''));
+  switch (m[2]) {
+    case '+':
+      return a + b;
+    case '−':
+      return a - b;
+    case '×':
+      return a * b;
+    default:
+      return a / b;
+  }
+}

@@ -4,6 +4,8 @@ import { g2Module } from './g2-schulte';
 import { g3Module } from './g3-pets';
 import { g4Module } from './g4-lights';
 import { g5Module } from './g5-notes';
+import { g6Module } from './g6-math';
+import { g7Module } from './g7-patterns';
 import type { GameModule } from './common/types';
 import type { GameId } from './levels';
 
@@ -28,6 +30,8 @@ const MODULES: Partial<Record<GameId, GameModule>> = {
   G3: g3Module,
   G4: g4Module,
   G5: g5Module,
+  G6: g6Module,
+  G7: g7Module,
 };
 
 export function getGameModule(id: GameId): GameModule | undefined {

@@ -3,6 +3,7 @@
 import { DEBUG } from '../../app/e2e';
 import { activeProfile, setGameProgress } from '../../app/store';
 import type { GameId, GameProgress } from '../../app/types';
+import { TOPIC_CODES } from '../../games/g6-math/config';
 import { vi } from '../../i18n/vi';
 
 const LEVELS = Array.from({ length: 10 }, (_, i) => String(i + 1));
@@ -188,6 +189,54 @@ export function DebugPanel({ gameId }: { gameId: GameId }) {
               value={opt('doubles')}
               options={[autoOpt, ['off', vi.debug.off]]}
               onChange={(v) => setOpt('doubles', v)}
+            />
+          </>
+        )}
+        {gameId === 'G6' && (
+          <>
+            <Select
+              label={vi.debug.topic}
+              value={
+                Array.isArray(g.options.topics) ? String(g.options.topics[0] ?? 'auto') : 'auto'
+              }
+              options={[autoOpt, ...TOPIC_CODES.map((c) => [c, c] as const)]}
+              onChange={(v) =>
+                set({ options: { ...g.options, topics: v === 'auto' ? null : [v] } })
+              }
+            />
+            <Select
+              label={vi.debug.timer}
+              value={opt('timer')}
+              options={[autoOpt, ['off', vi.debug.timerOff]]}
+              onChange={(v) => setOpt('timer', v)}
+            />
+          </>
+        )}
+        {gameId === 'G7' && (
+          <>
+            <Select
+              label={vi.debug.groups}
+              value={
+                Array.isArray(g.options.groups) ? String(g.options.groups[0] ?? 'auto') : 'auto'
+              }
+              options={[
+                autoOpt,
+                ['shapes', vi.debug.shapes],
+                ['numbers', vi.debug.numbers],
+                ['matrix', vi.debug.matrix],
+              ]}
+              onChange={(v) =>
+                set({ options: { ...g.options, groups: v === 'auto' ? null : [v] } })
+              }
+            />
+            <Select
+              label={vi.debug.timer}
+              value={opt('timer') === 'auto' ? 'off' : opt('timer')}
+              options={[
+                ['off', vi.debug.timerOff],
+                ['sec30', vi.debug.timer30],
+              ]}
+              onChange={(v) => setOpt('timer', v)}
             />
           </>
         )}

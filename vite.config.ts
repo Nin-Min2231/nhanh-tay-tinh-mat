@@ -31,6 +31,7 @@ export default defineConfig({
   server: { port: 5173, strictPort: true },
   test: {
     include: ['src/**/*.test.{ts,tsx}'],
+    testTimeout: 30_000, // test sinh 1.000 câu mỗi dạng (G6/G7)
     environment: 'node',
   },
 });

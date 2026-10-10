@@ -9,6 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "samples": "cross-env GEN_SAMPLES=1 vitest run src/games/samples",
     "test:e2e": "playwright test",
     "lint": "eslint . && tsc --noEmit",
     "format": "prettier --write ."

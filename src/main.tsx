@@ -2,6 +2,7 @@ import { render } from 'preact';
 import './ui/theme.css';
 import './ui/app.css';
 import './ui/games.css';
+import './ui/games2.css';
 import { installBackButton } from './app/backButton';
 import { initRouter, replace, route } from './app/router';
 import { appState, audio, selectProfile, showToast } from './app/store';

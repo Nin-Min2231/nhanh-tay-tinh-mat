@@ -2,6 +2,9 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { GameId } from '../../app/types';
 import { renderSprite, type SpriteKind } from '../../games/g3-pets/art';
+import { appleDefs, appleSvg, basketSvg } from '../../games/g6-math/art';
+import { glyphDefs, itemHtml } from '../../games/g7-patterns/art';
+import { glyph } from '../../games/g7-patterns/elements';
 import { LANE_COLORS, renderGem } from '../../games/g5-notes/art';
 import { vi } from '../../i18n/vi';
 
@@ -169,6 +172,47 @@ export function IntroAnimation({ id }: { id: GameId }) {
           <div class="ia-finger ia-finger-gem" />
           <span class="ia-perfect">{vi.g5.perfect}</span>
         </div>
+      </div>
+    );
+  }
+  if (id === 'G6') {
+    return (
+      <div class="intro-anim ia-orchard" aria-hidden="true" data-game={id}>
+        <span dangerouslySetInnerHTML={{ __html: appleDefs() }} />
+        <div class="ia-q">3 + 4 = ?</div>
+        {[5, 7, 9].map((n, i) => (
+          <div
+            key={n}
+            class={`ia-apple ia-apple-${i}`}
+            dangerouslySetInnerHTML={{ __html: `${appleSvg(i)}<b>${n}</b>` }}
+          />
+        ))}
+        <div class="ia-basket" dangerouslySetInnerHTML={{ __html: basketSvg() }} />
+        <div class="ia-finger ia-finger-apple" />
+      </div>
+    );
+  }
+  if (id === 'G7') {
+    const red = glyph('circle', 0);
+    const blue = glyph('square', 1);
+    return (
+      <div class="intro-anim ia-g7" aria-hidden="true" data-game={id}>
+        <span dangerouslySetInnerHTML={{ __html: glyphDefs() }} />
+        <div class="ia-seq">
+          {[red, blue, red, blue, red].map((g, i) => (
+            <span key={i} dangerouslySetInnerHTML={{ __html: itemHtml(g) }} />
+          ))}
+          <span class="ia-hole">
+            <span class="ia-hole-q">?</span>
+            <span class="ia-hole-a" dangerouslySetInnerHTML={{ __html: itemHtml(blue) }} />
+          </span>
+        </div>
+        <div class="ia-opts">
+          <span dangerouslySetInnerHTML={{ __html: itemHtml(glyph('circle', 1)) }} />
+          <span class="ia-opt-ok" dangerouslySetInnerHTML={{ __html: itemHtml(blue) }} />
+          <span dangerouslySetInnerHTML={{ __html: itemHtml(glyph('square', 0)) }} />
+        </div>
+        <div class="ia-finger ia-finger-opt" />
       </div>
     );
   }

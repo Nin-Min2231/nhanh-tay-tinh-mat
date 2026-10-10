@@ -133,52 +133,107 @@ function Art({ id }: { id: GameId }) {
     case 'G6':
       return (
         <>
+          <defs>
+            <radialGradient id="gi6a" cx="34%" cy="30%" r="82%">
+              <stop offset="0" stop-color="#ff9a8f" />
+              <stop offset="0.5" stop-color="#ec3b3b" />
+              <stop offset="1" stop-color="#b01e2a" />
+            </radialGradient>
+            <linearGradient id="gi6l" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#b6f06a" />
+              <stop offset="1" stop-color="#2f9e3a" />
+            </linearGradient>
+          </defs>
           <path
-            d="M32 18 C 14 8, 4 28, 10 42 C 16 58, 28 56, 32 54 C 36 56, 48 58, 54 42 C 60 28, 50 8, 32 18 Z"
-            fill="#EF5350"
-            stroke={LINE}
-            stroke-width="2.5"
+            d="M32 17 C 19 7, 3 15, 4.5 35 C 6 54, 20 62, 32 59.5 C 44 62, 58 54, 59.5 35 C 61 15, 45 7, 32 17 Z"
+            fill="url(#gi6a)"
+            stroke="#7d1020"
+            stroke-width="2.4"
             stroke-linejoin="round"
           />
           <path
-            d="M32 18 Q32 10 36 6"
+            d="M32 18 C 32 12, 34 8, 38 4.5"
             fill="none"
-            stroke={LINE}
-            stroke-width="3"
+            stroke="#6d4320"
+            stroke-width="3.2"
             stroke-linecap="round"
           />
           <path
-            d="M36 12 Q46 4 52 10 Q44 16 36 12 Z"
-            fill="#66BB6A"
-            stroke={LINE}
-            stroke-width="2"
+            d="M36 10 C 41 2, 52 3, 55 8.5 C 49 14.5, 39 14.5, 36 10 Z"
+            fill="url(#gi6l)"
+            stroke="#2c6b27"
+            stroke-width="1.8"
             stroke-linejoin="round"
           />
-          <path
-            d="M18 28 Q20 24 24 24"
-            fill="none"
-            stroke="#fff"
-            stroke-width="3"
-            stroke-linecap="round"
-            opacity="0.8"
+          <ellipse
+            cx="18.5"
+            cy="26"
+            rx="7"
+            ry="4"
+            transform="rotate(-38 18.5 26)"
+            fill="#fff"
+            fill-opacity="0.6"
           />
+          <circle cx="32" cy="38" r="12" fill="#fff" stroke={LINE} stroke-width="2.4" />
+          <text
+            x="32"
+            y="44.2"
+            text-anchor="middle"
+            font-family="Nunito, sans-serif"
+            font-weight="800"
+            font-size="17"
+            fill={LINE}
+          >
+            7
+          </text>
         </>
       );
     case 'G7':
       return (
-        <g stroke={LINE} stroke-width="2.5" stroke-linejoin="round">
-          <circle cx="12" cy="20" r="8" fill="#EF5350" />
-          <rect x="24" y="12" width="16" height="16" rx="2" fill="#4FC3F7" />
-          <path d="M52 12 L60 28 L44 28 Z" fill="#FFD54F" />
-          <rect x="8" y="36" width="48" height="20" rx="5" fill="#fff" stroke-dasharray="4 3" />
+        <g stroke={LINE} stroke-width="2.3" stroke-linejoin="round">
+          <defs>
+            <radialGradient id="gi7r" cx="34%" cy="28%" r="85%">
+              <stop offset="0" stop-color="#ff9a8f" />
+              <stop offset="0.55" stop-color="#ec3b3b" />
+              <stop offset="1" stop-color="#a61b27" />
+            </radialGradient>
+            <radialGradient id="gi7b" cx="34%" cy="28%" r="85%">
+              <stop offset="0" stop-color="#9fd0ff" />
+              <stop offset="0.55" stop-color="#2f86e8" />
+              <stop offset="1" stop-color="#154c9e" />
+            </radialGradient>
+            <radialGradient id="gi7y" cx="34%" cy="28%" r="85%">
+              <stop offset="0" stop-color="#fff6a6" />
+              <stop offset="0.55" stop-color="#ffc928" />
+              <stop offset="1" stop-color="#e08a00" />
+            </radialGradient>
+            <pattern
+              id="gi7s"
+              width="7"
+              height="7"
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(45)"
+            >
+              <rect width="2.6" height="7" fill="#fff" fill-opacity="0.55" />
+            </pattern>
+            <pattern id="gi7d" width="8" height="8" patternUnits="userSpaceOnUse">
+              <circle cx="4" cy="4" r="1.7" fill="#fff" fill-opacity="0.65" />
+            </pattern>
+          </defs>
+          <circle cx="12" cy="17" r="9.5" fill="url(#gi7r)" />
+          <circle cx="12" cy="17" r="9.5" fill="url(#gi7s)" stroke="none" />
+          <rect x="24" y="8" width="18" height="18" rx="4.5" fill="url(#gi7b)" />
+          <rect x="24" y="8" width="18" height="18" rx="4.5" fill="url(#gi7d)" stroke="none" />
+          <path d="M54 7.5 L62 24 L46 24 Z" fill="url(#gi7y)" />
+          <rect x="6" y="35" width="52" height="22" rx="7" fill="#fff" stroke-dasharray="4.5 3" />
           <text
             x="32"
-            y="52"
+            y="52.5"
             text-anchor="middle"
             font-family="Nunito, sans-serif"
             font-weight="800"
-            font-size="18"
-            fill={LINE}
+            font-size="19"
+            fill="#7b4de0"
             stroke="none"
           >
             ?
