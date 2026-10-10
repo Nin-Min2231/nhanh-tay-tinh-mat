@@ -13,8 +13,8 @@
 | TASK-04 G3 + G4 + G5 | Xong | 2026-10-10 | lint, 170 unit test, build, 135 e2e (45 × 3 khung hình) đều pass; cần anh thử TC-007 (2 ngón thật), TC-032 và cảm giác chơi/FPS trên tablet |
 | TASK-05 G6 + G7 | Xong | 2026-10-10 | lint, 373 unit test, build, 204 e2e (68 × 3 khung hình) đều pass; cần anh **duyệt nội dung mẫu** `docs/samples/` + thử cảm giác chơi trên máy thật |
 | TASK-06 Thưởng | Xong | 2026-10-10 | lint, 409 unit test, build, 267 e2e (89 × 3 khung hình) đều pass; **đã gộp vào `main`**; cần anh **duyệt 40 sticker + trang phục/hình nền** và thử hộp quà/album trên máy thật |
-| TASK-07 Khu phụ huynh | Chưa bắt đầu | | |
-| TASK-08 PWA + deploy | Chưa bắt đầu | | |
+| TASK-07 Khu phụ huynh | Chưa bắt đầu | | **Làm SAU TASK-08** (chủ dự án chọn thứ tự này ngày 2026-10-10); nhận thêm 2 mục dời từ TASK-08: số phiên bản + nút Cập nhật trong khu PH |
+| TASK-08 PWA + deploy | Kế hoạch chờ duyệt | 2026-10-10 | **Làm tiếp theo.** Kế hoạch đã trình bày, chờ anh nhắn “Đồng ý” (chi tiết + phát hiện về mã: `docs/HANDOVER.md` mục 6) |
 | TASK-09 QA | Chưa bắt đầu | | |
 | TASK-10 Sửa lỗi | Chưa bắt đầu | | |
 
@@ -25,21 +25,28 @@
 - **Duyệt hình thưởng TASK-06**: 40 sticker (tên + độ hiếm), 2 trang phục, 2 hình nền – xem bằng `npm run dev` rồi mở `http://localhost:5173/?gallery=1` (thêm `&theme=animal|fruit|space|vehicle` để xem to) và `?gallery=1&view=rewards`. Hình nào chưa ưng thì báo số `stk-xx` để em vẽ lại.
 - **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
 
+- **Duyệt kế hoạch TASK-08** (nhắn “Đồng ý”, kèm chỉnh sửa nếu có) – 4 quyết định mặc định: (1) icon tạo bằng script chạy tay và commit PNG; (2) Lighthouse chạy một lần bằng `npx lighthouse`, không thêm vào dự án; (3) không tách gói tải sau ở TASK-08; (4) thêm `noindex`. Khi làm TASK-08 anh sẽ phải tự bấm trên GitHub: Settings → Pages → Source: **GitHub Actions** (hướng dẫn từng bước đánh số sẽ ghi ở nhật ký TASK-08).
+
 ## Đề xuất (ngoài phạm vi, để sau)
 
 - **Bộ âm thanh Nhạc Cụ Gõ + Linh vật Cú Mèo** (mốc 80 và 230 sao): cần tổng hợp âm mới (`audio.ts` có thêm “bộ âm” để chọn) và vẽ Cú Mèo 5 biểu cảm như Sóc Bo → TASK-10 nếu anh muốn. Hiện chỉ mở khóa + hiện trong Album.
-- **Kích thước JS** tăng lên ≈ 98 KB gzip (từ ≈ 64 KB): 40 sticker + 2 hình nền + trang phục ≈ +33 KB. Vẫn thấp hơn nhiều giới hạn 350 KB; khi làm PWA (TASK-08) nên tách Album/sticker/hình nền thành gói tải sau (dynamic import) cùng với gói từng game.
+- **Kích thước JS** tăng lên ≈ 98 KB gzip (từ ≈ 64 KB): 40 sticker + 2 hình nền + trang phục ≈ +33 KB. Vẫn thấp hơn nhiều giới hạn 350 KB; kế hoạch TASK-08 là **không** tách gói tải sau (toàn bộ đã nằm trong cache offline), chỉ tách nếu đo thời gian khởi động offline thấy chậm.
 - Chữ tên sticker dưới mỗi ô Album đang 16px (nhỏ hơn mức 18px của SPEC) để vừa 4 cột trên điện thoại 360px; nếu anh thấy khó đọc thì chuyển sang bấm vào ô để xem tên (đã có).
 - Tỷ lệ độ hiếm thật sau “bảo đảm Hiếm” là ≈ **66 / 28,3 / 5,7** (Thường / Hiếm / Siêu hiếm), không phải đúng 70/25/5 (xem nhật ký TASK-06). Muốn đúng 70/25/5 thì phải bỏ bảo đảm; muốn giữ bảo đảm mà gần 70/25/5 hơn thì hạ xác suất Hiếm ở lần tung gốc – chỉnh trong `rollRarity` (`rewards.ts`) nếu anh muốn.
 
 - Home tablet ngang: xếp 3 nhóm game cạnh nhau để đỡ phải cuộn (TASK-10 nếu anh thấy cần).
-- Kích thước JS tăng từ ≈ 33 KB lên ≈ 64 KB (gzip) vì có thêm bộ sinh câu G6/G7: nên tách mỗi game thành gói tải sau (dynamic import) khi làm PWA (TASK-08) để lần mở đầu nhẹ hơn.
+- Kích thước JS tăng từ ≈ 33 KB lên ≈ 64 KB (gzip) vì có thêm bộ sinh câu G6/G7: có thể tách mỗi game thành gói tải sau (dynamic import) nếu TASK-08 đo thấy lần mở đầu chậm (mặc định không tách).
 - G6: M11 (nhân/chia số 2–3 chữ số) ở dạng tìm số thiếu ra số khá lớn (vd `? : 5 = 57`); đây là chủ đề lớp 3, không bật mặc định – nếu anh thấy khó quá thì giới hạn dạng tìm số thiếu cho M11 ở TASK-10.
 - G7 cấp 5 (mẫu 2 thuộc tính): khi sai hiện tô sáng cả dãy 6 ô; có thể làm lời giải thích riêng “màu lặp 2 nhịp, hình lặp 3 nhịp” nếu anh muốn (TASK-10).
 - G6 hình minh họa khi sai hiện 1,5 giây đúng SPEC; nếu thấy bé chưa kịp nhìn thì tăng hằng số `SHOW_MS` (`games/g6-math/view.ts`).
 - Hai test e2e cũ phụ thuộc thời gian thực – G1 TC-004 và G3 TC-013 – thỉnh thoảng chập chờn khi máy bận và chạy 4 luồng song song (một lần chạy đầy đủ có 2 lỗi, chạy riêng từng test đều pass; chạy đầy đủ lại bằng `--workers=3` được 204/204). TASK-09 (QA) nên ổn định hóa (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
 
 ## Nhật ký
+
+### 2026-10-10 – Chốt thứ tự: TASK-08 trước TASK-07 (chưa code)
+- Chủ dự án hỏi “làm TASK-08 trước TASK-07 có ảnh hưởng gì không” → trả lời: **không phụ thuộc kỹ thuật** (TASK-08 không cần khu PH; TASK-07 không cần PWA; Chart.js sau này vẫn nằm trong cache offline vì Workbox precache mọi file build). Ba hệ quả đã báo: (1) bản Pages chưa chỉnh được gì (khu PH còn “Đang xây dựng”; `?debug=1`/`?e2e=1` chỉ chạy ở bản dev; giới hạn cố định 15 phút/ngày); (2) chưa có sao lưu → bản cài chỉ để dùng thử, chưa cho bé dùng lâu dài; (3) “số phiên bản + nút Cập nhật trong khu PH” dời sang TASK-07 (TASK-08 làm nút ở Home + hiện tạm số phiên bản ở trang Khu phụ huynh placeholder). Chủ dự án chọn **làm TASK-08 trước**.
+- Đã khảo sát mã cho TASK-08 và lập kế hoạch (đã trình bày, **chưa được duyệt**, chưa sửa mã). Phát hiện chính: chưa có đăng ký service worker nào; `icons: []`; **precache chỉ có js/css/html nên font Nunito không chạy offline**; `updateAvailable` chưa ai bật; chưa có `deploy.yml`. Kế hoạch 7 bước, rủi ro (Lighthouse bản mới không còn nhóm PWA; luồng cập nhật cần 2 lần deploy mới thử thật; dữ liệu Pages tách riêng với bản thử LAN) và các bước chủ dự án phải tự bấm trên GitHub: xem `docs/HANDOVER.md` mục 6.
+- Việc kế tiếp: phiên mới đọc `docs/HANDOVER.md`, trình bày lại kế hoạch ngắn, chờ “Đồng ý”, rồi làm TASK-08 trên nhánh mới từ `main`.
 
 ### 2026-10-10 – TASK-06
 - Đã làm:
