@@ -6,7 +6,7 @@
 
 | TASK | Trạng thái | Ngày | Ghi chú |
 |---|---|---|---|
-| TASK-00 Môi trường + Git/GitHub | Chưa bắt đầu | | |
+| TASK-00 Môi trường + Git/GitHub | Xong | 2026-10-10 | Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat |
 | TASK-01 Khởi tạo dự án | Chưa bắt đầu | | |
 | TASK-02 Khung app | Chưa bắt đầu | | |
 | TASK-03 G1 + G2 + độ khó | Chưa bắt đầu | | |
@@ -27,6 +27,13 @@
 -
 
 ## Nhật ký
+
+### 2026-10-10 – TASK-00
+- Đã làm: kiểm tra môi trường (node v24.18.0, npm 11.16.0, git 2.55.0 – đạt); `git init` nhánh `main`; tạo `.gitignore` (Node/Vite, bỏ qua `*.xlsx`); cấu hình git user riêng cho repo (Nin-Min2231 / nguyennc1357@gmail.com); thêm remote `origin`; commit đầu tiên và push thành công.
+- Test case tự kiểm: không áp dụng.
+- Cách thử thủ công: mở https://github.com/Nin-Min2231/nhanh-tay-tinh-mat, thấy `CLAUDE.md` và thư mục `docs/`.
+- Còn lại / nợ kỹ thuật: `gh` CLI chưa đăng nhập (chưa cần; sẽ cần ở TASK-08 nếu muốn bật Pages bằng dòng lệnh). File Excel kế hoạch không đưa lên GitHub.
+- Commit: `docs: add project specs`
 
 <!-- Mẫu mỗi lần cập nhật:
 ### YYYY-MM-DD – TASK-0x
