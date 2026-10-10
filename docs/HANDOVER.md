@@ -5,17 +5,12 @@
 
 ---
 
-## 0. ⚠ ĐỌC TRƯỚC: code TASK-05 CHƯA được gộp vào `main`, CHƯA push lên GitHub
+## 0. Trạng thái git (cập nhật sau khi gộp)
 
-- Toàn bộ TASK-05 (G6 + G7, sổ lỗi, mẫu nội dung, bản HANDOVER này) nằm ở **commit `69aa393`** (cộng 1 commit cập nhật handover/PROGRESS ngay sau đó – xem `git log main..claude/handover-next-task-8f81b2`) trên nhánh **`claude/handover-next-task-8f81b2`** (git worktree tại `D:\01_NguyenNC\10_Claude\07_Tap_trung_G\.claude\worktrees\handover-next-task-8f81b2`, đã có `node_modules`). `main` (và `origin/main`) vẫn ở `6aa2f82` (TASK-04). Nhánh chỉ đi trước `main` 2 commit và `main` không có commit nào khác ⇒ gộp được bằng fast-forward.
-- Chủ dự án **chưa trả lời “Đồng ý”** cho câu hỏi “gộp vào `main` và đẩy lên GitHub?”. **Việc đầu tiên của phiên mới: hỏi lại chủ dự án.** Chỉ gộp/đẩy khi được đồng ý rõ ràng.
-- Bản `docs/HANDOVER.md` nằm **untracked** trong thư mục gốc dự án (`D:\01_NguyenNC\10_Claude\07_Tap_trung_G\docs\HANDOVER.md`) là **bản CŨ, đã lỗi thời** (ghi “TASK-05 kế tiếp”). **Đừng làm theo nó.** Đọc bản này (trong nhánh): `git show claude/handover-next-task-8f81b2:docs/HANDOVER.md` hoặc mở file trong worktree.
-- Cách gộp (khi đã được đồng ý):
-  1. Ở thư mục gốc (đang checkout `main`): `git status` sẽ báo `?? docs/HANDOVER.md` – file cũ này **chặn việc gộp** vì nhánh cũng có `docs/HANDOVER.md`. Đổi tên/di chuyển nó đi chỗ khác (vd `docs/HANDOVER.cu.md`, đừng commit) hoặc xóa sau khi hỏi chủ dự án.
-  2. `git merge --ff-only claude/handover-next-task-8f81b2` (chạy ở thư mục gốc) rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push`.
-  3. Không dùng `sync_with_base_branch` cho việc này (nó gộp `main` vào nhánh, ngược chiều). Từ trong worktree cũng có thể đẩy thẳng: `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin claude/handover-next-task-8f81b2:main`, sau đó ở thư mục gốc chạy `git pull --ff-only` (vẫn phải xử lý file untracked ở bước 1).
-- Chủ dự án có thể **thử ngay trên máy thật mà không cần gộp**: mở terminal trong thư mục worktree ở trên, chạy `npm run dev`, dùng địa chỉ `Network` in ra (`http://192.168.x.x:5173`) trên điện thoại/tablet cùng wifi.
-- Phiên mới nên bắt đầu làm TASK-06 trên nhánh mới **tạo từ nhánh này** (hoặc từ `main` sau khi đã gộp) để có sẵn mã G6/G7 và sổ lỗi.
+- **TASK-05 đã được gộp vào `main` và push lên GitHub** (chủ dự án đồng ý ngày 2026-10-10). `origin/main` và `main` ở thư mục gốc đều đã chứa G6 + G7, sổ lỗi, mẫu nội dung và bản HANDOVER này. Gộp bằng fast-forward nên lịch sử thẳng: `6aa2f82` (TASK-04) → `69aa393` (G6 + G7) → `793d95d` (handover) → (commit docs ghi nhận việc gộp).
+- Nhánh `claude/handover-next-task-8f81b2` và worktree của nó chỉ còn là bản sao của `main`, **không cần dùng nữa** (có thể xóa khi chủ dự án muốn; đừng xóa nếu chưa hỏi). Phiên mới nên làm việc trên nhánh/worktree mới **tạo từ `main`**.
+- File `docs/HANDOVER.md` cũ (bản “TASK-05 kế tiếp”) từng nằm untracked ở thư mục gốc đã được dời ra ngoài repo (chặn việc gộp) – bản đúng là file này, đã được git theo dõi.
+- Việc còn chờ chủ dự án (không chặn TASK-06): **duyệt nội dung mẫu** `docs/samples/G6.md`, `G7.md`, `G7.html`; thử G6/G7 trên điện thoại/tablet thật.
 
 ---
 
@@ -42,14 +37,14 @@ Làm TASK-06
 
 | Hạng mục | Trạng thái |
 |---|---|
-| TASK-00 → TASK-04 | **Xong**, đã push lên `main` (`6aa2f82`) |
-| TASK-05 | **Xong, đã commit `69aa393` nhưng CHỈ nằm ở nhánh `claude/handover-next-task-8f81b2`** (chưa gộp `main`, chưa push – xem mục 0) |
+| TASK-00 → TASK-04 | **Xong**, đã push lên `main` |
+| TASK-05 | **Xong**, đã gộp vào `main` và push (`69aa393`, handover `793d95d`) |
 | Tiếp theo | **TASK-06: nhiệm vụ, hộp quà, album** |
 | Sau đó | TASK-07 khu phụ huynh · TASK-08 PWA + deploy · TASK-09 QA · TASK-10 sửa lỗi |
 
 - Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (công khai), nhánh `main`, remote `origin`. Máy đã đăng nhập GitHub sẵn nên `git push` chạy thẳng (dùng `GIT_TERMINAL_PROMPT=0 timeout 90 git push` để không bị treo).
 - Git user riêng cho repo: `Nin-Min2231` / `nguyennc1357@gmail.com`. Commit kèm dòng `Co-Authored-By: …` theo nhắc trong phiên.
-- Lịch sử: `9e27852` docs → `7c69cbc` scaffold → `ab46084` app shell (TASK-02) → `76ec054` G1+G2 (TASK-03) → `6aa2f82` G3+G4+G5 (TASK-04, ở `main`) → `69aa393` G6+G7 (TASK-05, chỉ ở nhánh `claude/handover-next-task-8f81b2`).
+- Lịch sử: `9e27852` docs → `7c69cbc` scaffold → `ab46084` app shell (TASK-02) → `76ec054` G1+G2 (TASK-03) → `6aa2f82` G3+G4+G5 (TASK-04) → `69aa393` G6+G7 (TASK-05) → `793d95d` handover; tất cả đã ở `main`.
 - Test e2e: hai test cũ phụ thuộc thời gian thực (**G1 TC-004**, **G3 TC-013**) thỉnh thoảng chập chờn khi chạy 4 luồng song song trên máy bận; chạy riêng thì pass. Chạy đủ bộ nên dùng `npx playwright test --workers=3` (≈ 7 phút) và chạy lại riêng test lỗi trước khi kết luận có hồi quy.
 - Chất lượng hiện tại: `npm run lint` pass · **373 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (JS ≈ 188 KB, **≈ 64 KB gzip**) · **204 e2e** (Playwright, 68 test × 3 khung hình `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280) đều pass.
 - Home: **cả 7 game đều chơi được**.

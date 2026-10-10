@@ -21,7 +21,6 @@
 ## Câu hỏi mở (chờ chủ dự án)
 
 - Không còn câu hỏi chặn. R23–R25 (mới v1.2) áp dụng theo đề xuất; chủ dự án có thể góp ý trong quá trình làm.
-- **Gộp nhánh `claude/handover-next-task-8f81b2` (TASK-05) vào `main` và push lên GitHub?** – đang chờ chủ dự án đồng ý (xem `docs/HANDOVER.md` mục 0).
 - **Duyệt nội dung mẫu G6/G7** trong `docs/samples/` (câu nào quá khó/dễ với bé lớp 2?).
 
 ## Đề xuất (ngoài phạm vi, để sau)
