@@ -1,0 +1,777 @@
+{
+  "version": "v1.2",
+  "note": "Giá trị ban đầu; chỉnh tại đây (TASK-10). Chuỗi mô tả tiếng Việt là nhãn hiển thị cho phụ huynh; code tự ánh xạ sang enum.",
+  "adaptive": {
+    "window": 3,
+    "upAvg": 0.85,
+    "downAvg": 0.55,
+    "twoLowBelow": 0.5,
+    "kidEasyDelta": -2,
+    "kidHardDelta": 2
+  },
+  "stars": {
+    "two": 0.7,
+    "three": 0.9
+  },
+  "benchmark": {
+    "G1": 4,
+    "G2": 3,
+    "G3": 4,
+    "G4": 4,
+    "G5": 3,
+    "G6": 4,
+    "G7": 4
+  },
+  "games": {
+    "G1": {
+      "name": "Bóng Xanh – Bóng Đỏ",
+      "params": {
+        "displayMs": "Thời gian hiện bóng (ms)",
+        "colors": "Số màu bóng",
+        "simultaneous": "Bóng cùng lúc",
+        "goRatio": "Tỷ lệ bóng xanh",
+        "gapMs": "Khoảng nghỉ giữa bóng (ms)"
+      },
+      "levels": [
+        {
+          "displayMs": 1200,
+          "colors": 2,
+          "simultaneous": 1,
+          "goRatio": 0.75,
+          "gapMs": [
+            900,
+            1300
+          ]
+        },
+        {
+          "displayMs": 1100,
+          "colors": 2,
+          "simultaneous": 1,
+          "goRatio": 0.75,
+          "gapMs": [
+            900,
+            1300
+          ]
+        },
+        {
+          "displayMs": 1000,
+          "colors": 2,
+          "simultaneous": 1,
+          "goRatio": 0.7,
+          "gapMs": [
+            900,
+            1300
+          ]
+        },
+        {
+          "displayMs": 950,
+          "colors": 3,
+          "simultaneous": 1,
+          "goRatio": 0.7,
+          "gapMs": [
+            750,
+            1100
+          ]
+        },
+        {
+          "displayMs": 875,
+          "colors": 3,
+          "simultaneous": 1,
+          "goRatio": 0.7,
+          "gapMs": [
+            750,
+            1100
+          ]
+        },
+        {
+          "displayMs": 800,
+          "colors": 3,
+          "simultaneous": 1,
+          "goRatio": 0.65,
+          "gapMs": [
+            750,
+            1100
+          ]
+        },
+        {
+          "displayMs": 725,
+          "colors": 3,
+          "simultaneous": 2,
+          "goRatio": 0.65,
+          "gapMs": [
+            600,
+            900
+          ]
+        },
+        {
+          "displayMs": 650,
+          "colors": 4,
+          "simultaneous": 2,
+          "goRatio": 0.65,
+          "gapMs": [
+            600,
+            900
+          ]
+        },
+        {
+          "displayMs": 575,
+          "colors": 4,
+          "simultaneous": 2,
+          "goRatio": 0.6,
+          "gapMs": [
+            600,
+            900
+          ]
+        },
+        {
+          "displayMs": 500,
+          "colors": 4,
+          "simultaneous": 2,
+          "goRatio": 0.6,
+          "gapMs": [
+            600,
+            900
+          ]
+        }
+      ]
+    },
+    "G2": {
+      "name": "Bảng Số Thần Kỳ",
+      "params": {
+        "grid": "Bảng",
+        "colorMode": "Màu ô",
+        "rotate": "Số xoay",
+        "order": "Thứ tự",
+        "targetSec": "Thời gian mục tiêu (giây)",
+        "hintAfterSec": "Gợi ý sau (giây)"
+      },
+      "levels": [
+        {
+          "grid": 3,
+          "colorMode": "1 màu",
+          "rotate": false,
+          "order": "Xuôi",
+          "targetSec": 20,
+          "hintAfterSec": 4
+        },
+        {
+          "grid": 3,
+          "colorMode": "Nhiều màu",
+          "rotate": false,
+          "order": "Xuôi",
+          "targetSec": 15,
+          "hintAfterSec": 6
+        },
+        {
+          "grid": 4,
+          "colorMode": "1 màu",
+          "rotate": false,
+          "order": "Xuôi",
+          "targetSec": 40,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 4,
+          "colorMode": "Nhiều màu",
+          "rotate": false,
+          "order": "Xuôi",
+          "targetSec": 35,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 4,
+          "colorMode": "Nhiều màu",
+          "rotate": true,
+          "order": "Xuôi",
+          "targetSec": 35,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 5,
+          "colorMode": "1 màu",
+          "rotate": false,
+          "order": "Xuôi",
+          "targetSec": 70,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 5,
+          "colorMode": "Nhiều màu",
+          "rotate": false,
+          "order": "Xuôi",
+          "targetSec": 60,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 5,
+          "colorMode": "Nhiều màu",
+          "rotate": true,
+          "order": "Xuôi",
+          "targetSec": 60,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 5,
+          "colorMode": "Nhiều màu",
+          "rotate": false,
+          "order": "Ngược 25→1",
+          "targetSec": 70,
+          "hintAfterSec": null
+        },
+        {
+          "grid": 5,
+          "colorMode": "Màu ô đổi mỗi 3s",
+          "rotate": true,
+          "order": "Xuôi",
+          "targetSec": 60,
+          "hintAfterSec": null
+        }
+      ]
+    },
+    "G3": {
+      "name": "Đuổi Bắt Thú Cưng",
+      "params": {
+        "speedPctW": "Tốc độ (% chiều rộng/giây)",
+        "sizePct": "Kích thước (% cạnh ngắn)",
+        "count": "Số con",
+        "decoys": "Con không được bắt",
+        "erratic": "Đổi hướng bất ngờ"
+      },
+      "levels": [
+        {
+          "speedPctW": 15,
+          "sizePct": 22,
+          "count": 1,
+          "decoys": 0,
+          "erratic": false
+        },
+        {
+          "speedPctW": 20,
+          "sizePct": 20,
+          "count": 1,
+          "decoys": 0,
+          "erratic": false
+        },
+        {
+          "speedPctW": 25,
+          "sizePct": 18,
+          "count": 2,
+          "decoys": 0,
+          "erratic": false
+        },
+        {
+          "speedPctW": 30,
+          "sizePct": 17,
+          "count": 2,
+          "decoys": 0,
+          "erratic": false
+        },
+        {
+          "speedPctW": 35,
+          "sizePct": 16,
+          "count": 2,
+          "decoys": 1,
+          "erratic": false
+        },
+        {
+          "speedPctW": 40,
+          "sizePct": 15,
+          "count": 3,
+          "decoys": 1,
+          "erratic": false
+        },
+        {
+          "speedPctW": 45,
+          "sizePct": 14,
+          "count": 3,
+          "decoys": 1,
+          "erratic": true
+        },
+        {
+          "speedPctW": 50,
+          "sizePct": 13,
+          "count": 3,
+          "decoys": 2,
+          "erratic": true
+        },
+        {
+          "speedPctW": 55,
+          "sizePct": 12,
+          "count": 4,
+          "decoys": 2,
+          "erratic": true
+        },
+        {
+          "speedPctW": 60,
+          "sizePct": 11,
+          "count": 4,
+          "decoys": 2,
+          "erratic": "Có + tăng tốc"
+        }
+      ]
+    },
+    "G4": {
+      "name": "Chuỗi Ánh Sáng",
+      "params": {
+        "pads": "Số ô",
+        "startLen": "Độ dài bắt đầu",
+        "flashMs": "Thời gian sáng (ms)",
+        "gapMs": "Nghỉ giữa 2 ô (ms)"
+      },
+      "levels": [
+        {
+          "pads": 4,
+          "startLen": 2,
+          "flashMs": 900,
+          "gapMs": 400
+        },
+        {
+          "pads": 4,
+          "startLen": 3,
+          "flashMs": 800,
+          "gapMs": 350
+        },
+        {
+          "pads": 4,
+          "startLen": 3,
+          "flashMs": 700,
+          "gapMs": 300
+        },
+        {
+          "pads": 6,
+          "startLen": 3,
+          "flashMs": 800,
+          "gapMs": 350
+        },
+        {
+          "pads": 6,
+          "startLen": 3,
+          "flashMs": 700,
+          "gapMs": 300
+        },
+        {
+          "pads": 6,
+          "startLen": 4,
+          "flashMs": 650,
+          "gapMs": 250
+        },
+        {
+          "pads": 6,
+          "startLen": 4,
+          "flashMs": 550,
+          "gapMs": 220
+        },
+        {
+          "pads": 9,
+          "startLen": 3,
+          "flashMs": 650,
+          "gapMs": 250
+        },
+        {
+          "pads": 9,
+          "startLen": 4,
+          "flashMs": 550,
+          "gapMs": 200
+        },
+        {
+          "pads": 9,
+          "startLen": 4,
+          "flashMs": 450,
+          "gapMs": 180
+        }
+      ]
+    },
+    "G5": {
+      "name": "Nốt Nhạc Rơi",
+      "params": {
+        "fallMs": "Thời gian rơi (ms)",
+        "density": "Mật độ (nốt/giây)",
+        "doubleRatio": "Tỷ lệ nốt đôi",
+        "perfectMs": "Cửa sổ Tuyệt (± ms)",
+        "goodMs": "Cửa sổ Tốt (± ms)"
+      },
+      "levels": [
+        {
+          "fallMs": 2600,
+          "density": 0.8,
+          "doubleRatio": 0.0,
+          "perfectMs": 120,
+          "goodMs": 220
+        },
+        {
+          "fallMs": 2400,
+          "density": 1.0,
+          "doubleRatio": 0.0,
+          "perfectMs": 120,
+          "goodMs": 220
+        },
+        {
+          "fallMs": 2200,
+          "density": 1.2,
+          "doubleRatio": 0.0,
+          "perfectMs": 110,
+          "goodMs": 200
+        },
+        {
+          "fallMs": 2000,
+          "density": 1.4,
+          "doubleRatio": 0.05,
+          "perfectMs": 100,
+          "goodMs": 180
+        },
+        {
+          "fallMs": 1900,
+          "density": 1.6,
+          "doubleRatio": 0.1,
+          "perfectMs": 100,
+          "goodMs": 180
+        },
+        {
+          "fallMs": 1750,
+          "density": 1.9,
+          "doubleRatio": 0.1,
+          "perfectMs": 90,
+          "goodMs": 165
+        },
+        {
+          "fallMs": 1600,
+          "density": 2.2,
+          "doubleRatio": 0.15,
+          "perfectMs": 90,
+          "goodMs": 165
+        },
+        {
+          "fallMs": 1500,
+          "density": 2.5,
+          "doubleRatio": 0.15,
+          "perfectMs": 80,
+          "goodMs": 150
+        },
+        {
+          "fallMs": 1350,
+          "density": 2.8,
+          "doubleRatio": 0.2,
+          "perfectMs": 80,
+          "goodMs": 150
+        },
+        {
+          "fallMs": 1200,
+          "density": 3.0,
+          "doubleRatio": 0.2,
+          "perfectMs": 80,
+          "goodMs": 150
+        }
+      ]
+    },
+    "G6": {
+      "name": "Hái Táo Tính Nhẩm",
+      "params": {
+        "secPerQ": "Thời gian/câu (giây)",
+        "options": "Số đáp án",
+        "sway": "Táo đung đưa",
+        "missing": "Dạng tìm số thiếu",
+        "range": "Độ lớn số trong chủ đề"
+      },
+      "levels": [
+        {
+          "secPerQ": 15,
+          "options": 3,
+          "sway": false,
+          "missing": false,
+          "range": "Nhỏ (nửa dễ)"
+        },
+        {
+          "secPerQ": 13,
+          "options": 3,
+          "sway": false,
+          "missing": false,
+          "range": "Nhỏ (nửa dễ)"
+        },
+        {
+          "secPerQ": 12,
+          "options": 3,
+          "sway": false,
+          "missing": false,
+          "range": "Nhỏ (nửa dễ)"
+        },
+        {
+          "secPerQ": 11,
+          "options": 4,
+          "sway": false,
+          "missing": false,
+          "range": "Đầy đủ"
+        },
+        {
+          "secPerQ": 10,
+          "options": 4,
+          "sway": false,
+          "missing": false,
+          "range": "Đầy đủ"
+        },
+        {
+          "secPerQ": 9,
+          "options": 4,
+          "sway": false,
+          "missing": false,
+          "range": "Đầy đủ"
+        },
+        {
+          "secPerQ": 8,
+          "options": 4,
+          "sway": true,
+          "missing": false,
+          "range": "Đầy đủ"
+        },
+        {
+          "secPerQ": 7,
+          "options": 6,
+          "sway": false,
+          "missing": "20% câu",
+          "range": "Đầy đủ"
+        },
+        {
+          "secPerQ": 6,
+          "options": 6,
+          "sway": true,
+          "missing": "30% câu",
+          "range": "Đầy đủ"
+        },
+        {
+          "secPerQ": 5,
+          "options": 6,
+          "sway": true,
+          "missing": "40% câu",
+          "range": "Đầy đủ"
+        }
+      ]
+    },
+    "G7": {
+      "name": "Tìm Quy Luật",
+      "params": {
+        "types": "Dạng câu",
+        "options": "Số đáp án",
+        "retry": "Được thử lại"
+      },
+      "levels": [
+        {
+          "types": "AB (màu)",
+          "options": 3,
+          "retry": "Có (½ điểm)"
+        },
+        {
+          "types": "AB, AAB, ABB (hình + màu)",
+          "options": 3,
+          "retry": "Có (½ điểm)"
+        },
+        {
+          "types": "ABC; to – nhỏ",
+          "options": 3,
+          "retry": "Có (½ điểm)"
+        },
+        {
+          "types": "Dãy số +1, +2, +5, +10; mũi tên xoay 90°",
+          "options": 4,
+          "retry": "Có (½ điểm)"
+        },
+        {
+          "types": "Mẫu 2 thuộc tính (màu và hình đổi độc lập)",
+          "options": 4,
+          "retry": "Có (½ điểm)"
+        },
+        {
+          "types": "Dãy số giảm, đếm cách 3/4; mẫu tăng dần (1, 2, 3 chấm)",
+          "options": 4,
+          "retry": false
+        },
+        {
+          "types": "Ma trận 2×2 (tương tự)",
+          "options": 4,
+          "retry": false
+        },
+        {
+          "types": "Ma trận 3×3 (quy luật theo hàng)",
+          "options": 4,
+          "retry": false
+        },
+        {
+          "types": "Tìm hình khác loại; dãy ×2 (1, 2, 4, 8)",
+          "options": 4,
+          "retry": false
+        },
+        {
+          "types": "Dãy xen kẽ (+1, +2, +1…); ma trận 3×3 hai quy luật",
+          "options": 4,
+          "retry": false
+        }
+      ]
+    }
+  },
+  "mathTopics": [
+    {
+      "code": "M01",
+      "grade": 1,
+      "name": "Cộng, trừ trong phạm vi 10",
+      "example": "3 + 4 = ?"
+    },
+    {
+      "code": "M02",
+      "grade": 1,
+      "name": "Cộng, trừ trong phạm vi 20 (không nhớ)",
+      "example": "12 + 5 = ?"
+    },
+    {
+      "code": "M03",
+      "grade": 1,
+      "name": "So sánh số trong phạm vi 100 (>, <, =)",
+      "example": "47 ? 74"
+    },
+    {
+      "code": "M04",
+      "grade": 1,
+      "name": "Cộng, trừ số tròn chục; trong 100 không nhớ",
+      "example": "40 + 30 = ?; 56 − 23 = ?"
+    },
+    {
+      "code": "M05",
+      "grade": 2,
+      "name": "Cộng, trừ qua 10 trong phạm vi 20 (có nhớ)",
+      "example": "8 + 7 = ?; 15 − 9 = ?"
+    },
+    {
+      "code": "M06",
+      "grade": 2,
+      "name": "Cộng, trừ có nhớ trong phạm vi 100",
+      "example": "38 + 27 = ?; 72 − 45 = ?"
+    },
+    {
+      "code": "M07",
+      "grade": 2,
+      "name": "Bảng nhân 2 và 5",
+      "example": "5 × 7 = ?"
+    },
+    {
+      "code": "M08",
+      "grade": 2,
+      "name": "Bảng chia 2 và 5",
+      "example": "35 : 5 = ?"
+    },
+    {
+      "code": "M09",
+      "grade": 2,
+      "name": "Cộng, trừ trong phạm vi 1000 (nhớ tối đa 1 lần)",
+      "example": "352 + 129 = ?"
+    },
+    {
+      "code": "M10",
+      "grade": 3,
+      "name": "Bảng nhân, chia 3 → 9",
+      "example": "7 × 8 = ?; 54 : 6 = ?"
+    },
+    {
+      "code": "M11",
+      "grade": 3,
+      "name": "Nhân, chia số 2–3 chữ số với số 1 chữ số",
+      "example": "23 × 4 = ?; 84 : 4 = ?"
+    },
+    {
+      "code": "M12",
+      "grade": 3,
+      "name": "Cộng, trừ trong phạm vi 10 000",
+      "example": "2 450 + 1 300 = ?"
+    },
+    {
+      "code": "M13",
+      "grade": 3,
+      "name": "Tìm thành phần chưa biết",
+      "example": "? × 6 = 42"
+    },
+    {
+      "code": "M14",
+      "grade": 3,
+      "name": "Gấp / giảm một số lần",
+      "example": "Gấp 4 lên 3 lần = ?"
+    }
+  ],
+  "mathDefaultByGrade": {
+    "1": [
+      "M01",
+      "M02",
+      "M03",
+      "M04"
+    ],
+    "2": [
+      "M02",
+      "M05",
+      "M06",
+      "M07",
+      "M08"
+    ],
+    "3": [
+      "M06",
+      "M09",
+      "M10",
+      "M11",
+      "M13"
+    ]
+  },
+  "unlocks": [
+    {
+      "stars": 10,
+      "reward": "Khung avatar Cầu Vồng"
+    },
+    {
+      "stars": 25,
+      "reward": "Trang phục linh vật: Mũ Phi Công"
+    },
+    {
+      "stars": 50,
+      "reward": "Hình nền: Rừng Kẹo"
+    },
+    {
+      "stars": 80,
+      "reward": "Bộ âm thanh: Nhạc Cụ Gõ"
+    },
+    {
+      "stars": 120,
+      "reward": "Trang phục linh vật: Áo Siêu Nhân Sóc (thiết kế gốc)"
+    },
+    {
+      "stars": 170,
+      "reward": "Hình nền: Đáy Biển"
+    },
+    {
+      "stars": 230,
+      "reward": "Linh vật thứ 2: Cú Mèo Thông Thái"
+    },
+    {
+      "stars": 300,
+      "reward": "Huy hiệu Vàng “Nhanh Tay Tinh Mắt”"
+    }
+  ],
+  "rewards": {
+    "rarity": {
+      "common": 0.7,
+      "rare": 0.25,
+      "legendary": 0.05
+    },
+    "stickers": {
+      "common": 24,
+      "rare": 12,
+      "legendary": 4
+    },
+    "pityAfter": 5,
+    "duplicateStars": 3,
+    "boxEveryStars": 15,
+    "maxBoxesPerDayDefault": 3,
+    "restOnTimeStars": 2
+  },
+  "session": {
+    "dailyMinutesDefault": 15,
+    "dailyMinutesRange": [
+      5,
+      60
+    ],
+    "warnBeforeMin": 2,
+    "overtimeMaxSec": 90
+  }
+}
