@@ -1,5 +1,5 @@
 // Nguồn cấu hình độ khó: docs/data/levels.json (chỉnh ở đó, không sửa số trong code – TASK-10).
-import raw from '../../docs/data/levels.json';
+import raw from '../../docs/data/levels.json' with { type: 'json' };
 
 export type GameId = 'G1' | 'G2' | 'G3' | 'G4' | 'G5' | 'G6' | 'G7';
 export const GAME_IDS: readonly GameId[] = ['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7'];

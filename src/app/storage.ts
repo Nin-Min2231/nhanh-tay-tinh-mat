@@ -1,2 +1,167 @@
-// TODO: storage – xem CLAUDE.md mục 4
-export {};
+// Mọi truy cập localStorage đi qua đây (CLAUDE.md mục 5, quy tắc 11–12).
+import { generateId } from './device';
+import type { AppState, DailyAggregate, RoundRecord } from './types';
+import { APP_VERSION } from './version';
+
+export const CURRENT_SCHEMA = 1;
+export const STATE_KEY = 'ntm.state';
+export const roundsKey = (profileId: string) => `ntm.rounds.${profileId}`;
+export const dailyKey = (profileId: string) => `ntm.daily.${profileId}`;
+
+export interface KeyValueBackend {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+}
+
+/** migrations[v] nâng dữ liệu từ phiên bản v lên v+1. */
+export type MigrationFn = (state: Record<string, unknown>) => Record<string, unknown>;
+export const MIGRATIONS: Record<number, MigrationFn> = {};
+
+export function defaultState(): AppState {
+  return {
+    schemaVersion: CURRENT_SCHEMA,
+    deviceId: generateId(),
+    activeProfileId: null,
+    profiles: [],
+    settings: { sound: true, music: true, vibration: true, allowKidDifficultyChoice: true },
+    lastBackupAt: null,
+    installedVersion: APP_VERSION,
+  };
+}
+
+export type MigrateResult =
+  { ok: true; state: AppState } | { ok: false; reason: 'invalid' | 'tooNew' | 'noMigration' };
+
+/** Đưa dữ liệu đọc được về schema hiện tại. Thuần, có test. */
+export function migrateState(
+  raw: unknown,
+  migrations: Record<number, MigrationFn> = MIGRATIONS,
+  current: number = CURRENT_SCHEMA,
+): MigrateResult {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    return { ok: false, reason: 'invalid' };
+  }
+  let obj = raw as Record<string, unknown>;
+  let v = obj.schemaVersion;
+  if (typeof v !== 'number' || !Number.isInteger(v) || v < 1) {
+    return { ok: false, reason: 'invalid' };
+  }
+  if (v > current) return { ok: false, reason: 'tooNew' };
+  while (v < current) {
+    const fn = migrations[v];
+    if (!fn) return { ok: false, reason: 'noMigration' };
+    obj = { ...fn(obj), schemaVersion: v + 1 };
+    v += 1;
+  }
+  if (typeof obj.deviceId !== 'string' || !Array.isArray(obj.profiles)) {
+    return { ok: false, reason: 'invalid' };
+  }
+  return { ok: true, state: obj as unknown as AppState };
+}
+
+export function createStorage(getBackend: () => KeyValueBackend = () => window.localStorage) {
+  const memory = new Map<string, string>();
+  let degraded = false;
+  /** Dữ liệu từ phiên bản mới hơn: chỉ ghi vào bộ nhớ tạm để không phá dữ liệu gốc. */
+  let memoryOnly = false;
+
+  function read(key: string): string | null {
+    if (memory.has(key)) return memory.get(key) ?? null;
+    try {
+      return getBackend().getItem(key);
+    } catch {
+      degraded = true;
+      return null;
+    }
+  }
+
+  function write(key: string, value: string): void {
+    if (memoryOnly) {
+      degraded = true;
+    } else {
+      try {
+        getBackend().setItem(key, value);
+        memory.delete(key);
+        return;
+      } catch {
+        degraded = true;
+      }
+    }
+    memory.set(key, value);
+  }
+
+  function remove(key: string): void {
+    memory.delete(key);
+    if (memoryOnly) return;
+    try {
+      getBackend().removeItem(key);
+    } catch {
+      degraded = true;
+    }
+  }
+
+  function loadList<T>(key: string): T[] {
+    const text = read(key);
+    if (text === null) return [];
+    try {
+      const v: unknown = JSON.parse(text);
+      return Array.isArray(v) ? (v as T[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function loadState(): AppState {
+    const text = read(STATE_KEY);
+    if (text === null) return defaultState();
+    let parsed: unknown = null;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      /* dữ liệu hỏng → xử lý bên dưới */
+    }
+    const res = migrateState(parsed);
+    if (res.ok) return res.state;
+    if (res.reason === 'tooNew') {
+      memoryOnly = true;
+      degraded = true;
+    } else {
+      write(`${STATE_KEY}.bak`, text); // giữ bản hỏng để cứu dữ liệu, rồi bắt đầu mới
+    }
+    return defaultState();
+  }
+
+  return {
+    loadState,
+    saveState: (state: AppState) => write(STATE_KEY, JSON.stringify(state)),
+    loadRounds: (profileId: string) => loadList<RoundRecord>(roundsKey(profileId)),
+    saveRounds: (profileId: string, rounds: RoundRecord[]) =>
+      write(roundsKey(profileId), JSON.stringify(rounds)),
+    appendRound(record: RoundRecord): void {
+      const list = loadList<RoundRecord>(roundsKey(record.profileId));
+      list.push(record);
+      write(roundsKey(record.profileId), JSON.stringify(list));
+    },
+    loadDaily: (profileId: string) => loadList<DailyAggregate>(dailyKey(profileId)),
+    saveDaily: (profileId: string, daily: DailyAggregate[]) =>
+      write(dailyKey(profileId), JSON.stringify(daily)),
+    removeProfileData(profileId: string): void {
+      remove(roundsKey(profileId));
+      remove(dailyKey(profileId));
+    },
+    /** true nếu đang chạy bằng bộ nhớ tạm (dữ liệu sẽ mất khi đóng app). */
+    isDegraded: () => degraded,
+    /** Xin quyền lưu trữ bền; gọi sau khi tạo hồ sơ đầu tiên. */
+    async persist(): Promise<boolean> {
+      try {
+        return (await navigator.storage?.persist?.()) ?? false;
+      } catch {
+        return false;
+      }
+    },
+  };
+}
+
+export type AppStorage = ReturnType<typeof createStorage>;
+export const storage: AppStorage = createStorage();

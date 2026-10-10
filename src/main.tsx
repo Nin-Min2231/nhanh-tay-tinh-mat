@@ -1,15 +1,32 @@
 import { render } from 'preact';
 import './ui/theme.css';
+import './ui/app.css';
+import { installBackButton } from './app/backButton';
+import { initRouter, replace, route } from './app/router';
+import { appState, audio, selectProfile, showToast } from './app/store';
+import './app/viewport';
 import { vi } from './i18n/vi';
+import { App } from './ui/App';
 
-// TODO (TASK-02): thay trang Hello bằng App thật (router, store, đăng ký SW).
-function Hello() {
-  return (
-    <main style={{ padding: '32px 16px', textAlign: 'center' }}>
-      <h1 style={{ fontSize: 'var(--font-title)', fontWeight: 800, margin: 0 }}>{vi.app.title}</h1>
-      <p>{vi.app.tagline}</p>
-    </main>
-  );
-}
+initRouter();
 
-render(<Hello />, document.getElementById('app')!);
+// Chọn màn hình đầu tiên: chưa có hồ sơ → tạo; 1 hồ sơ → vào Home; nhiều hồ sơ → chọn người chơi.
+(function boot() {
+  const { profiles } = appState.value;
+  const r = route.value;
+  if (profiles.length === 0) return replace('/profiles/new');
+  if (profiles.length === 1) {
+    const only = profiles[0];
+    if (only) selectProfile(only.id);
+    if (r.name === 'profiles' || r.name === 'profile-new') replace('/home');
+    return;
+  }
+  replace('/profiles');
+})();
+
+installBackButton({ onExitHint: () => showToast(vi.toast.exitHint) });
+
+// Mở khóa AudioContext ở lần chạm đầu tiên
+document.addEventListener('pointerdown', () => audio.unlock(), { capture: true });
+
+render(<App />, document.getElementById('app')!);
