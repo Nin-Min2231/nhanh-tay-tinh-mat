@@ -35,11 +35,13 @@ test.describe('TC-003 – hồ sơ', () => {
     expect(state.profiles[0]).toMatchObject({ name: 'Bé An', grade: 2, avatarId: 'cat' });
   });
 
-  test('Home có 7 thẻ game chia 3 nhóm; G1, G2 chơi được, còn lại “Sắp có”', async ({ page }) => {
+  test('Home có 7 thẻ game chia 3 nhóm; G1–G5 chơi được, G6–G7 “Sắp có”', async ({ page }) => {
     await seedProfiles(page, [makeProfile('An')]);
     await page.goto('/');
-    for (const id of ['G1', 'G2']) await expect(page.getByTestId(`game-${id}`)).toBeEnabled();
-    for (const id of ['G3', 'G4', 'G5', 'G6', 'G7']) {
+    for (const id of ['G1', 'G2', 'G3', 'G4', 'G5']) {
+      await expect(page.getByTestId(`game-${id}`)).toBeEnabled();
+    }
+    for (const id of ['G6', 'G7']) {
       const card = page.getByTestId(`game-${id}`);
       await expect(card).toBeDisabled();
       await expect(card).toContainText(vi.common.comingSoon);

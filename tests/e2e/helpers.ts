@@ -1,5 +1,13 @@
 import { expect, type Page } from '@playwright/test';
 import { createProfile } from '../../src/app/profile';
+import { mulberry32 } from '../../src/app/rng';
+import { DEFAULT_G5_OPTIONS, resolveG5Params } from '../../src/games/g5-notes/config';
+import {
+  ROUND_MS,
+  firstHitTime,
+  generateSchedule,
+  type Note,
+} from '../../src/games/g5-notes/logic';
 import { vi } from '../../src/i18n/vi';
 import type { AppState, DayUsage, GameId, Profile, RoundRecord } from '../../src/app/types';
 
@@ -231,4 +239,151 @@ export async function playG1(
     await page.waitForTimeout(20);
   }
   throw new Error('Lượt G1 không kết thúc trong thời gian chờ');
+}
+
+// ---------------------------------------------------------------- G3
+
+export interface G3Pet {
+  kind: string;
+  decoy: boolean;
+  x: number;
+  y: number;
+  r: number;
+}
+
+export async function g3Snapshot(page: Page): Promise<{
+  pets: G3Pet[];
+  stats: Record<string, number>;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+} | null> {
+  return page.evaluate(() => {
+    const h = document.querySelector<HTMLElement>('[data-testid="game-host"]');
+    if (!h) return null;
+    const r = h.getBoundingClientRect();
+    return {
+      pets: JSON.parse(h.dataset.pets ?? '[]'),
+      stats: JSON.parse(h.dataset.stats ?? '{}'),
+      x: r.left,
+      y: r.top,
+      w: r.width,
+      h: r.height,
+    };
+  });
+}
+
+/** Đợi tới khi có đủ `count` con (`decoy` = Nhím) đang chạy, trả về ảnh chụp trạng thái. */
+export async function g3WaitPets(page: Page, decoy: boolean, count: number) {
+  let snap = await g3Snapshot(page);
+  for (
+    let i = 0;
+    i < 200 && (!snap || snap.pets.filter((p) => p.decoy === decoy).length < count);
+    i++
+  ) {
+    await page.waitForTimeout(20);
+    snap = await g3Snapshot(page);
+  }
+  return snap!;
+}
+
+// ---------------------------------------------------------------- G4
+
+export interface G4State {
+  phase: string;
+  seq: number[];
+  stats: { maxSpan: number; correctSequences: number; pads: number; mistakes: number };
+}
+
+export async function g4State(page: Page): Promise<G4State> {
+  return page.evaluate(() => {
+    const h = document.querySelector<HTMLElement>('[data-testid="game-host"]');
+    return {
+      phase: h?.dataset.phase ?? '',
+      seq: JSON.parse(h?.dataset.seq ?? '[]'),
+      stats: JSON.parse(h?.dataset.stats ?? '{}'),
+    };
+  });
+}
+
+/** Đợi tới lượt bé (phase = input) và trả về chuỗi hiện tại. */
+export async function g4WaitInput(page: Page): Promise<G4State> {
+  await expect
+    .poll(async () => (await g4State(page)).phase, { timeout: 20_000, intervals: [20, 50, 100] })
+    .toBe('input');
+  return g4State(page);
+}
+
+export async function g4Tap(page: Page, pad: number) {
+  const c = await page.evaluate((i) => {
+    const el = document.querySelector<HTMLElement>(`.g4-pad[data-pad="${i}"]`);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }, pad);
+  if (!c) throw new Error(`Không có ô ${pad}`);
+  await page.touchscreen.tap(c.x, c.y);
+}
+
+// ---------------------------------------------------------------- G5
+
+/** Lịch nốt của G5 (giống hệt trong game) cho seed e2e và cấp cho trước – để chọn seed có nốt đôi. */
+export function g5ScheduleFor(seed: number, level: number): Note[] {
+  const first = mulberry32(seed);
+  const noteRng = mulberry32((first() * 4294967296) >>> 0);
+  const params = resolveG5Params(level, DEFAULT_G5_OPTIONS);
+  const duration = Math.max(ROUND_MS / 10, firstHitTime(params) + 3000);
+  return generateSchedule(noteRng, params, duration);
+}
+
+export async function g5Stats(page: Page): Promise<{
+  perfect: number;
+  good: number;
+  miss: number;
+  extraTaps: number;
+  combo: number;
+  maxCombo: number;
+}> {
+  return page.evaluate(() => {
+    const h = document.querySelector<HTMLElement>('[data-testid="game-host"]');
+    return JSON.parse(h?.dataset.stats ?? '{}');
+  });
+}
+
+/**
+ * Bot chạy TRONG trang: chạm các nốt có hitTime ∈ [from, to] đúng lúc (dùng PointerEvent giả, đa điểm).
+ * Trả về khi đã chạm xong nốt cuối trong khoảng (hoặc khi vùng chơi biến mất).
+ */
+export async function g5Bot(page: Page, from = 0, to = Infinity) {
+  await page.evaluate(
+    async ({ from, to }) => {
+      const host = document.querySelector<HTMLElement>('[data-testid="game-host"]');
+      if (!host) return;
+      const schedule = JSON.parse(host.dataset.schedule ?? '[]') as [number, number][];
+      const rect = host.getBoundingClientRect();
+      const laneW = rect.width / 4;
+      const y = rect.top + rect.height * 0.8;
+      let pointerId = 1000;
+      const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()));
+      const nowT = () => performance.now() - Number(host.dataset.offset ?? 0);
+      for (const [hitTime, lane] of schedule) {
+        if (hitTime < from || hitTime > to) continue;
+        while (document.querySelector('[data-testid="game-host"]') && nowT() < hitTime)
+          await nextFrame();
+        if (!document.querySelector('[data-testid="game-host"]')) return;
+        host.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            pointerId: pointerId++,
+            pointerType: 'touch',
+            isPrimary: false,
+            clientX: rect.left + (lane + 0.5) * laneW,
+            clientY: y,
+            bubbles: true,
+          }),
+        );
+      }
+    },
+    { from, to },
+  );
 }

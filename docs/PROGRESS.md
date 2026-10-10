@@ -10,7 +10,7 @@
 | TASK-01 Khởi tạo dự án | Xong | 2026-10-10 | lint/test/build/e2e đều pass |
 | TASK-02 Khung app | Xong | 2026-10-10 | lint, 42 unit test, build, 51 e2e (17 × 3 khung hình) đều pass; cần anh thử TC-034/035 trên tablet Samsung |
 | TASK-03 G1 + G2 + độ khó | Xong | 2026-10-10 | lint, 100 unit test, build, 90 e2e (30 × 3 khung hình) đều pass; kèm bảng màu mới rực rỡ; cần anh thử cảm giác chơi + FPS trên tablet |
-| TASK-04 G3 + G4 + G5 | Chưa bắt đầu | | |
+| TASK-04 G3 + G4 + G5 | Xong | 2026-10-10 | lint, 170 unit test, build, 135 e2e (45 × 3 khung hình) đều pass; cần anh thử TC-007 (2 ngón thật), TC-032 và cảm giác chơi/FPS trên tablet |
 | TASK-05 G6 + G7 | Chưa bắt đầu | | |
 | TASK-06 Thưởng | Chưa bắt đầu | | |
 | TASK-07 Khu phụ huynh | Chưa bắt đầu | | |
@@ -27,6 +27,29 @@
 - Home tablet ngang: xếp 3 nhóm game cạnh nhau để đỡ phải cuộn (TASK-10 nếu anh thấy cần).
 
 ## Nhật ký
+
+### 2026-10-10 – TASK-04
+- Đã làm:
+  - **G3 Đuổi Bắt Thú Cưng** (`games/g3-pets`): canvas 60 giây, 10 cấp. 4 thú (thỏ, mèo, cún, gà con) + Nhím ngủ (có “zzz”) **vẽ tự thiết kế bằng mã canvas**: chuyển sắc, vệt sáng, mắt bóng, má hồng, viền mềm, mèo có vòng cổ + chuông, cún có thẻ tên; mỗi con có bản “hú” (mắt cười, miệng há). Sprite vẽ sẵn 1 lần rồi `drawImage` (không tạo object mỗi khung hình). Nảy mép (góc bật ≥ 20°), đổi hướng bất ngờ mỗi 1–2,5 giây, cấp 10 có cú tăng tốc ×1,5 trong 0,5 giây, Nhím chậm ½. Chạm trúng → “Hú!” + hạt lấp lánh, thú hiện lại chỗ khác sau 300ms; chạm Nhím/chỗ trống → lỗi nhẹ nhàng.
+  - **G4 Chuỗi Ánh Sáng** (`games/g4-lights`): lưới 4 / 6 (2×3 dọc, 3×2 ngang) / 9 ô (Corsi, cùng màu xanh dịu, sáng vàng). Ô 4–6 có màu + biểu tượng ● ▲ ■ ★ ♥ ◆ + nốt nhạc riêng, bóng bẩy như nút kẹo. Luật: đúng → chuỗi mới dài thêm 1; sai → “Thử lại nhé!” phát lại cùng chuỗi; sai lần thứ 2 trong lượt → kết thúc. Khóa chạm khi đang phát, nhắc nhẹ sau 8 giây không chạm.
+  - **G5 Nốt Nhạc Rơi** (`games/g5-notes`): 4 làn, vạch đích 80%, lưới móc đơn theo BPM 90–140, mật độ đúng bảng (±10%), nốt đôi, giai điệu ngũ cung tự sinh. Chạm **đa điểm** theo `pointerId`. Vị trí nốt tính theo **thời gian** (offset đồng hồ; tạm dừng thì dịch offset nên lịch nốt không lệch). Tuyệt / Tốt / Trượt, combo, extraTaps. Viên nhạc là gem bóng bẩy có quầng sáng, nền đêm sao. Tablet ngang: khung tối đa 640px, canh giữa.
+  - Dùng chung: `common/hud.ts` (HUD sao + thanh thời gian, G1 đã chuyển sang dùng), `common/sparkles.ts` (hạt lấp lánh).
+  - Hình động giới thiệu riêng cho G3 (mèo bị chạm “Hú!”, Nhím ngủ không chạm), G4 (ô sáng lần lượt rồi chạm lại), G5 (nốt rơi → chạm → “Tuyệt!”). Biểu tượng thẻ G3/G4/G5 trên Home nâng cấp cùng phong cách.
+  - Bảng gỡ lỗi `?debug=1` thêm tùy chọn của G3/G4/G5; cờ test `?e2e=1&freeze=1` (G3: thú đứng yên) và các thuộc tính `data-*` (chỉ dev / bản build e2e).
+- Test case tự kiểm (Playwright, phone + tablet + tablet-portrait): **TC-006 Pass** (G4: đúng → +1; sai → thử lại cùng chuỗi; sai lần 2 → kết thúc; chạm lúc đang phát bị bỏ qua) · **TC-013 Pass** (G3: chạm thú +điểm và thú hiện lại chỗ khác; Nhím và chỗ trống tính lỗi; điểm đúng công thức) · **TC-007 Pass ở mức mô phỏng** (G5: 2 ngón thật qua CDP vào nốt đôi, cả 2 nốt được tính) · **TC-032 Pass ở mức mô phỏng** (mỗi làn ≥ 48px; tablet ngang khung ≤ 640px, canh giữa). Thêm: bot chơi đúng nhịp cả lượt G5 → ≥ 95% Tuyệt/Tốt, 3 sao; tạm dừng giữa lượt G5 rồi tiếp tục vẫn đúng nhịp; chạm làn trống → extraTaps; G3/G4 chạm 2 ngón chỉ tính 1; Dễ/Khó và tùy chọn phụ huynh hoạt động trên game mới.
+- **60 fps:** vẫn không mở được bảng Performance của DevTools. Đo bằng script (bọc `requestAnimationFrame` để đo thời gian JS mỗi khung, cấp 10, 5 giây): bình thường **G1 0,17 ms · G3 0,4 ms · G5 0,3 ms mỗi khung** (ngân sách 16,6 ms), p95 < 1 ms, nhịp khung 16,7 ms (60 Hz). Khi giả lập CPU chậm ×4, trình duyệt headless (render bằng phần mềm) rớt khung nhưng thời gian JS trung bình vẫn chỉ 1–2 ms → phần nặng là vẽ pixel của trình duyệt giả lập, không phải mã game. **Anh xem số FPS thật bằng `?debug=1` (góc phải dưới HUD) khi chơi G1/G3/G5 trên Galaxy Tab dòng A**; nếu dưới 50 fps, báo tôi để giảm hiệu ứng (đã có sẵn phương án vẽ nền tĩnh vào lớp riêng).
+- Cách thử thủ công (điện thoại/tablet cùng wifi, `npm run dev`, thêm `?debug=1` để xem FPS và đổi cấp):
+  1. **G3:** cấp 1 thú to, chạy chậm; chuyển cấp 5–6 để có Nhím ngủ (chạm Nhím phải lắc nhẹ + “Shh!”); cấp 7+ thú đổi hướng bất ngờ; cấp 10 có cú tăng tốc.
+  2. **G4:** cấp 1 (4 ô) xem hết chuỗi rồi chạm lại; cố ý chạm sai 1 lần (phải “Thử lại nhé!” và phát lại cùng chuỗi), sai lần 2 → kết thúc. Cấp 4 (6 ô), cấp 8 (9 ô Corsi).
+  3. **G5:** chạm nốt khi chạm vạch (không cần chạm đúng chỗ, chạm cả làn). **TC-007 trên tablet Samsung:** từ cấp 4 trở lên có nốt đôi – chạm 2 ngón cùng lúc, cả 2 nốt phải được tính. **TC-032 trên điện thoại dọc:** chơi bằng 2 ngón cái, 4 làn phải vừa màn hình.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - Thú vẽ bằng mã canvas (không phải file SVG): cùng hình, nhanh hơn, không cần tải ảnh.
+  - G3: Nhím không biến mất khi bị chạm (chỉ lắc, “Shh!”, tính lỗi). Vùng tâm thú co vào bên trong khung để không bị cắt tai/gai ở mép.
+  - G4: “sai lần thứ 2” tính trong cả lượt (không cần liên tiếp). Chuỗi tối đa 12 ô (đạt thì kết thúc) để lượt không kéo dài vô hạn. Khi chạy e2e (`?e2e=1`) nhịp phát được tua nhanh ×10.
+  - G5: chạm lệch quá “Tốt” nhưng còn trong ±1,5 × “Tốt” chỉ sáng nhẹ, không tính điểm, không phạt; mật độ nốt tính cả nốt đôi; nốt đầu tiên xuất hiện ở đỉnh màn hình lúc bắt đầu (có khoảng chờ ≈ thời gian rơi); lượt kết thúc sau nốt cuối (≈ 75 giây + vài giây).
+  - Màu sắc: sân cỏ xanh cho G3, ô kẹo cho G4, bầu trời đêm tím cho G5 (nối tiếp yêu cầu “rực rỡ, nhiều tone màu”).
+- Còn lại / nợ kỹ thuật: Album/Khu phụ huynh vẫn “Đang xây dựng”; G6, G7 “Sắp có”; chưa có nhiệm vụ/hộp quà (TASK-06); một số biểu tượng thẻ G1, G2 vẫn phẳng hơn G3–G5 (có thể nâng cấp cùng đợt ở TASK-10); G5 có thể vẽ lớp nền tĩnh vào canvas riêng nếu tablet yếu.
+- Commit: `feat: G3, G4, G5 with illustrated pets, glossy pads and rhythm gems`
 
 ### 2026-10-10 – TASK-03 (+ đổi bảng màu)
 - Đã làm:

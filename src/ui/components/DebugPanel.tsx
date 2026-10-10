@@ -122,6 +122,75 @@ export function DebugPanel({ gameId }: { gameId: GameId }) {
             />
           </>
         )}
+        {gameId === 'G3' && (
+          <>
+            <Select
+              label={vi.debug.speed}
+              value={opt('speed')}
+              options={[
+                autoOpt,
+                ['slow', vi.debug.slow],
+                ['medium', vi.debug.medium],
+                ['fast', vi.debug.fast],
+              ]}
+              onChange={(v) => setOpt('speed', v)}
+            />
+            <Select
+              label={vi.debug.decoys}
+              value={opt('decoys')}
+              options={[autoOpt, ['off', vi.debug.off], ['on', vi.debug.on]]}
+              onChange={(v) => setOpt('decoys', v)}
+            />
+          </>
+        )}
+        {gameId === 'G4' && (
+          <>
+            <Select
+              label={vi.debug.pads}
+              value={opt('pads')}
+              options={[autoOpt, ['4', '4'], ['6', '6'], ['9', '9']]}
+              onChange={(v) => setOpt('pads', v)}
+            />
+            <Select
+              label={vi.debug.speed}
+              value={opt('speed')}
+              options={[
+                autoOpt,
+                ['slow', vi.debug.slow],
+                ['medium', vi.debug.medium],
+                ['fast', vi.debug.fast],
+              ]}
+              onChange={(v) => setOpt('speed', v)}
+            />
+            <Select
+              label={vi.debug.startLen}
+              value={opt('startLen')}
+              options={[autoOpt, ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5']]}
+              onChange={(v) => setOpt('startLen', v)}
+            />
+          </>
+        )}
+        {gameId === 'G5' && (
+          <>
+            <Select
+              label={vi.debug.fall}
+              value={opt('fall')}
+              options={[
+                autoOpt,
+                ['slow', vi.debug.slow],
+                ['medium', vi.debug.medium],
+                ['fast', vi.debug.fast],
+              ]}
+              onChange={(v) => setOpt('fall', v)}
+            />
+            <Select
+              label={vi.debug.doubles}
+              value={opt('doubles')}
+              options={[autoOpt, ['off', vi.debug.off]]}
+              onChange={(v) => setOpt('doubles', v)}
+            />
+          </>
+        )}
       </div>
       <p class="debug-note" data-testid="debug-recent">
         {vi.debug.recent(g.recentScores)}

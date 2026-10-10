@@ -1,0 +1,513 @@
+/* ================= G3 sân cỏ · G4 ô sáng · G5 bầu trời đêm (TASK-04) ================= */
+
+/* ---------- Nền riêng từng game ---------- */
+.theme-meadow {
+  background:
+    radial-gradient(circle, #ffffff 3.5px, transparent 4px) 22px 34px / 96px 76px,
+    radial-gradient(circle, #ffe066 3px, transparent 3.5px) 64px 64px / 118px 94px,
+    radial-gradient(circle, #ff9fcb 3px, transparent 3.5px) 88px 20px / 134px 110px,
+    linear-gradient(180deg, #9ee7ff 0%, #d8f8c4 36%, #7fdc7a 100%);
+}
+.theme-night {
+  background:
+    radial-gradient(circle, rgb(255 255 255 / 0.75) 1.6px, transparent 2.2px) 0 0 / 53px 47px,
+    radial-gradient(circle, rgb(255 220 255 / 0.6) 1.1px, transparent 1.7px) 20px 25px / 37px 41px,
+    radial-gradient(ellipse at 50% 0%, #7a4be0 0%, #3a1f8a 55%, #1a0c47 100%);
+  border-inline: 3px solid var(--ink);
+}
+
+/* ---------- G4 Chuỗi Ánh Sáng ---------- */
+.g4 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 100%;
+  padding: 8px;
+}
+.g4-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 20px;
+  border: var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 4px 0 rgb(38 50 56 / 0.25);
+  font-size: 22px;
+  font-weight: 800;
+}
+.g4[data-mode='watch'] .g4-phase {
+  color: #7a3fd0;
+}
+.g4[data-mode='play'] .g4-phase {
+  color: #17863d;
+}
+.g4-len {
+  color: var(--color-muted);
+}
+.g4-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--g4-cols, 2), var(--g4-cell, 120px));
+  grid-auto-rows: var(--g4-cell, 120px);
+  gap: 12px;
+}
+.g4-pad {
+  --c: #cccccc;
+  --c2: #eeeeee;
+  --c3: #999999;
+  --shade: #777777;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 4px solid var(--ink);
+  border-radius: 26px;
+  background: radial-gradient(circle at 30% 22%, var(--c2) 0%, var(--c) 58%, var(--c3) 100%);
+  box-shadow:
+    0 8px 0 var(--shade),
+    inset 0 6px 0 rgb(255 255 255 / 0.38),
+    inset 0 -10px 14px rgb(0 0 0 / 0.12);
+  transition:
+    transform 0.08s,
+    filter 0.08s,
+    box-shadow 0.08s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.g4-pad svg {
+  width: 56%;
+  height: 56%;
+  filter: drop-shadow(0 3px 0 rgb(38 50 56 / 0.35));
+  pointer-events: none;
+}
+.g4-pad.is-lit {
+  transform: translateY(5px) scale(1.04);
+  filter: brightness(1.28) saturate(1.25);
+  box-shadow:
+    0 2px 0 var(--shade),
+    0 0 0 6px rgb(255 255 255 / 0.92),
+    0 0 36px 12px var(--c2),
+    inset 0 6px 0 rgb(255 255 255 / 0.5);
+}
+.g4-p0 {
+  --c: #ff5a6a;
+  --c2: #ffb0b8;
+  --c3: #d92b40;
+  --shade: #a21b2e;
+}
+.g4-p1 {
+  --c: #3ddc6e;
+  --c2: #b4f5c6;
+  --c3: #22a84f;
+  --shade: #157a38;
+}
+.g4-p2 {
+  --c: #3fa9ff;
+  --c2: #b4ddff;
+  --c3: #1b79d6;
+  --shade: #12569e;
+}
+.g4-p3 {
+  --c: #ffd93d;
+  --c2: #fff3a6;
+  --c3: #e0b000;
+  --shade: #a07f00;
+}
+.g4-p4 {
+  --c: #ff6fb5;
+  --c2: #ffc0e0;
+  --c3: #e03c93;
+  --shade: #a02468;
+}
+.g4-p5 {
+  --c: #9a6cf5;
+  --c2: #d3beff;
+  --c3: #6a3fd6;
+  --shade: #4a2b9e;
+}
+/* Corsi 9 ô: cùng màu xanh dịu, sáng lên màu vàng – chỉ khác vị trí */
+.g4-corsi {
+  --c: #8fddb8;
+  --c2: #d2f5e4;
+  --c3: #54be8e;
+  --shade: #2f8a62;
+}
+.g4-corsi.is-lit {
+  --c: #ffe04a;
+  --c2: #fff6b0;
+  --c3: #ffc400;
+}
+
+/* ---------- Hình động giới thiệu G3 / G4 / G5 ---------- */
+.ia-meadow {
+  background:
+    radial-gradient(circle, #ffffff 3px, transparent 3.5px) 20px 30px / 70px 56px,
+    linear-gradient(180deg, #9ee7ff 0%, #d8f8c4 40%, #7fdc7a 100%);
+}
+.ia-cat {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  animation: ia-cat-move 5s infinite;
+}
+.ia-cat canvas {
+  position: absolute;
+  inset: 0;
+}
+.ia-cat-idle {
+  animation: ia-cat-idle 5s infinite;
+}
+.ia-cat-cheer {
+  opacity: 0;
+  animation: ia-cat-cheer 5s infinite;
+}
+.ia-hedgehog {
+  position: absolute;
+  left: 4%;
+  bottom: 2%;
+}
+.ia-zzz {
+  position: absolute;
+  left: 62px;
+  top: -6px;
+  color: #5b3fc4;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  animation: zzz 2s ease-in-out infinite;
+}
+.ia-finger-cat {
+  left: 182px;
+  animation-name: ia-finger-cat;
+}
+.ia-hu {
+  position: absolute;
+  left: 160px;
+  top: 6px;
+  color: #ffd93d;
+  font-size: 26px;
+  font-weight: 800;
+  -webkit-text-stroke: 4px var(--ink);
+  paint-order: stroke fill;
+  opacity: 0;
+  animation: ia-hu 5s infinite;
+}
+.ia-g4 {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #e8dcff 100%);
+}
+.ia-pads {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 64px);
+  grid-auto-rows: 64px;
+  gap: 8px;
+}
+.ia-pads .g4-pad {
+  border-width: 3px;
+  border-radius: 18px;
+  box-shadow:
+    0 5px 0 var(--shade),
+    inset 0 4px 0 rgb(255 255 255 / 0.38);
+}
+.ia-pad-0 {
+  animation: ia-lit-a 5s infinite;
+}
+.ia-pad-3 {
+  animation: ia-lit-b 5s infinite;
+}
+.ia-pad-1 {
+  animation: ia-lit-c 5s infinite;
+}
+.ia-finger-pads {
+  left: 22px;
+  top: 150px;
+  animation-name: ia-finger-seq;
+}
+.ia-night {
+  background:
+    radial-gradient(circle, rgb(255 255 255 / 0.75) 1.4px, transparent 2px) 0 0 / 43px 37px,
+    radial-gradient(ellipse at 50% 0%, #7a4be0 0%, #3a1f8a 55%, #1a0c47 100%);
+}
+.ia-lanes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.ia-lane {
+  flex: 1;
+  border-left: 2px solid rgb(255 255 255 / 0.15);
+}
+.ia-lane-0 {
+  background: linear-gradient(180deg, transparent, rgb(255 95 162 / 0.3));
+}
+.ia-lane-1 {
+  background: linear-gradient(180deg, transparent, rgb(255 201 61 / 0.3));
+}
+.ia-lane-2 {
+  background: linear-gradient(180deg, transparent, rgb(61 220 110 / 0.3));
+}
+.ia-lane-3 {
+  background: linear-gradient(180deg, transparent, rgb(41 182 246 / 0.3));
+}
+.ia-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 132px;
+  height: 4px;
+  background: rgb(255 255 255 / 0.45);
+}
+.ia-gem {
+  position: absolute;
+  left: 170px;
+  top: -60px;
+  animation: ia-fall 5s infinite;
+}
+.ia-finger-gem {
+  left: 186px;
+  top: 190px;
+  animation-name: ia-gem-tap;
+}
+.ia-perfect {
+  position: absolute;
+  left: 152px;
+  top: 76px;
+  color: #ffe066;
+  font-size: 26px;
+  font-weight: 800;
+  -webkit-text-stroke: 4px var(--ink);
+  paint-order: stroke fill;
+  opacity: 0;
+  animation: ia-perfect 5s infinite;
+}
+
+@keyframes ia-cat-move {
+  0% {
+    left: 6%;
+    top: 14%;
+    opacity: 1;
+    transform: scale(1);
+  }
+  40%,
+  46% {
+    left: 40%;
+    top: 34%;
+    opacity: 1;
+    transform: scale(1);
+  }
+  60% {
+    left: 40%;
+    top: 34%;
+    opacity: 0;
+    transform: scale(1.35);
+  }
+  61% {
+    left: 66%;
+    top: 6%;
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  68% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    left: 70%;
+    top: 30%;
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes ia-cat-idle {
+  0%,
+  44% {
+    opacity: 1;
+  }
+  45%,
+  62% {
+    opacity: 0;
+  }
+  63%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes ia-cat-cheer {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  45%,
+  60% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ia-finger-cat {
+  0%,
+  34% {
+    top: 105%;
+  }
+  42% {
+    top: 100px;
+  }
+  52%,
+  100% {
+    top: 105%;
+  }
+}
+@keyframes ia-hu {
+  0%,
+  44% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  50%,
+  58% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+  66%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ia-lit-a {
+  0%,
+  7%,
+  17%,
+  59%,
+  69%,
+  100% {
+    filter: none;
+    transform: none;
+  }
+  9%,
+  15%,
+  61%,
+  67% {
+    filter: brightness(1.3) saturate(1.3);
+    transform: translateY(3px) scale(1.06);
+  }
+}
+@keyframes ia-lit-b {
+  0%,
+  23%,
+  33%,
+  71%,
+  81%,
+  100% {
+    filter: none;
+    transform: none;
+  }
+  25%,
+  31%,
+  73%,
+  79% {
+    filter: brightness(1.3) saturate(1.3);
+    transform: translateY(3px) scale(1.06);
+  }
+}
+@keyframes ia-lit-c {
+  0%,
+  39%,
+  49%,
+  83%,
+  93%,
+  100% {
+    filter: none;
+    transform: none;
+  }
+  41%,
+  47%,
+  85%,
+  91% {
+    filter: brightness(1.3) saturate(1.3);
+    transform: translateY(3px) scale(1.06);
+  }
+}
+@keyframes ia-finger-seq {
+  0%,
+  54% {
+    left: 22px;
+    top: 150px;
+  }
+  60%,
+  66% {
+    left: 22px;
+    top: 36px;
+  }
+  72%,
+  78% {
+    left: 94px;
+    top: 108px;
+  }
+  84%,
+  90% {
+    left: 94px;
+    top: 36px;
+  }
+  97%,
+  100% {
+    left: 94px;
+    top: 150px;
+  }
+}
+@keyframes ia-fall {
+  0% {
+    top: -60px;
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    top: 104px;
+    opacity: 1;
+    transform: scale(1);
+  }
+  56% {
+    top: 104px;
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  60%,
+  100% {
+    top: 104px;
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+@keyframes ia-gem-tap {
+  0%,
+  44% {
+    top: 190px;
+  }
+  50% {
+    top: 120px;
+  }
+  60%,
+  100% {
+    top: 190px;
+  }
+}
+@keyframes ia-perfect {
+  0%,
+  50% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  56%,
+  70% {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+  80%,
+  100% {
+    opacity: 0;
+  }
+}

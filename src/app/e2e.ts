@@ -11,6 +11,8 @@ export const E2E = {
   enabled: hooksAllowed && params.get('e2e') === '1',
   seed: Number(params.get('seed') ?? 12345) || 12345,
   timeScale: 10,
+  /** ?freeze=1 → G3: thú đứng yên để test chạm chính xác. */
+  freeze: hooksAllowed && params.get('freeze') === '1',
 } as const;
 
 /** ?debug=1 → bảng chỉnh độ khó/tùy chọn ở màn Giới thiệu và đồng hồ FPS. */

@@ -1,7 +1,20 @@
 // Icon thẻ game (SVG tự vẽ). Màu luôn đi kèm hình dạng (mù màu).
 import type { GameId } from '../../app/types';
+import { renderSprite } from '../../games/g3-pets/art';
+import { LANE_COLORS, renderGem, type LanePalette } from '../../games/g5-notes/art';
 
 const LINE = '#37474F';
+
+/** Sprite vẽ bằng canvas → data URL (tạo 1 lần, dùng lại cho mọi thẻ). */
+const urlCache = new Map<string, string>();
+function spriteUrl(key: string, make: () => HTMLCanvasElement): string {
+  let url = urlCache.get(key);
+  if (!url) {
+    url = make().toDataURL('image/png');
+    urlCache.set(key, url);
+  }
+  return url;
+}
 
 function Art({ id }: { id: GameId }) {
   switch (id) {
@@ -68,58 +81,54 @@ function Art({ id }: { id: GameId }) {
       );
     case 'G3':
       return (
-        <g fill="#FF8A65" stroke={LINE} stroke-width="2.5">
-          <ellipse cx="32" cy="42" rx="14" ry="11" />
-          <ellipse cx="14" cy="28" rx="5.5" ry="7" transform="rotate(-20 14 28)" />
-          <ellipse cx="25" cy="17" rx="5.5" ry="7" />
-          <ellipse cx="39" cy="17" rx="5.5" ry="7" />
-          <ellipse cx="50" cy="28" rx="5.5" ry="7" transform="rotate(20 50 28)" />
-        </g>
+        <image
+          href={spriteUrl('cat', () => renderSprite('cat', false, 128, 1))}
+          x="1"
+          y="1"
+          width="62"
+          height="62"
+        />
       );
     case 'G4':
       return (
         <g stroke={LINE} stroke-width="2.5" stroke-linejoin="round">
-          <rect x="6" y="6" width="25" height="25" rx="5" fill="#EF5350" />
-          <circle cx="18.5" cy="18.5" r="6" fill="#fff" />
-          <rect x="33" y="6" width="25" height="25" rx="5" fill="#4FC3F7" />
-          <rect x="40" y="13" width="11" height="11" fill="#fff" />
-          <rect x="6" y="33" width="25" height="25" rx="5" fill="#66BB6A" />
-          <path d="M18.5 40 L26 52 L11 52 Z" fill="#fff" />
-          <rect x="33" y="33" width="25" height="25" rx="5" fill="#FFD54F" />
-          <path d="M45.5 39 L52 45.5 L45.5 52 L39 45.5 Z" fill="#fff" />
+          <defs>
+            <linearGradient id="gi4r" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#FF9AA6" />
+              <stop offset="1" stop-color="#E0334A" />
+            </linearGradient>
+            <linearGradient id="gi4b" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#9AD3FF" />
+              <stop offset="1" stop-color="#2F8BE0" />
+            </linearGradient>
+            <linearGradient id="gi4g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#A8F2BE" />
+              <stop offset="1" stop-color="#2EB85A" />
+            </linearGradient>
+            <linearGradient id="gi4y" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#FFF08A" />
+              <stop offset="1" stop-color="#F2B90A" />
+            </linearGradient>
+          </defs>
+          <rect x="5" y="5" width="26" height="26" rx="7" fill="url(#gi4r)" />
+          <circle cx="18" cy="18" r="6" fill="#fff" />
+          <rect x="33" y="5" width="26" height="26" rx="7" fill="url(#gi4b)" />
+          <rect x="40" y="12" width="12" height="12" rx="2" fill="#fff" />
+          <rect x="5" y="33" width="26" height="26" rx="7" fill="url(#gi4g)" />
+          <path d="M18 39 L25.5 52 L10.5 52 Z" fill="#fff" />
+          <rect x="33" y="33" width="26" height="26" rx="7" fill="url(#gi4y)" />
+          <path d="M46 39 L52.5 46 L46 53 L39.5 46 Z" fill="#fff" />
         </g>
       );
     case 'G5':
       return (
-        <g fill={LINE}>
-          <ellipse
-            cx="22"
-            cy="46"
-            rx="11"
-            ry="8"
-            fill="#9575CD"
-            stroke={LINE}
-            stroke-width="2.5"
-            transform="rotate(-20 22 46)"
-          />
-          <path
-            d="M31 44 L31 12 Q44 14 48 28"
-            fill="none"
-            stroke={LINE}
-            stroke-width="4.5"
-            stroke-linecap="round"
-          />
-          <ellipse
-            cx="46"
-            cy="52"
-            rx="8"
-            ry="6"
-            fill="#4FC3F7"
-            stroke={LINE}
-            stroke-width="2.5"
-            transform="rotate(-20 46 52)"
-          />
-        </g>
+        <image
+          href={spriteUrl('gem', () => renderGem(LANE_COLORS[0] as LanePalette, 40, 3))}
+          x="0"
+          y="2"
+          width="64"
+          height="64"
+        />
       );
     case 'G6':
       return (

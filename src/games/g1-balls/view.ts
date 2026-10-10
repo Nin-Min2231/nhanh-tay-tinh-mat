@@ -5,11 +5,11 @@ import { mulberry32, pick, type Rng } from '../../app/rng';
 import { vi } from '../../i18n/vi';
 import { createCanvasStage } from '../common/CanvasStage';
 import { createHintBubble } from '../common/HintBubble';
+import { drawHud, makeBarGradient } from '../common/hud';
 import { attachPointerInput, type TapEvent } from '../common/PointerInput';
 import type { GameContext, GameInstance } from '../common/types';
 import { readG1Options, resolveG1Params, type BallKind, type G1Params } from './config';
 import {
-  HUD_HEIGHT,
   ROUND_MS,
   SpawnPlanner,
   ballDiameter,
@@ -107,11 +107,7 @@ export function createG1(host: HTMLElement, ctx: GameContext): GameInstance {
   let diameter = 64;
   const stage = createCanvasStage(host, (w, h, cx) => {
     diameter = ballDiameter(w, h);
-    const g = cx.createLinearGradient(0, 0, Math.max(1, w), 0);
-    g.addColorStop(0, '#43D675');
-    g.addColorStop(0.5, '#FFD93D');
-    g.addColorStop(1, '#FF8A3D');
-    barGradient = g;
+    barGradient = makeBarGradient(cx, w);
   });
   const c = stage.ctx;
 
@@ -272,62 +268,6 @@ export function createG1(host: HTMLElement, ctx: GameContext): GameInstance {
   }
 
   // ---- vẽ ----
-  function drawStar(cx: number, cy: number, r: number): void {
-    c.beginPath();
-    for (let i = 0; i < 10; i++) {
-      const rad = i % 2 === 0 ? r : r * 0.45;
-      const a = -Math.PI / 2 + (i * Math.PI) / 5;
-      const px = cx + Math.cos(a) * rad;
-      const py = cy + Math.sin(a) * rad;
-      if (i === 0) c.moveTo(px, py);
-      else c.lineTo(px, py);
-    }
-    c.closePath();
-  }
-
-  function drawHud(w: number): void {
-    // số bóng xanh đã chạm
-    drawStar(26, HUD_HEIGHT / 2, 13);
-    c.fillStyle = '#FFD93D';
-    c.fill();
-    c.lineWidth = 3;
-    c.lineJoin = 'round';
-    c.strokeStyle = INK;
-    c.stroke();
-    c.fillStyle = INK;
-    c.font = '800 22px Nunito, system-ui, sans-serif';
-    c.textBaseline = 'middle';
-    c.textAlign = 'left';
-    c.fillText(hitsText, 48, HUD_HEIGHT / 2 + 1);
-    // thanh thời gian của lượt
-    const x0 = 96;
-    const bw = Math.max(10, w - x0 - 16);
-    const frac = Math.min(1, gameT / roundMs);
-    c.beginPath();
-    c.roundRect(x0, 13, bw, 18, 9);
-    c.fillStyle = 'rgba(255,255,255,0.85)';
-    c.fill();
-    if (frac > 0.01) {
-      c.save();
-      c.beginPath();
-      c.roundRect(x0, 13, bw * frac, 18, 9);
-      c.fillStyle = barGradient ?? '#43D675';
-      c.fill();
-      c.restore();
-    }
-    c.beginPath();
-    c.roundRect(x0, 13, bw, 18, 9);
-    c.lineWidth = 3;
-    c.strokeStyle = INK;
-    c.stroke();
-    if (DEBUG) {
-      c.font = '700 14px Nunito, system-ui, sans-serif';
-      c.fillStyle = INK;
-      c.textAlign = 'right';
-      c.fillText(fpsText, w - 20, HUD_HEIGHT + 14);
-    }
-  }
-
   function drawBall(b: Ball): void {
     const age = gameT - b.bornAt;
     let s = 1;
@@ -455,7 +395,12 @@ export function createG1(host: HTMLElement, ctx: GameContext): GameInstance {
       c.fill();
     }
     c.globalAlpha = 1;
-    drawHud(stage.width);
+    drawHud(c, stage.width, {
+      countText: hitsText,
+      progress: gameT / roundMs,
+      gradient: barGradient,
+      debugText: DEBUG ? fpsText : undefined,
+    });
     if (marked || dirtyDom) {
       dirtyDom = false;
       publish();

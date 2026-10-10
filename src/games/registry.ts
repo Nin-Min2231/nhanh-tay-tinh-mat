@@ -1,6 +1,9 @@
 // Danh sách game hiển thị trên Home + nơi nạp GameModule.
 import { g1Module } from './g1-balls';
 import { g2Module } from './g2-schulte';
+import { g3Module } from './g3-pets';
+import { g4Module } from './g4-lights';
+import { g5Module } from './g5-notes';
 import type { GameModule } from './common/types';
 import type { GameId } from './levels';
 
@@ -22,6 +25,9 @@ export function groupOf(id: GameId): GameGroup {
 const MODULES: Partial<Record<GameId, GameModule>> = {
   G1: g1Module,
   G2: g2Module,
+  G3: g3Module,
+  G4: g4Module,
+  G5: g5Module,
 };
 
 export function getGameModule(id: GameId): GameModule | undefined {
