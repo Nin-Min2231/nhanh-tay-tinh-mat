@@ -1,4 +1,18 @@
 // Toàn bộ chuỗi giao diện nằm ở đây (CLAUDE.md mục 5, quy tắc 16).
+import type { GameId } from '../games/levels';
+
+interface GameText {
+  name: string;
+  hint: string;
+  /** Các dòng chỉ số hiện ở màn Kết quả. */
+  lines?: (m: Record<string, number>) => string[];
+}
+
+/** Số giây có 1 chữ số thập phân, dấu phẩy kiểu Việt: 32,5 */
+const sec1 = (ms: number) => (Math.round(ms / 100) / 10).toString().replace('.', ',');
+/** Số giây có 2 chữ số thập phân: 0,52 */
+const sec2 = (ms: number) => (Math.round(ms / 10) / 100).toString().replace('.', ',');
+
 export const vi = {
   app: {
     title: 'Nhanh Tay Tinh Mắt',
@@ -65,7 +79,6 @@ export const vi = {
       reflex: 'Phản xạ',
       focus: 'Tập trung & Trí nhớ',
       learn: 'Học mà chơi',
-      test: 'Thử nghiệm',
     },
     timeLeft: (minutes: number) => `Còn ${minutes} phút`,
     timeLeftLabel: 'Thời gian chơi hôm nay',
@@ -79,16 +92,21 @@ export const vi = {
     updateAvailable: 'Có bản mới – Cập nhật',
   },
   games: {
-    G0: {
-      name: 'Game thử (tạm)',
-      hint: 'Chạm vào vòng tròn 10 lần!',
-      metric: (m: Record<string, number>) => `Con chạm được ${m.hits ?? 0} vòng tròn!`,
-    },
     G1: {
       name: 'Bóng Xanh – Bóng Đỏ',
       hint: 'Chạm bóng xanh thật nhanh! Bóng đỏ thì đừng chạm nhé.',
+      lines: (m: Record<string, number>) => [
+        `Con chạm được ${m.hits ?? 0} bóng xanh!`,
+        ...((m.rtMeanMs ?? 0) > 0 ? [`Phản xạ trung bình: ${sec2(m.rtMeanMs ?? 0)} giây`] : []),
+      ],
     },
-    G2: { name: 'Bảng Số Thần Kỳ', hint: 'Chạm các số theo thứ tự từ nhỏ đến lớn.' },
+    G2: {
+      name: 'Bảng Số Thần Kỳ',
+      hint: 'Chạm các số theo thứ tự từ nhỏ đến lớn.',
+      lines: (m: Record<string, number>) => [
+        `Con tìm xong trong ${sec1((m.timeSec ?? 0) * 1000)} giây!`,
+      ],
+    },
     G3: {
       name: 'Đuổi Bắt Thú Cưng',
       hint: 'Chạm bạn thú cưng đang chạy! Đừng đánh thức bạn Nhím.',
@@ -97,7 +115,12 @@ export const vi = {
     G5: { name: 'Nốt Nhạc Rơi', hint: 'Chạm nốt nhạc khi nó chạm vạch nhé!' },
     G6: { name: 'Hái Táo Tính Nhẩm', hint: 'Hái quả táo có đáp án đúng!' },
     G7: { name: 'Tìm Quy Luật', hint: 'Tìm hình tiếp theo của quy luật.' },
+  } as Record<GameId, GameText>,
+  g2: {
+    findNumber: 'Tìm số:',
+    progress: (done: number, total: number) => `${done}/${total}`,
   },
+  encourage: ['Gần đúng rồi!', 'Bình tĩnh nhé!', 'Cố lên nào!', 'Thử lại nhé!', 'Con làm được mà!'],
   intro: {
     chooseLevel: 'Con muốn chơi thế nào?',
     easy: 'Dễ',
@@ -105,7 +128,6 @@ export const vi = {
     auto: 'Tự động',
     hard: 'Khó',
     replay: 'Xem lại hướng dẫn',
-    autoHint: 'Gợi ý',
   },
   play: {
     pause: 'Tạm dừng',
@@ -116,7 +138,6 @@ export const vi = {
     warn2min: 'Còn 2 phút nữa thôi nhé!',
     timeUp: 'Hết giờ rồi! Mình chơi nốt lượt này nhé.',
     countdownLabel: 'Chuẩn bị',
-    progress: (done: number, total: number) => `${done}/${total}`,
   },
   result: {
     title: 'Kết quả',
@@ -126,6 +147,8 @@ export const vi = {
       2: 'Giỏi quá, con tiến bộ rồi!',
       3: 'Tuyệt vời! Con thật siêu!',
     } as Record<number, string>,
+    levelUp: 'Lên cấp!',
+    levelUpDetail: (n: number) => `Bây giờ con ở cấp ${n}`,
   },
   rest: {
     title: 'Giờ nghỉ ngơi',
@@ -146,5 +169,29 @@ export const vi = {
     album: 'Album sticker',
     parentGate: 'Khu phụ huynh',
     parent: 'Khu phụ huynh',
+  },
+  /** Bảng gỡ lỗi (?debug=1) – chỉ có khi chạy dev; giao diện phụ huynh thật làm ở TASK-07. */
+  debug: {
+    title: 'Gỡ lỗi (chỉ khi dev)',
+    mode: 'Chế độ',
+    modeAuto: 'Tự động',
+    modeFixed: 'Cố định',
+    level: 'Cấp',
+    minLevel: 'Cấp thấp nhất',
+    maxLevel: 'Cấp cao nhất',
+    auto: 'tự động',
+    colors: 'Số màu bóng',
+    simultaneous: 'Bóng cùng lúc',
+    grid: 'Cỡ bảng',
+    order: 'Thứ tự',
+    orderForward: 'Xuôi',
+    orderBackward: 'Ngược',
+    hint: 'Gợi ý',
+    on: 'Bật',
+    off: 'Tắt',
+    recent: (scores: number[]) =>
+      scores.length === 0
+        ? 'Điểm gần đây: chưa có'
+        : `Điểm gần đây: ${scores.map((s) => s.toFixed(2)).join(', ')}`,
   },
 } as const;

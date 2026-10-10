@@ -1,9 +1,9 @@
 // Icon thẻ game (SVG tự vẽ). Màu luôn đi kèm hình dạng (mù màu).
-import type { PlayableId } from '../../app/routes';
+import type { GameId } from '../../app/types';
 
 const LINE = '#37474F';
 
-function Art({ id }: { id: PlayableId }) {
+function Art({ id }: { id: GameId }) {
   switch (id) {
     case 'G1':
       return (
@@ -176,25 +176,10 @@ function Art({ id }: { id: PlayableId }) {
           </text>
         </g>
       );
-    case 'G0':
-      return (
-        <>
-          <circle cx="32" cy="32" r="22" fill="#66BB6A" stroke={LINE} stroke-width="2.5" />
-          <path
-            d="M22 36 Q32 46 42 36"
-            fill="none"
-            stroke={LINE}
-            stroke-width="3"
-            stroke-linecap="round"
-          />
-          <circle cx="25" cy="27" r="2.5" fill={LINE} />
-          <circle cx="39" cy="27" r="2.5" fill={LINE} />
-        </>
-      );
   }
 }
 
-export function GameIcon({ id, size = 64 }: { id: PlayableId; size?: number }) {
+export function GameIcon({ id, size = 64 }: { id: GameId; size?: number }) {
   return (
     <svg class="game-icon" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
       <Art id={id} />

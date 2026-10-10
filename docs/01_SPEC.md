@@ -296,7 +296,7 @@ Khóa PH (F08): phép nhân `a × b` với a ∈ [12, 49], b ∈ [3, 9]; bàn ph
 ## 12. Âm thanh, rung, đồ họa
 
 - **Linh vật**: “Sóc Bo” – sóc nhỏ màu cam, đuôi to, mắt tròn; SVG tự vẽ với 5 biểu cảm (chào, vui, cổ vũ, ngạc nhiên, ngủ). Linh vật thứ 2 “Cú Mèo Thông Thái” mở khóa ở 230 sao.
-- **Bảng màu** (tươi, tương phản AA với chữ tối): nền kem `#FFF8EC`, xanh trời `#4FC3F7`, xanh lá `#66BB6A`, vàng `#FFD54F`, cam `#FF8A65`, tím `#9575CD`, chữ `#263238`.
+- **Bảng màu** (rực rỡ, nhiều tông nổi bật; chữ luôn tối `#263238` trên nền sáng/vừa để đạt tương phản AA; màu luôn kèm hình dạng): nền chuyển sắc trời → kem → hồng nhạt `#BDE9FF → #FFF1C7 → #FFD9EC`; xanh trời `#29B6F6`, xanh lá `#3DDC6E`, vàng `#FFD93D`, cam `#FF8A3D`, hồng `#FF5FA2`, tím `#8E6CF0`, ngọc `#18C9B9`, đỏ `#FF4D5E`; mỗi màu có bản nhạt (`*-soft`) cho nền thẻ. Mỗi game có tông riêng trên Home: G1 cam, G3 vàng, G5 hồng, G2 tím, G4 xanh trời, G6 xanh lá, G7 ngọc. Nút chính dạng “kẹo” (chuyển sắc cam + bóng đổ). Chi tiết ở `src/ui/theme.css`.
 - **G1 mã hóa màu + hình**: xanh = tròn + mặt cười; đỏ = vuông + dấu ✕; vàng = tam giác + dấu !; nâu = thoi + dấu ~.
 - **Âm thanh**: Web Audio tổng hợp: chạm đúng (ding cao), sai (bụp nhỏ, trầm nhẹ – không chê), sao (arpeggio), lên cấp (fanfare ngắn), 9 nốt cho G4/G5 (âm giai ngũ cung C D E G A).
   Mở khóa AudioContext ở lần chạm đầu (`resume()` trong `pointerdown`).

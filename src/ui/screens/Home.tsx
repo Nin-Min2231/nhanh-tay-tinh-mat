@@ -1,9 +1,9 @@
 import { vi } from '../../i18n/vi';
 import { navigate } from '../../app/router';
 import { dateKey } from '../../app/profile';
-import type { PlayableId } from '../../app/routes';
 import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
 import { activeProfile, updateAvailable } from '../../app/store';
+import type { GameId } from '../../app/types';
 import { GAME_GROUPS, isGameAvailable } from '../../games/registry';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
@@ -18,21 +18,23 @@ const MISSIONS = [
   { key: 'learn', icon: 'G6' },
 ] as const;
 
-function GameCard({ id, locked }: { id: PlayableId; locked: boolean }) {
+function GameCard({ id, locked }: { id: GameId; locked: boolean }) {
   const p = activeProfile.value;
   const available = isGameAvailable(id);
-  const progress = id === 'G0' ? null : p?.games[id];
+  const progress = p?.games[id];
   const disabled = !available || locked;
   return (
     <button
       type="button"
-      class={`game-card${disabled ? ' is-disabled' : ''}`}
+      class={`game-card g-${id}${disabled ? ' is-disabled' : ''}`}
       disabled={disabled}
       data-testid={`game-${id}`}
       onClick={() => navigate(`/play/${id}/intro`)}
     >
-      <GameIcon id={id} size={72} />
-      <span class="game-name">{vi.games[id].name}</span>
+      <span class="game-icon-wrap">
+        <GameIcon id={id} size={64} />
+      </span>
+      <span class="game-name">{vi.games[id]?.name}</span>
       <span class="game-meta">
         {!available && vi.common.comingSoon}
         {available && locked && (
@@ -44,7 +46,6 @@ function GameCard({ id, locked }: { id: PlayableId; locked: boolean }) {
           !locked &&
           progress &&
           `${vi.common.level(progress.level)} · ${'★'.repeat(progress.bestStars)}${'☆'.repeat(3 - progress.bestStars)}`}
-        {available && !locked && !progress && vi.games.G0.hint}
       </span>
     </button>
   );
@@ -68,11 +69,17 @@ export function Home() {
           </span>
         </div>
         <nav class="home-actions">
-          <Button variant="icon" aria-label={vi.home.album} onClick={() => navigate('/album')}>
+          <Button
+            variant="icon"
+            class="tone-purple"
+            aria-label={vi.home.album}
+            onClick={() => navigate('/album')}
+          >
             <IconAlbum />
           </Button>
           <Button
             variant="icon"
+            class="tone-sky"
             aria-label={vi.home.switchPlayer}
             onClick={() => navigate('/profiles')}
           >
@@ -80,6 +87,7 @@ export function Home() {
           </Button>
           <Button
             variant="icon"
+            class="tone-orange"
             aria-label={vi.home.parent}
             onClick={() => navigate('/parent-gate')}
           >
@@ -119,7 +127,7 @@ export function Home() {
         </h2>
         <ul class="mission-row">
           {MISSIONS.map((m) => (
-            <li key={m.key} class="mission" data-testid={`mission-${m.key}`}>
+            <li key={m.key} class={`mission mission-${m.key}`} data-testid={`mission-${m.key}`}>
               <GameIcon id={m.icon} size={40} />
               <span>{vi.home.missions[m.key]}</span>
               <span class="mission-check" aria-hidden="true" />
@@ -130,7 +138,7 @@ export function Home() {
 
       {GAME_GROUPS.map(({ group, games }) => (
         <section key={group} class={`group group-${group}`}>
-          <h2 class="section-title">{vi.home.groups[group]}</h2>
+          <h2 class="group-title">{vi.home.groups[group]}</h2>
           <div class="card-grid">
             {games.map((id) => (
               <GameCard key={id} id={id} locked={out} />
@@ -138,13 +146,6 @@ export function Home() {
           </div>
         </section>
       ))}
-
-      <section class="group group-test">
-        <h2 class="section-title">{vi.home.groups.test}</h2>
-        <div class="card-grid">
-          <GameCard id="G0" locked={out} />
-        </div>
-      </section>
     </main>
   );
 }

@@ -1,15 +1,22 @@
 // State toàn cục (signals) + các hành động ghi dữ liệu.
 import { computed, signal } from '@preact/signals';
 import type { RoundResult } from '../games/common/types';
-import type { KidChoice } from './adaptive';
+import { applyRound, type KidChoice, type LevelChange } from './adaptive';
 import { createAudio } from './audio';
 import { generateId, getDeviceClass } from './device';
 import { createHaptics } from './haptics';
 import { MAX_PROFILES, createProfile, dateKey, emptyDay, type NewProfileInput } from './profile';
-import type { PlayableId } from './routes';
 import { starsForScore } from './scoring';
 import { storage } from './storage';
-import type { AppState, GameId, GlobalSettings, Profile, RoundMode, RoundRecord } from './types';
+import type {
+  AppState,
+  GameId,
+  GameProgress,
+  GlobalSettings,
+  Profile,
+  RoundMode,
+  RoundRecord,
+} from './types';
 
 export const appState = signal<AppState>(storage.loadState());
 /** true nếu localStorage không dùng được → đang chạy bằng bộ nhớ tạm. */
@@ -77,20 +84,36 @@ export function addPlayTime(profileId: string, ms: number, key = dateKey(new Dat
   });
 }
 
+/** Sửa tiến độ/cài đặt của 1 game (dùng cho bảng gỡ lỗi ?debug=1 và khu phụ huynh ở TASK-07). */
+export function setGameProgress(
+  profileId: string,
+  gameId: GameId,
+  patch: Partial<GameProgress>,
+): void {
+  updateProfile(profileId, (p) => ({
+    ...p,
+    games: { ...p.games, [gameId]: { ...p.games[gameId], ...patch } },
+  }));
+}
+
 // ---- Lượt chơi ----
 
 export interface PendingPlay {
-  gameId: PlayableId;
+  gameId: GameId;
   choice: KidChoice;
 }
 /** Lựa chọn ở màn Giới thiệu, đọc bởi màn Chơi. */
 export const pendingPlay = signal<PendingPlay | null>(null);
 
 export interface LastResult {
-  gameId: PlayableId;
+  gameId: GameId;
   score: number;
   stars: 1 | 2 | 3;
   metrics: Record<string, number>;
+  /** Lượt này làm tăng cấp (hiện “Lên cấp!”). Giảm cấp thì đổi lặng lẽ, không thông báo. */
+  leveledUp: boolean;
+  /** Cấp của game sau lượt này. */
+  newLevel: number;
   /** Lượt kết thúc vì đã hết giờ trong ngày → sau đó sang màn nghỉ. */
   outOfTime: boolean;
 }
@@ -98,19 +121,26 @@ export const lastResult = signal<LastResult | null>(null);
 
 export interface RecordRoundArgs {
   profileId: string;
-  gameId: PlayableId;
+  gameId: GameId;
   level: number;
   mode: RoundMode;
   startedAt: Date;
   result: RoundResult;
   /** Thời gian Running thực tế do RoundClock đo (ms). */
   playedMs: number;
+  /** Có tính vào độ khó thích ứng không (chỉ lượt chế độ Tự động + bé chọn “Tự động”, không phải bài đo). */
+  countsForAdaptive: boolean;
   benchmark?: boolean;
   options?: Record<string, unknown>;
 }
 
-/** Lưu RoundRecord, cộng sao + thời gian chơi. Trả về số sao. */
-export function recordRound(args: RecordRoundArgs): { stars: 1 | 2 | 3; record: RoundRecord } {
+/** Lưu RoundRecord, cộng sao + thời gian chơi, cập nhật độ khó. */
+export function recordRound(args: RecordRoundArgs): {
+  stars: 1 | 2 | 3;
+  record: RoundRecord;
+  change: LevelChange;
+  newLevel: number;
+} {
   const stars = starsForScore(args.result.score);
   const record: RoundRecord = {
     id: generateId(),
@@ -131,25 +161,30 @@ export function recordRound(args: RecordRoundArgs): { stars: 1 | 2 | 3; record: 
   storage.appendRound(record);
 
   const key = dateKey(args.startedAt);
+  let change: LevelChange = 'none';
+  let newLevel = args.level;
   updateProfile(args.profileId, (p) => {
     const day = p.days[key] ?? emptyDay();
-    const next: Profile = {
+    const before = p.games[args.gameId];
+    const applied = applyRound(before, args.result.score, args.countsForAdaptive);
+    change = applied.change;
+    newLevel = applied.progress.level;
+    return {
       ...p,
       totalStars: p.totalStars + stars, // không bao giờ giảm
       days: {
         ...p.days,
         [key]: { ...day, playMs: day.playMs + args.playedMs, starsToday: day.starsToday + stars },
       },
-    };
-    if (args.gameId !== 'G0') {
-      const gid: GameId = args.gameId;
-      const g = p.games[gid];
-      next.games = {
+      games: {
         ...p.games,
-        [gid]: { ...g, plays: g.plays + 1, bestStars: Math.max(g.bestStars, stars) },
-      };
-    }
-    return next;
+        [args.gameId]: {
+          ...applied.progress,
+          plays: before.plays + 1,
+          bestStars: Math.max(before.bestStars, stars),
+        },
+      },
+    };
   });
-  return { stars, record };
+  return { stars, record, change, newLevel };
 }

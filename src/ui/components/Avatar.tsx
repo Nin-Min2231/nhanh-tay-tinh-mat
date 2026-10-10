@@ -309,18 +309,18 @@ function Art({ id }: { id: AvatarId }): ComponentChildren {
 }
 
 const BACKGROUNDS: Record<AvatarId, string> = {
-  cat: '#FFF3C4',
-  dog: '#D7F0FF',
-  bunny: '#FFE0EC',
-  bear: '#E3F5DA',
-  panda: '#E6E0FA',
-  fox: '#D7F0FF',
-  frog: '#FFF3C4',
-  lion: '#E3F5DA',
-  owl: '#FFE0EC',
-  pig: '#D7F0FF',
-  penguin: '#FFF3C4',
-  koala: '#FFE0EC',
+  cat: '#FFE066',
+  dog: '#8FD8FF',
+  bunny: '#FF9FCB',
+  bear: '#9BE8AA',
+  panda: '#C3AEFF',
+  fox: '#7FE3D8',
+  frog: '#FFC98A',
+  lion: '#B7F0A0',
+  owl: '#FFB0C8',
+  pig: '#A5DBFF',
+  penguin: '#FFE066',
+  koala: '#D2BFFF',
 };
 
 export function isAvatarId(id: string): id is AvatarId {

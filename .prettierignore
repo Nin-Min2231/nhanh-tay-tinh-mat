@@ -1,5 +1,7 @@
 dist
+dist-e2e
 dev-dist
+dist-e2e
 coverage
 playwright-report
 test-results

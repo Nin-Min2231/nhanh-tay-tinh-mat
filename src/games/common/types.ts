@@ -2,8 +2,7 @@
 import type { AudioApi } from '../../app/audio';
 import type { HapticsApi } from '../../app/haptics';
 import type { Rng } from '../../app/rng';
-import type { PlayableId } from '../../app/routes';
-import type { Grade, MathFact } from '../../app/types';
+import type { GameId, Grade, MathFact } from '../../app/types';
 
 export interface GameContext {
   /** 1–10 đã áp dụng (sau Dễ/Khó hoặc chế độ Cố định). */
@@ -16,6 +15,8 @@ export interface GameContext {
   audio: AudioApi;
   haptics: HapticsApi;
   benchmark: boolean;
+  /** Hệ số rút ngắn độ dài lượt (chỉ >1 khi chạy e2e; chơi thật luôn là 1). Không đổi tốc độ/thời gian hiện của vật. */
+  timeScale: number;
   onFinish(result: RoundResult): void;
 }
 
@@ -32,7 +33,7 @@ export interface GameInstance {
 }
 
 export interface GameModule {
-  id: PlayableId;
+  id: GameId;
   create(host: HTMLElement, ctx: GameContext): GameInstance;
 }
 

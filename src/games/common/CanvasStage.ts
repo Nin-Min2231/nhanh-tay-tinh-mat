@@ -10,7 +10,7 @@ export interface CanvasStage {
 
 export function createCanvasStage(
   host: HTMLElement,
-  onResize?: (width: number, height: number) => void,
+  onResize?: (width: number, height: number, ctx: CanvasRenderingContext2D) => void,
 ): CanvasStage {
   const canvas = document.createElement('canvas');
   canvas.className = 'game-canvas';
@@ -27,7 +27,7 @@ export function createCanvasStage(
     canvas.width = Math.max(1, Math.round(w * dpr));
     canvas.height = Math.max(1, Math.round(h * dpr));
     ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-    onResize?.(w, h);
+    onResize?.(w, h, ctx!);
   }
 
   const ro = new ResizeObserver((entries) => {

@@ -1,7 +1,10 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { createProfile } from '../../src/app/profile';
 import { vi } from '../../src/i18n/vi';
-import type { AppState, DayUsage, Profile } from '../../src/app/types';
+import type { AppState, DayUsage, GameId, Profile, RoundRecord } from '../../src/app/types';
+
+/** Mở app ở chế độ test: lượt G1 rút còn 6 giây, seed cố định (cần build với VITE_E2E=true). */
+export const E2E_URL = '/?e2e=1&seed=12345';
 
 export function todayKey(): string {
   const d = new Date();
@@ -26,6 +29,15 @@ export function makeProfile(
     ...today,
   };
   return { ...p, ...patch, days: { [todayKey()]: day } };
+}
+
+/** Hồ sơ có G1/G2 ở cấp/chế độ chỉ định. */
+export function withGame(
+  profile: Profile,
+  id: GameId,
+  patch: Partial<Profile['games'][GameId]>,
+): Profile {
+  return { ...profile, games: { ...profile.games, [id]: { ...profile.games[id], ...patch } } };
 }
 
 /** Gieo sẵn dữ liệu localStorage trước khi app tải (chỉ khi chưa có dữ liệu). */
@@ -55,50 +67,44 @@ export async function createProfileViaUi(page: Page, name: string, grade: 1 | 2 
   await page.getByRole('button', { name: vi.profiles.submit }).click();
 }
 
-export async function openG0Intro(page: Page) {
-  await page.getByTestId('game-G0').click();
+export async function openIntro(page: Page, id: GameId) {
+  await page.getByTestId(`game-${id}`).click();
   await expect(page.getByTestId('start-game')).toBeVisible();
 }
 
+/** Chọn Dễ/Vừa/Tự động/Khó ở màn Giới thiệu. */
+export async function chooseDifficulty(page: Page, choice: 'easy' | 'normal' | 'auto' | 'hard') {
+  await page.getByRole('radio', { name: vi.intro[choice] }).click();
+}
+
 /** Bấm Bắt đầu, đợi đếm ngược 3-2-1 xong (game đang Running). */
-export async function startG0(page: Page) {
-  await openG0Intro(page);
+export async function pressStart(page: Page) {
   await page.getByTestId('start-game').click();
   await expect(page.getByTestId('countdown')).toBeVisible();
   await expect(page.getByTestId('countdown')).toBeHidden({ timeout: 6000 });
-  await expect(host(page)).toHaveAttribute('data-target', /\d+,\d+/);
 }
 
-export function host(page: Page): Locator {
-  return page.getByTestId('game-host');
-}
-
-export async function targetPoint(page: Page): Promise<{ x: number; y: number }> {
-  const t = await host(page).getAttribute('data-target');
-  const [x, y] = (t ?? '0,0').split(',').map(Number);
-  return { x: x as number, y: y as number };
-}
-
-/** Chạm trúng vòng tròn hiện tại và đợi vòng mới (hoặc kết thúc). */
-export async function hitTarget(page: Page, nth: number) {
-  const { x, y } = await targetPoint(page);
-  await host(page).tap({ position: { x, y } });
-  if (nth < 10) await expect(host(page)).toHaveAttribute('data-hits', String(nth));
-}
-
-export async function playG0ToEnd(page: Page) {
-  for (let i = 1; i <= 10; i++) await hitTarget(page, i);
+export async function startGame(page: Page, id: GameId) {
+  await openIntro(page, id);
+  await pressStart(page);
 }
 
 export async function readState(page: Page): Promise<AppState> {
   return page.evaluate(() => JSON.parse(localStorage.getItem('ntm.state') ?? 'null'));
 }
 
-export async function readRounds(page: Page, profileId: string): Promise<unknown[]> {
+export async function readRounds(page: Page, profileId: string): Promise<RoundRecord[]> {
   return page.evaluate(
     (id) => JSON.parse(localStorage.getItem(`ntm.rounds.${id}`) ?? '[]'),
     profileId,
   );
+}
+
+export async function lastRound(page: Page, profileId: string): Promise<RoundRecord> {
+  const rounds = await readRounds(page, profileId);
+  const r = rounds.at(-1);
+  if (!r) throw new Error('Chưa có lượt nào được lưu');
+  return r;
 }
 
 /** Giả lập app bị ẩn (bấm Home / chuyển tab). */
@@ -107,4 +113,122 @@ export async function hidePage(page: Page) {
     Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+}
+
+// ---------------------------------------------------------------- G2
+
+interface CellMap {
+  [n: string]: { x: number; y: number };
+}
+
+/** Tâm từng ô (toạ độ trang) theo số – lưới không đổi vị trí trong lượt. */
+export async function g2Cells(page: Page): Promise<CellMap> {
+  return page.evaluate(() => {
+    const out: Record<string, { x: number; y: number }> = {};
+    document.querySelectorAll<HTMLElement>('.g2-cell').forEach((c) => {
+      const r = c.getBoundingClientRect();
+      out[c.dataset.n as string] = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    return out;
+  });
+}
+
+export async function g2Params(page: Page): Promise<{ grid: number; backward: boolean }> {
+  const raw = await page.getByTestId('game-host').getAttribute('data-g2');
+  return JSON.parse(raw ?? '{}');
+}
+
+export async function g2Tap(page: Page, cells: CellMap, n: number) {
+  const c = cells[String(n)];
+  if (!c) throw new Error(`Không có ô số ${n}`);
+  await page.touchscreen.tap(c.x, c.y);
+}
+
+/** Chơi hết bảng G2 theo đúng thứ tự; `errors` lần chạm sai trước khi bắt đầu tìm. */
+export async function playG2(page: Page, opts: { errors?: number } = {}) {
+  const cells = await g2Cells(page);
+  const { grid, backward } = await g2Params(page);
+  const total = grid * grid;
+  const seq = Array.from({ length: total }, (_, i) => (backward ? total - i : i + 1));
+  for (let i = 0; i < (opts.errors ?? 0); i++) {
+    await g2Tap(page, cells, seq[total - 1] as number); // số cuối dãy, chắc chắn chưa phải số cần tìm
+  }
+  for (const n of seq) await g2Tap(page, cells, n);
+}
+
+// ---------------------------------------------------------------- G1
+
+export interface G1Ball {
+  id: number;
+  kind: 'green' | 'red' | 'yellow' | 'brown';
+  x: number;
+  y: number;
+}
+
+export async function g1Snapshot(page: Page): Promise<{
+  balls: G1Ball[];
+  stats: Record<string, number>;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+} | null> {
+  return page.evaluate(() => {
+    const h = document.querySelector<HTMLElement>('[data-testid="game-host"]');
+    if (!h) return null;
+    const r = h.getBoundingClientRect();
+    return {
+      balls: JSON.parse(h.dataset.balls ?? '[]'),
+      stats: JSON.parse(h.dataset.stats ?? '{}'),
+      x: r.left,
+      y: r.top,
+      w: r.width,
+      h: r.height,
+    };
+  });
+}
+
+/** Chạm góc dưới-trái vùng chơi: luôn là chỗ trống (bóng cách mép ≥ 16px). */
+export async function tapEmptySpot(page: Page) {
+  const s = await g1Snapshot(page);
+  if (!s) throw new Error('Không thấy vùng chơi');
+  await page.touchscreen.tap(s.x + 5, s.y + s.h - 5);
+}
+
+/**
+ * Bot chơi G1 đến khi lượt kết thúc.
+ * - chạm mọi bóng xanh nếu `tapGreen`;
+ * - chạm `falseAlarms` bóng không xanh đầu tiên;
+ * - chạm `emptyTaps` lần vào chỗ trống ngay đầu lượt.
+ * Bóng không xanh còn lại được để tự biến mất.
+ */
+export async function playG1(
+  page: Page,
+  opts: { tapGreen?: boolean; falseAlarms?: number; emptyTaps?: number } = {},
+) {
+  const tapGreen = opts.tapGreen ?? true;
+  let falseAlarms = opts.falseAlarms ?? 0;
+  for (let i = 0; i < (opts.emptyTaps ?? 0); i++) {
+    await tapEmptySpot(page);
+    await page.waitForTimeout(40);
+  }
+  const handled = new Set<number>();
+  const deadline = Date.now() + 40_000;
+  while (Date.now() < deadline) {
+    const s = await g1Snapshot(page);
+    if (!s) return; // vùng chơi đã biến mất → sang màn Kết quả
+    for (const b of s.balls) {
+      if (handled.has(b.id)) continue;
+      if (b.kind === 'green' && tapGreen) {
+        handled.add(b.id);
+        await page.touchscreen.tap(s.x + b.x, s.y + b.y);
+      } else if (b.kind !== 'green' && falseAlarms > 0) {
+        handled.add(b.id);
+        falseAlarms -= 1;
+        await page.touchscreen.tap(s.x + b.x, s.y + b.y);
+      }
+    }
+    await page.waitForTimeout(20);
+  }
+  throw new Error('Lượt G1 không kết thúc trong thời gian chờ');
 }

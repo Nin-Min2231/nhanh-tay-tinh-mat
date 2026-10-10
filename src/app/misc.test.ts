@@ -2,10 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mulberry32, seedFromString, randInt } from './rng';
 import { deviceClassFromScreen, generateId, isWindowTooSmall } from './device';
 import { parseRoute, routePath } from './routes';
-import { createGameProgress, createProfile, dateKey, isValidProfileName } from './profile';
-import type { GameProgress } from './types';
-import { levelForRound } from './adaptive';
-import { starsForScore } from './scoring';
+import { createProfile, dateKey, isValidProfileName } from './profile';
 
 describe('rng', () => {
   it('cùng seed → cùng dãy; khác seed → khác dãy', () => {
@@ -73,7 +70,7 @@ describe('routes', () => {
     expect(parseRoute('#/profiles')).toEqual({ name: 'profiles' });
     expect(parseRoute('#/profiles/new')).toEqual({ name: 'profile-new' });
     expect(parseRoute('#/play/G1/intro')).toEqual({ name: 'intro', gameId: 'G1' });
-    expect(parseRoute('#/play/G0')).toEqual({ name: 'play', gameId: 'G0' });
+    expect(parseRoute('#/play/G1')).toEqual({ name: 'play', gameId: 'G1' });
     expect(parseRoute('#/play/G9')).toEqual({ name: 'not-found' });
     expect(parseRoute('#/parent/settings')).toEqual({ name: 'parent', tab: 'settings' });
     expect(parseRoute('#/khong-co')).toEqual({ name: 'not-found' });
@@ -123,28 +120,5 @@ describe('profile', () => {
   it('dateKey theo giờ địa phương', () => {
     expect(dateKey(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
     expect(dateKey(new Date(2026, 11, 31, 0, 0))).toBe('2026-12-31');
-  });
-});
-
-describe('levelForRound / starsForScore (bản tối thiểu của TASK-02)', () => {
-  const g: GameProgress = { ...createGameProgress(), level: 5 };
-
-  it('Dễ −2, Khó +2, Vừa/Tự động giữ nguyên, Cố định không đổi', () => {
-    expect(levelForRound(g, 'easy')).toBe(3);
-    expect(levelForRound(g, 'hard')).toBe(7);
-    expect(levelForRound(g, 'normal')).toBe(5);
-    expect(levelForRound(g, 'auto')).toBe(5);
-    expect(levelForRound({ ...g, mode: 'fixed' }, 'hard')).toBe(5);
-    expect(levelForRound({ ...g, level: 1 }, 'easy')).toBe(1);
-    expect(levelForRound({ ...g, level: 10 }, 'hard')).toBe(10);
-  });
-
-  it('ngưỡng sao 0,70 / 0,90 và luôn ≥ 1', () => {
-    expect(starsForScore(0)).toBe(1);
-    expect(starsForScore(0.69)).toBe(1);
-    expect(starsForScore(0.7)).toBe(2);
-    expect(starsForScore(0.89)).toBe(2);
-    expect(starsForScore(0.9)).toBe(3);
-    expect(starsForScore(1)).toBe(3);
   });
 });

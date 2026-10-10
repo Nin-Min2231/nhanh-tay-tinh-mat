@@ -3,7 +3,9 @@ node_modules/
 
 # Build output
 dist/
+dist-e2e/
 dev-dist/
+dist-e2e/
 
 # Test output
 coverage/

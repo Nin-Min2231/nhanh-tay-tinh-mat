@@ -23,7 +23,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+    command:
+      'cross-env VITE_E2E=true vite build --outDir dist-e2e && vite preview --outDir dist-e2e --port 4173 --strictPort',
     url: 'http://localhost:4173',
     reuseExistingServer: true,
     timeout: 120_000,

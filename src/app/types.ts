@@ -74,8 +74,7 @@ export type RoundMode = 'auto' | 'fixed' | 'easy' | 'normal' | 'hard';
 export interface RoundRecord {
   id: string;
   profileId: string;
-  /** G0 = game thử tạm của TASK-02, bị gỡ ở TASK-03. */
-  gameId: GameId | 'G0';
+  gameId: GameId;
   startedAt: string;
   level: number;
   mode: RoundMode;

@@ -3,6 +3,7 @@ import { vi } from '../../i18n/vi';
 import { replace } from '../../app/router';
 import { audio, lastResult } from '../../app/store';
 import { Button } from '../components/Button';
+import { Confetti } from '../components/Confetti';
 import { Mascot } from '../components/Mascot';
 import { StarBurst } from '../components/StarBurst';
 
@@ -17,23 +18,38 @@ export function Result() {
     return () => window.clearTimeout(id);
   }, []);
   useEffect(() => {
-    if (r) audio.star();
+    if (!r) return;
+    if (r.leveledUp) audio.levelUp();
+    else audio.star();
   }, [r]);
   if (!r) return null;
 
-  const g = vi.games[r.gameId];
-  const metricText = 'metric' in g ? g.metric(r.metrics) : '';
+  const lines = vi.games[r.gameId]?.lines?.(r.metrics) ?? [];
+  const celebrate = r.stars === 3 || r.leveledUp;
 
   return (
     <main class="screen screen-center result" data-testid="result">
+      {celebrate && <Confetti />}
       <h1 class="title">{vi.result.title}</h1>
-      <Mascot mood={r.stars === 3 ? 'cheer' : 'happy'} size={120} />
+      <Mascot mood={celebrate ? 'cheer' : 'happy'} size={120} />
       <StarBurst count={r.stars} />
       <p class="result-stars">{vi.result.starsEarned(r.stars)}</p>
+      {r.leveledUp && (
+        <>
+          <p class="levelup" data-testid="level-up">
+            {vi.result.levelUp}
+          </p>
+          <p class="levelup-detail">{vi.result.levelUpDetail(r.newLevel)}</p>
+        </>
+      )}
       <p class="result-praise" data-testid="praise">
         {vi.result.praise[r.stars]}
       </p>
-      {metricText && <p class="result-metric">{metricText}</p>}
+      {lines.map((line) => (
+        <p key={line} class="result-metric" data-testid="metric-line">
+          {line}
+        </p>
+      ))}
       <div class={`result-actions${ready ? '' : ' is-pending'}`}>
         {r.outOfTime ? (
           <Button
@@ -46,7 +62,12 @@ export function Result() {
           </Button>
         ) : (
           <>
-            <Button variant="primary" size="lg" onClick={() => replace(`/play/${r.gameId}/intro`)}>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => replace(`/play/${r.gameId}/intro`)}
+              data-testid="play-again"
+            >
               {vi.common.playAgain}
             </Button>
             <Button

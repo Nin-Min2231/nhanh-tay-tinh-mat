@@ -3,9 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
 import { levelForRound } from '../../app/adaptive';
 import { setBackInterceptor } from '../../app/backButton';
+import { E2E, TIME_SCALE } from '../../app/e2e';
 import { freshSeed, mulberry32 } from '../../app/rng';
 import { goHome, setStack } from '../../app/router';
-import type { PlayableId } from '../../app/routes';
 import { dateKey } from '../../app/profile';
 import { RoundClock, dayRemainingMs, type RoundPhase } from '../../app/session';
 import {
@@ -17,7 +17,7 @@ import {
   pendingPlay,
   recordRound,
 } from '../../app/store';
-import type { RoundMode } from '../../app/types';
+import type { GameId, RoundMode } from '../../app/types';
 import { Countdown } from '../../games/common/Countdown';
 import { PauseOverlay } from '../../games/common/PauseOverlay';
 import type { GameInstance, RoundResult } from '../../games/common/types';
@@ -28,7 +28,7 @@ import { IconPause } from '../components/Icons';
 const TICK_MS = 250;
 const WARN_BANNER_MS = 5000;
 
-export function PlayScreen({ gameId }: { gameId: PlayableId }) {
+export function PlayScreen({ gameId }: { gameId: GameId }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const clockRef = useRef<RoundClock | null>(null);
   const instanceRef = useRef<GameInstance | null>(null);
@@ -61,17 +61,20 @@ export function PlayScreen({ gameId }: { gameId: PlayableId }) {
     clockRef.current = clock;
     setRemainingSec(Math.ceil(clock.remainingMs / 1000));
 
-    const progress = gameId === 'G0' ? null : profile.games[gameId];
-    const level = progress ? levelForRound(progress, pending.choice) : 1;
+    const progress = profile.games[gameId];
+    const level = levelForRound(progress, pending.choice);
+    // Cố định > lựa chọn của bé. Chỉ lượt Tự động + bé chọn “Tự động” mới tính vào độ khó thích ứng.
     const mode: RoundMode =
-      pending.choice === 'auto' ? (progress?.mode ?? 'normal') : pending.choice;
+      progress.mode === 'fixed' ? 'fixed' : pending.choice === 'auto' ? 'auto' : pending.choice;
+    const benchmark = false;
+    const countsForAdaptive = progress.mode === 'auto' && pending.choice === 'auto' && !benchmark;
 
     const settle = (result: RoundResult | null): void => {
       if (settledRef.current) return;
       settledRef.current = true;
       if (result) {
         clock.finish();
-        const { stars } = recordRound({
+        const { stars, change, newLevel } = recordRound({
           profileId: profile.id,
           gameId,
           level,
@@ -79,12 +82,17 @@ export function PlayScreen({ gameId }: { gameId: PlayableId }) {
           startedAt,
           result,
           playedMs: clock.playedMs,
+          countsForAdaptive,
+          benchmark,
+          options: progress.options,
         });
         lastResult.value = {
           gameId,
           score: result.score,
           stars,
           metrics: result.metrics,
+          leveledUp: change === 'up',
+          newLevel,
           outOfTime: clock.remainingMs <= 0,
         };
         setStack(['/home', '/result']);
@@ -97,16 +105,17 @@ export function PlayScreen({ gameId }: { gameId: PlayableId }) {
 
     const instance = mod.create(host, {
       level,
-      options: progress?.options ?? {},
+      options: progress.options,
       profile: {
         grade: profile.grade,
         mathTopics: profile.math.topics,
         mathFacts: profile.math.facts,
       },
-      rng: mulberry32(freshSeed()),
+      rng: mulberry32(E2E.enabled ? E2E.seed : freshSeed()),
       audio,
       haptics,
-      benchmark: false,
+      benchmark,
+      timeScale: TIME_SCALE,
       onFinish: (r) => settle(r),
     });
     instanceRef.current = instance;

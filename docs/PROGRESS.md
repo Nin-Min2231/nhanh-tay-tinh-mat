@@ -9,7 +9,7 @@
 | TASK-00 Môi trường + Git/GitHub | Xong | 2026-10-10 | Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat |
 | TASK-01 Khởi tạo dự án | Xong | 2026-10-10 | lint/test/build/e2e đều pass |
 | TASK-02 Khung app | Xong | 2026-10-10 | lint, 42 unit test, build, 51 e2e (17 × 3 khung hình) đều pass; cần anh thử TC-034/035 trên tablet Samsung |
-| TASK-03 G1 + G2 + độ khó | Chưa bắt đầu | | |
+| TASK-03 G1 + G2 + độ khó | Xong | 2026-10-10 | lint, 100 unit test, build, 90 e2e (30 × 3 khung hình) đều pass; kèm bảng màu mới rực rỡ; cần anh thử cảm giác chơi + FPS trên tablet |
 | TASK-04 G3 + G4 + G5 | Chưa bắt đầu | | |
 | TASK-05 G6 + G7 | Chưa bắt đầu | | |
 | TASK-06 Thưởng | Chưa bắt đầu | | |
@@ -27,6 +27,33 @@
 - Home tablet ngang: xếp 3 nhóm game cạnh nhau để đỡ phải cuộn (TASK-10 nếu anh thấy cần).
 
 ## Nhật ký
+
+### 2026-10-10 – TASK-03 (+ đổi bảng màu)
+- Đã làm:
+  - `adaptive.ts` đầy đủ (`levelForRound`, `applyRound`/`afterRound`, ngưỡng đọc từ `levels.json`) + `scoring.ts`, có test (tăng/giảm cấp, 2 lượt < 0,5, Cố định, min/max, Dễ/Vừa/Khó không tính, ngưỡng sao).
+  - **G1 Bóng Xanh – Bóng Đỏ** (`games/g1-balls`): canvas 60 giây, 10 cấp, 4 loại bóng (xanh tròn + mặt cười, đỏ vuông + ✕, vàng tam giác + !, nâu thoi + ~), RT = `event.timeStamp − onset`, RT < 120ms không tính vào trung bình, chỉ nhận chạm đầu, chạm chỗ trống/bóng sai bị tính lỗi, 2 bóng cùng lúc ≥ 50% nhóm có bóng xanh, tùy chọn `colors`/`simultaneous`, pool bóng + hạt (không tạo object mỗi khung hình).
+  - **G2 Bảng Số Thần Kỳ** (`games/g2-schulte`): DOM/CSS grid 3×3–5×5, 1 màu / nhiều màu / đổi màu mỗi 3 giây, số xoay (gạch chân số có chữ số 6/9), thứ tự ngược, gợi ý nhấp nháy, tùy chọn `grid`/`order`/`hint`.
+  - Màn Kết quả: sao bay, pháo giấy (3 sao hoặc lên cấp), lời khen nỗ lực, chỉ số chính (G1: số bóng xanh + phản xạ trung bình; G2: thời gian), “Lên cấp!” + âm fanfare; xuống cấp đổi lặng lẽ.
+  - Hình động giới thiệu riêng cho G1, G2; bong bóng lời động viên khi chạm sai.
+  - `?debug=1` (chỉ khi `npm run dev`): bảng chỉnh Tự động/Cố định, cấp, min/max, tùy chọn từng game + đồng hồ FPS ở G1. `?e2e=1` (dev hoặc build e2e): lượt G1 rút còn 6 giây, seed cố định (`&seed=N`), game ghi trạng thái ra `data-*`. Bản deploy thật không bật được hai cờ này.
+  - Gỡ game thử G0; Home: G1, G2 chơi được, G3–G7 “Sắp có”.
+  - **Bảng màu mới** theo yêu cầu: nền chuyển sắc trời → kem → hồng, mỗi game một tông thẻ riêng, nút “kẹo” có bóng đổ, nhóm game có nhãn màu, avatar/ô số G2/bóng G1 đậm màu hơn; chữ vẫn tối để dễ đọc. Đã cập nhật `docs/01_SPEC.md` mục 12.
+- Test case tự kiểm (Playwright, phone + tablet + tablet-portrait): TC-004 Pass · TC-005 Pass · TC-009 Pass · TC-014 Pass (qua `?debug=1`) · TC-015 Pass (3 lượt, cấp vẫn 5) · TC-016 Pass · TC-017 Pass · TC-031 Pass (G1 và G2, 2 ngón qua CDP). Cộng thêm: G2 gạch chân 6/9, thứ tự ngược, gợi ý; chạm lại ô đã đúng không lỗi.
+- **TC-028 (đen trắng):** tự kiểm bằng ảnh chuyển xám – 4 loại bóng vẫn phân biệt rõ nhờ hình (tròn+mặt cười / vuông+✕ / tam giác+! / thoi+~). Anh nên xem lại trên máy thật.
+- **60 fps G1:** không mở được bảng Performance của DevTools từ môi trường này. Đo thay bằng script lấy mẫu `requestAnimationFrame` trong Chromium (cấp 10, 5 giây): trung bình 16,7 ms/khung, p99 ≤ 16,8 ms (riêng tablet dọc có 4/300 khung ≈ 33 ms), 0 khung > 34 ms; bật CPU throttle ×4 không khác (headless vẫn khóa 60 Hz nên chỉ là ước lượng thô). **Số liệu thật: bật `?debug=1` khi chạy `npm run dev` rồi xem số “fps” ở góc phải dưới thanh HUD khi chơi G1 trên tablet Galaxy Tab dòng A.**
+- Cách thử thủ công (điện thoại/tablet cùng wifi, địa chỉ `http://192.168.x.x:5173/` như ở TASK-02):
+  1. Mở Home → thẻ “Bóng Xanh – Bóng Đỏ” → Bắt đầu. Chạm bóng xanh; thử chạm bóng đỏ và chỗ trống (phải lắc nhẹ + âm “bụp” + lời động viên).
+  2. Thêm `?debug=1` vào địa chỉ để đổi cấp/số màu: ví dụ đặt Số màu bóng = 4 và cấp 8–10 để thấy đủ 4 loại bóng; kiểm tra TC-028 bằng cách chụp màn hình rồi chuyển ảnh đen trắng.
+  3. “Bảng Số Thần Kỳ”: chạm 1 → 9; thử cấp 5, 8 (số xoay, 6 và 9 có gạch chân), cấp 9 (ngược từ 25).
+  4. Chơi G1 ba lượt thật tốt ở chế độ “Tự động” để thấy “Lên cấp!”; hai lượt cố tình bấm bừa để thấy cấp giảm nhẹ nhàng.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - “Lên cấp!” hiện ngay ở Kết quả của lượt làm đổi cấp (lượt kế tiếp chơi ở cấp mới).
+  - G1: hết 60 giây thì không ra bóng mới nhưng chờ nhóm bóng đang hiện xong; chạm trước khi bóng kịp hiện hình tính là chạm chỗ trống.
+  - G2: lượt bị buộc kết thúc vì quá giờ thì điểm nhân thêm tỷ lệ số đã tìm được. Đổi cỡ bảng bằng tùy chọn thì thời gian mục tiêu đổi theo số ô.
+  - `levelForRound` ở chế độ Tự động kẹp cấp trong min–max của phụ huynh (SPEC chưa nói rõ).
+  - Các luồng ngẫu nhiên của G1 (loại bóng / vị trí / khoảng nghỉ / hiệu ứng) tách riêng từ `ctx.rng` nên dãy bóng không phụ thuộc kích thước màn hình.
+- Còn lại / nợ kỹ thuật: Album/Khu phụ huynh vẫn “Đang xây dựng”; hình động giới thiệu G3–G7 làm cùng từng game; chưa có nhiệm vụ/hộp quà (TASK-06); hạng mục “debug panel” sẽ thay bằng khu phụ huynh ở TASK-07.
+- Commit: `feat: G1, G2, adaptive difficulty, result screen, vivid color theme`
 
 ### 2026-10-10 – TASK-02
 - Đã làm:

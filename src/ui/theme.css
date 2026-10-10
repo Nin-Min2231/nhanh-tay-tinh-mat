@@ -6,14 +6,27 @@
 @import '@fontsource/nunito/vietnamese-800.css';
 
 :root {
-  /* Bảng màu – docs/01_SPEC.md mục 12 */
-  --color-bg: #fff8ec;
-  --color-sky: #4fc3f7;
-  --color-green: #66bb6a;
-  --color-yellow: #ffd54f;
-  --color-orange: #ff8a65;
-  --color-purple: #9575cd;
+  /* Bảng màu rực rỡ (docs/01_SPEC.md mục 12). Chữ luôn tối trên nền sáng/vừa để đạt tương phản AA. */
   --color-text: #263238;
+  --ink: #263238;
+  --color-bg: #fff4d6;
+  --bg-gradient: linear-gradient(180deg, #bde9ff 0%, #fff1c7 45%, #ffd9ec 100%);
+
+  --color-sky: #29b6f6;
+  --color-sky-soft: #b9e8ff;
+  --color-green: #3ddc6e;
+  --color-green-soft: #bdf2cb;
+  --color-yellow: #ffd93d;
+  --color-yellow-soft: #fff0a8;
+  --color-orange: #ff8a3d;
+  --color-orange-soft: #ffd3ae;
+  --color-pink: #ff5fa2;
+  --color-pink-soft: #ffc2dd;
+  --color-purple: #8e6cf0;
+  --color-purple-soft: #d9ccff;
+  --color-teal: #18c9b9;
+  --color-teal-soft: #b3f3ec;
+  --color-red: #ff4d5e;
 
   /* Cỡ chữ tối thiểu: thân 18px, nút 22px, tiêu đề 28px */
   --font-body: 18px;
@@ -42,6 +55,10 @@ body {
   font-size: var(--font-body);
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg-gradient) fixed no-repeat;
 }
 
 #app {

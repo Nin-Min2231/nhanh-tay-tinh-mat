@@ -37,7 +37,7 @@ function round(profileId: string, id: string): RoundRecord {
   return {
     id,
     profileId,
-    gameId: 'G0',
+    gameId: 'G1',
     startedAt: '2026-01-01T00:00:00.000Z',
     level: 1,
     mode: 'auto',
