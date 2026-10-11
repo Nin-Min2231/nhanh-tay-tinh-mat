@@ -9,6 +9,7 @@ import { installBackButton } from './app/backButton';
 import { initPwa } from './app/pwa';
 import { initRouter, replace, route } from './app/router';
 import { appState, audio, selectProfile, showToast } from './app/store';
+import { watchToday } from './app/today';
 import './app/viewport';
 import { vi } from './i18n/vi';
 import { App } from './ui/App';
@@ -30,6 +31,7 @@ initRouter();
 })();
 
 installBackButton({ onExitHint: () => showToast(vi.toast.exitHint) });
+watchToday(); // sang ngày mới khi app đang mở: Home/giờ chơi tự cập nhật
 
 // Mở khóa AudioContext ở lần chạm đầu tiên
 document.addEventListener('pointerdown', () => audio.unlock(), { capture: true });

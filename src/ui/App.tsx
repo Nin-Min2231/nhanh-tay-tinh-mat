@@ -1,9 +1,9 @@
 import { useEffect } from 'preact/hooks';
 import { replace, route } from '../app/router';
-import { dateKey } from '../app/profile';
 import { isOutOfTime } from '../app/session';
 import { parentUnlocked } from '../app/parentStore';
 import { activeProfile, appState, lastResult, pendingPlay } from '../app/store';
+import { today } from '../app/today';
 import { isGameAvailable } from '../games/registry';
 import { GiftModal } from './components/GiftBox';
 import { StorageBanner, TooSmallOverlay, Toast } from './components/Overlays';
@@ -36,7 +36,7 @@ function redirectFor(): string | null {
     return '/home';
   if (r.name === 'result' && !lastResult.value) return '/home';
   if ((r.name === 'intro' || r.name === 'play') && !isGameAvailable(r.gameId)) return '/home';
-  if ((r.name === 'intro' || r.name === 'play') && isOutOfTime(profile, dateKey(new Date()))) {
+  if ((r.name === 'intro' || r.name === 'play') && isOutOfTime(profile, today.value)) {
     // Đang chơi dở thì đã được xử lý trong PlayScreen; vào mới khi hết giờ → màn nghỉ
     if (r.name === 'intro') return '/rest';
   }

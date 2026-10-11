@@ -71,6 +71,9 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* chỉ rút thời lượng thì hoạt ảnh lặp vô hạn (vẫy đuôi, lấp lánh…) chạy lại mỗi 0,01ms = chớp liên tục */
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

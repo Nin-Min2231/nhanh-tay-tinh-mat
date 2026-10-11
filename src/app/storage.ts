@@ -2,6 +2,7 @@
 import { generateId } from './device';
 import type { DataSnapshot } from './backup';
 import type { AppState, DailyAggregate, RoundRecord } from './types';
+import { repairState, sanitizeDaily, sanitizeRounds } from './validate';
 import { APP_VERSION } from './version';
 
 export const CURRENT_SCHEMA = 2;
@@ -116,16 +117,18 @@ export function createStorage(getBackend: () => KeyValueBackend = () => window.l
     }
   }
 
-  function loadList<T>(key: string): T[] {
+  /** Đọc danh sách; phần tử sai hình/thiếu trường bị bỏ (sanitize) để dữ liệu hỏng không làm sập giao diện. */
+  function loadList<T>(key: string, sanitize: (v: unknown) => T[]): T[] {
     const text = read(key);
     if (text === null) return [];
     try {
-      const v: unknown = JSON.parse(text);
-      return Array.isArray(v) ? (v as T[]) : [];
+      return sanitize(JSON.parse(text));
     } catch {
       return [];
     }
   }
+  const loadRounds = (profileId: string) => loadList(roundsKey(profileId), sanitizeRounds);
+  const loadDaily = (profileId: string) => loadList(dailyKey(profileId), sanitizeDaily);
 
   function loadState(): AppState {
     const text = read(STATE_KEY);
@@ -137,7 +140,12 @@ export function createStorage(getBackend: () => KeyValueBackend = () => window.l
       /* dữ liệu hỏng → xử lý bên dưới */
     }
     const res = migrateState(parsed);
-    if (res.ok) return res.state;
+    if (res.ok) {
+      // sửa trường thiếu/sai kiểu; nếu phải bỏ hồ sơ nào thì giữ bản gốc để còn cứu được
+      const fixed = repairState(res.state);
+      if (fixed.dropped > 0) write(`${STATE_KEY}.bak`, text);
+      return fixed.state;
+    }
     if (res.reason === 'tooNew') {
       memoryOnly = true;
       degraded = true;
@@ -150,15 +158,15 @@ export function createStorage(getBackend: () => KeyValueBackend = () => window.l
   return {
     loadState,
     saveState: (state: AppState) => write(STATE_KEY, JSON.stringify(state)),
-    loadRounds: (profileId: string) => loadList<RoundRecord>(roundsKey(profileId)),
+    loadRounds,
     saveRounds: (profileId: string, rounds: RoundRecord[]) =>
       write(roundsKey(profileId), JSON.stringify(rounds)),
     appendRound(record: RoundRecord): void {
-      const list = loadList<RoundRecord>(roundsKey(record.profileId));
+      const list = loadRounds(record.profileId);
       list.push(record);
       write(roundsKey(record.profileId), JSON.stringify(list));
     },
-    loadDaily: (profileId: string) => loadList<DailyAggregate>(dailyKey(profileId)),
+    loadDaily,
     saveDaily: (profileId: string, daily: DailyAggregate[]) =>
       write(dailyKey(profileId), JSON.stringify(daily)),
     removeProfileData(profileId: string): void {
@@ -170,8 +178,8 @@ export function createStorage(getBackend: () => KeyValueBackend = () => window.l
       const rounds: Record<string, RoundRecord[]> = {};
       const daily: Record<string, DailyAggregate[]> = {};
       for (const p of state.profiles) {
-        rounds[p.id] = loadList<RoundRecord>(roundsKey(p.id));
-        daily[p.id] = loadList<DailyAggregate>(dailyKey(p.id));
+        rounds[p.id] = loadRounds(p.id);
+        daily[p.id] = loadDaily(p.id);
       }
       return { state, rounds, daily };
     },

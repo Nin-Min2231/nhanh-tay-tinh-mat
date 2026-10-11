@@ -177,6 +177,8 @@
   --s: #ffffff;
   --sel: var(--color-yellow);
   flex: 1;
+  /* vùng chạm ≥ 48px cả hai chiều: nhãn ngắn như “Dễ” không được co về bằng chữ (từng chỉ rộng 43px trên tablet) */
+  min-width: 56px;
   min-height: 56px;
   padding: 8px 4px;
   border: var(--border);

@@ -2,6 +2,7 @@
 // File chứa cả ba nhóm khóa localStorage: ntm.state, ntm.rounds.<id>, ntm.daily.<id>.
 import { migrateState } from './storage';
 import type { AppState, DailyAggregate, RoundRecord } from './types';
+import { repairState, sanitizeDaily, sanitizeRounds } from './validate';
 
 export const BACKUP_FORMAT = 'nhanhtay-backup';
 export const BACKUP_FORMAT_VERSION = 1;
@@ -61,13 +62,15 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-function listMap<T>(raw: unknown, ids: string[]): Record<string, T[]> {
+/** Danh sách theo hồ sơ; phần tử sai hình (file bị sửa tay/hỏng) bị loại bởi `sanitize`. */
+function listMap<T>(
+  raw: unknown,
+  ids: string[],
+  sanitize: (v: unknown) => T[],
+): Record<string, T[]> {
   const out: Record<string, T[]> = {};
   const src = isRecord(raw) ? raw : {};
-  for (const id of ids) {
-    const v = src[id];
-    out[id] = Array.isArray(v) ? (v as T[]) : [];
-  }
+  for (const id of ids) out[id] = sanitize(src[id]);
   return out;
 }
 
@@ -84,15 +87,15 @@ export function parseBackup(text: string): ParseBackupResult {
   if (!migrated.ok) {
     return { ok: false, reason: migrated.reason === 'tooNew' ? 'tooNew' : 'invalid' };
   }
-  const state = migrated.state;
-  const ok = state.profiles.every(
-    (p) => p && typeof p.id === 'string' && typeof p.name === 'string',
-  );
-  if (!ok) return { ok: false, reason: 'invalid' };
+  // Trường thiếu/sai kiểu trong hồ sơ được sửa về mặc định; hồ sơ không nhận ra được (thiếu id/name, trùng id)
+  // thì từ chối cả file thay vì lặng lẽ làm mất dữ liệu của bé.
+  const repaired = repairState(migrated.state);
+  if (repaired.dropped > 0) return { ok: false, reason: 'invalid' };
+  const state = repaired.state;
 
   const ids = state.profiles.map((p) => p.id);
-  const rounds = listMap<RoundRecord>(raw.rounds, ids);
-  const daily = listMap<DailyAggregate>(raw.daily, ids);
+  const rounds = listMap(raw.rounds, ids, sanitizeRounds);
+  const daily = listMap(raw.daily, ids, sanitizeDaily);
   const exportedAt = typeof raw.exportedAt === 'string' ? raw.exportedAt : '';
   const appVersion = typeof raw.appVersion === 'string' ? raw.appVersion : '';
   const backup: BackupFile = {

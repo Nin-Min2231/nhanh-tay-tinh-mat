@@ -3,12 +3,13 @@ import { useEffect, useMemo } from 'preact/hooks';
 import { navigate } from '../../app/router';
 import { BENCHMARK_ORDER, benchmarkDue, doneRecently } from '../../app/benchmark';
 import { benchmarkMode, startBenchmark } from '../../app/parentStore';
-import { getDay, dateKey } from '../../app/profile';
+import { getDay } from '../../app/profile';
 import { applyUpdate } from '../../app/pwa';
 import { MISSION_GROUPS, boxRoomToday, starsToNextBox, BOX_EVERY_STARS } from '../../app/rewards';
 import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
 import { storage } from '../../app/storage';
 import { activeProfile, updateAvailable } from '../../app/store';
+import { today } from '../../app/today';
 import type { GameId } from '../../app/types';
 import { GAME_GROUPS, isGameAvailable } from '../../games/registry';
 import { Avatar } from '../components/Avatar';
@@ -63,7 +64,7 @@ function GameCard({ id, locked }: { id: GameId; locked: boolean }) {
 
 export function Home() {
   const p = activeProfile.value;
-  const key = dateKey(new Date());
+  const key = today.value; // tự đổi khi qua nửa đêm / máy ngủ dậy (app/today.ts)
   // Về Home = thoát luồng bài đo tuần (nếu có)
   useEffect(() => {
     benchmarkMode.value = false;
