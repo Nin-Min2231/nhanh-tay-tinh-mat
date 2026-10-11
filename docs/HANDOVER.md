@@ -94,12 +94,17 @@ src/
     parentStore.ts         # (TASK-07) nối thuần ↔ store: parentUnlocked, benchmarkMode, startBenchmark, parentGive*/parentPatch*/parentSet*,
                            #   parentAdd/Edit/DeleteProfile, parentCreateBackup, parentRestore
     rng.ts                 # mulberry32 có seed + randInt, pick, shuffle
+    validate.ts            # (TASK-09) THUẦN + test: đọc dữ liệu có kiểm tra – sanitizeRounds/sanitizeDaily, repairProfile/repairState
+                           #   (trường thiếu/sai kiểu → mặc định, dữ liệu hợp lệ giữ nguyên). Gắn vào storage.loadState/loadRounds/loadDaily và backup.parseBackup
+    today.ts               # (TASK-09) signal `today` (khóa ngày giờ máy) + watchToday(): tự sang ngày mới lúc 00:00 / khi app hiện lại
+  qa/rules.test.ts         # (TASK-09) test quét mã nguồn bảo vệ các quy tắc CLAUDE.md mục 5 (danh sách ngoại lệ ghi rõ trong test)
   games/
     levels.ts              # import docs/data/levels.json, kiểu an toàn (KHÔNG chép tay số liệu)
     registry.ts            # GAME_GROUPS + MODULES (cả 7 game đã đăng ký)
     common/                # types.ts (GameModule/Context/Result), CanvasStage, PointerInput (PointerGate),
                            # HintBubble, hud.ts, sparkles.ts, Countdown, PauseOverlay
     g1-balls … g7-patterns/   # mỗi game: config.ts · logic.ts (thuần, có test) · view.ts · index.ts (G6/G7 có thêm các file sinh câu hỏi)
+                           #   (G5: nền các làn vẽ một lần ở canvas `.g5-underlay` nằm dưới canvas chính – TASK-09)
     samples.test.ts        # sinh docs/samples/* khi GEN_SAMPLES=1 (`npm run samples`); bình thường bị bỏ qua
   ui/
     App.tsx                # chọn màn hình + redirect hợp lệ; gắn <GiftModal /> ở gốc
@@ -112,8 +117,9 @@ src/
     stickers/              # Sticker.tsx (khung theo độ hiếm + nền chủ đề) · kit.tsx (Lin, Rad, Shine, Sparkle, Eye, Cheek…) ·
                            #   animals/fruits/space/vehicles.tsx (mỗi file 10 hình `stk-xx`) · Gallery.tsx (chỉ dev)
     theme.css / app.css / games.css / games2.css / rewards.css   # bảng màu rực rỡ + style (rewards.css = TASK-06)
-tests/e2e/                 # helpers.ts + framework / games / games2 / games3 / rewards .spec.ts
-docs/                      # SPEC, GAMES, TASKS, ACCEPTANCE, PROGRESS, data/levels.json, samples/, HANDOVER (file này)
+tests/e2e/                 # helpers.ts + framework / games / games2 / games3 / rewards / parent / pwa / qa / a11y .spec.ts
+scripts/                   # make-icons.mjs (icon PWA) · perf-fps.mjs (npm run perf) · qa-table.mjs (bảng TC từ báo cáo Playwright)
+docs/                      # SPEC, GAMES, TASKS, ACCEPTANCE, PROGRESS, QA_REPORT, data/levels.json, samples/, HANDOVER (file này)
 ```
 
 ### Hợp đồng game (docs/01_SPEC.md mục 4, đã triển khai)
