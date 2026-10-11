@@ -18,6 +18,7 @@ import {
   readState,
   seedProfiles,
   startGame,
+  tapEmptySpot,
   withGame,
 } from './helpers';
 
@@ -59,8 +60,8 @@ test.describe('TC-013 – G3: thú, Nhím ngủ, chỗ trống', () => {
     await page.touchscreen.tap(snap.x + hedgehog.x, snap.y + hedgehog.y);
     await expect.poll(async () => (await g3Snapshot(page))!.stats.decoyTaps).toBe(1);
     await expect(page.locator('.hint-bubble')).toHaveText(vi.g3.decoyHint);
-    // chạm chỗ trống → lỗi (góc dưới-trái luôn trống vì thú cách mép)
-    await page.touchscreen.tap(snap.x + 4, snap.y + snap.h - 4);
+    // chạm chỗ trống → lỗi (góc dưới-trái luôn trống vì thú cách mép); chờ hết lắc do lần chạm Nhím
+    await tapEmptySpot(page);
     await expect.poll(async () => (await g3Snapshot(page))!.stats.emptyTaps).toBe(1);
 
     // lượt kết thúc sau 6 giây (chế độ test) → điểm theo công thức

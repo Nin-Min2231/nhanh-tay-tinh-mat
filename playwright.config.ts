@@ -11,18 +11,37 @@ export default defineConfig({
   fullyParallel: true,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: { baseURL: 'http://localhost:4173', trace: 'retain-on-failure' },
+  // `screen` phải khớp viewport: app phân loại điện thoại/tablet theo window.screen (src/app/device.ts), mà Playwright
+  // mặc định đặt screen = 1920×1080 → nếu bỏ trống thì cả 3 khung hình đều bị coi là tablet (không có rung, ngưỡng “cửa sổ nhỏ”
+  // của tablet…) và nhánh điện thoại không bao giờ được kiểm.
   projects: [
     {
       name: 'phone',
-      use: { ...chromium, viewport: { width: 360, height: 740 }, hasTouch: true, isMobile: true },
+      use: {
+        ...chromium,
+        viewport: { width: 360, height: 740 },
+        screen: { width: 360, height: 740 },
+        hasTouch: true,
+        isMobile: true,
+      },
     },
     {
       name: 'tablet',
-      use: { ...chromium, viewport: { width: 1280, height: 800 }, hasTouch: true },
+      use: {
+        ...chromium,
+        viewport: { width: 1280, height: 800 },
+        screen: { width: 1280, height: 800 },
+        hasTouch: true,
+      },
     },
     {
       name: 'tablet-portrait',
-      use: { ...chromium, viewport: { width: 800, height: 1280 }, hasTouch: true },
+      use: {
+        ...chromium,
+        viewport: { width: 800, height: 1280 },
+        screen: { width: 800, height: 1280 },
+        hasTouch: true,
+      },
     },
   ],
   webServer: [

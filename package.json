@@ -14,7 +14,8 @@
     "lint": "eslint . && tsc --noEmit",
     "format": "prettier --write .",
     "build:pages": "cross-env BASE_PATH=/nhanh-tay-tinh-mat/ npm run build",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "perf": "node scripts/perf-fps.mjs"
   },
   "dependencies": {
     "@fontsource/nunito": "^5.3.0",

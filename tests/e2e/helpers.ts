@@ -53,13 +53,20 @@ export async function seedProfiles(
   page: Page,
   profiles: Profile[],
   activeProfileId: string | null = profiles[0]?.id ?? null,
+  settings: Partial<AppState['settings']> = {},
 ): Promise<void> {
   const state: AppState = {
     schemaVersion: 1,
     deviceId: 'e2e-device',
     activeProfileId,
     profiles,
-    settings: { sound: false, music: false, vibration: false, allowKidDifficultyChoice: true },
+    settings: {
+      sound: false,
+      music: false,
+      vibration: false,
+      allowKidDifficultyChoice: true,
+      ...settings,
+    },
     lastBackupAt: null,
     installedVersion: '0.0.0',
   };
@@ -196,18 +203,34 @@ export async function g1Snapshot(page: Page): Promise<{
   });
 }
 
-/** Chạm góc dưới-trái vùng chơi: luôn là chỗ trống (bóng cách mép ≥ 16px). */
+/**
+ * Khoảng cách từ mép vùng chơi tới điểm “chỗ trống” (góc dưới-trái). Phải lớn hơn biên độ lắc của
+ * `.shake` (±6px) – nếu chạm sát mép (vd 5px) lúc khung đang lắc thì điểm chạm trượt ra ngoài vùng chơi
+ * (đây từng là nguyên nhân G1 TC-004 / G3 TC-013 chập chờn ở tablet). Bóng/thú cách mép ≥ 16px nên vẫn trống.
+ */
+export const EMPTY_SPOT_INSET = 14;
+
+/** Chờ khung chơi hết lắc (`.shake`, ~200ms sau mỗi lần chạm sai). */
+export async function waitShakeEnd(page: Page) {
+  await page.waitForFunction(
+    () => !document.querySelector('[data-testid="game-host"]')?.classList.contains('shake'),
+  );
+}
+
+/** Chạm góc dưới-trái vùng chơi (G1, G3): luôn là chỗ trống. Chờ hết lắc rồi mới chạm. */
 export async function tapEmptySpot(page: Page) {
+  await waitShakeEnd(page);
   const s = await g1Snapshot(page);
   if (!s) throw new Error('Không thấy vùng chơi');
-  await page.touchscreen.tap(s.x + 5, s.y + s.h - 5);
+  await page.touchscreen.tap(s.x + EMPTY_SPOT_INSET, s.y + s.h - EMPTY_SPOT_INSET);
 }
 
 /**
  * Bot chơi G1 đến khi lượt kết thúc.
  * - chạm mọi bóng xanh nếu `tapGreen`;
  * - chạm `falseAlarms` bóng không xanh đầu tiên;
- * - chạm `emptyTaps` lần vào chỗ trống ngay đầu lượt.
+ * - chạm `emptyTaps` lần vào chỗ trống: ngay sau khi đã chạm bóng đầu tiên (bóng chỉ hiện ~1 giây nên phải
+ *   chạm trước), hoặc ngay đầu lượt nếu bot không chạm bóng nào.
  * Bóng không xanh còn lại được để tự biến mất.
  */
 export async function playG1(
@@ -216,10 +239,19 @@ export async function playG1(
 ) {
   const tapGreen = opts.tapGreen ?? true;
   let falseAlarms = opts.falseAlarms ?? 0;
-  for (let i = 0; i < (opts.emptyTaps ?? 0); i++) {
-    await tapEmptySpot(page);
-    await page.waitForTimeout(40);
+  let emptyLeft = opts.emptyTaps ?? 0;
+
+  async function tapEmptySpots() {
+    while (emptyLeft > 0) {
+      const before = (await g1Snapshot(page))?.stats.emptyTaps ?? 0;
+      await tapEmptySpot(page);
+      // chờ game ghi nhận lần chạm này rồi mới chạm tiếp (không dựa vào độ trễ cố định)
+      await expect.poll(async () => (await g1Snapshot(page))?.stats.emptyTaps).toBe(before + 1);
+      emptyLeft -= 1;
+    }
   }
+
+  if (!tapGreen && falseAlarms === 0) await tapEmptySpots();
   const handled = new Set<number>();
   const deadline = Date.now() + 40_000;
   while (Date.now() < deadline) {
@@ -236,7 +268,9 @@ export async function playG1(
         await page.touchscreen.tap(s.x + b.x, s.y + b.y);
       }
     }
-    await page.waitForTimeout(20);
+    // đã chạm bóng rồi → làm nốt các lần chạm chỗ trống, sau đó lấy lại ảnh chụp mới (bóng đã đổi)
+    if (handled.size > 0 && emptyLeft > 0) await tapEmptySpots();
+    else await page.waitForTimeout(20);
   }
   throw new Error('Lượt G1 không kết thúc trong thời gian chờ');
 }

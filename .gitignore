@@ -5,6 +5,7 @@ node_modules/
 dist/
 dist-e2e/
 dist-e2e-base/
+dist-perf/
 dev-dist/
 dist-e2e/
 
