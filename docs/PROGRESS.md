@@ -15,12 +15,14 @@
 | TASK-06 Thưởng | Xong | 2026-10-10 | lint, 409 unit test, build, 267 e2e (89 × 3 khung hình) đều pass; **đã gộp vào `main`**; cần anh **duyệt 40 sticker + trang phục/hình nền** và thử hộp quà/album trên máy thật |
 | TASK-07 Khu phụ huynh | Xong, **đã gộp `main`, v0.9.0 đang live** | 2026-10-11 | lint, 470 unit test, build, 375 e2e (125 × 3 khung hình) đều pass; TC-010/023/025/026/027 tự kiểm Pass; **cần anh thử trên máy thật** + duyệt chữ R13 |
 | TASK-08 PWA + deploy | Xong, **đã gộp `main`, Pages đang chạy** | 2026-10-11 | Pages: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ ; còn chờ anh thử cài + máy bay trên máy thật (TC-001/002/012) và TC-029 sau bản 0.9.0 |
-| TASK-09 QA | **Kế hoạch đã trình bày, chờ anh “Đồng ý”** | 2026-10-11 | Chi tiết kế hoạch + phát hiện sơ bộ: `docs/HANDOVER.md` mục 6 (chưa sửa mã) |
+| TASK-09 QA | **Xong** (nhánh `claude/handover-task-continuation-aaaede`, v0.9.1, chờ gộp `main` + deploy) | 2026-10-11 | lint, **523 unit test**, build, **408** e2e (3 khung hình) đều pass; test chập chờn đã ổn định; báo cáo `docs/QA_REPORT.md`; **cần anh thử trên máy thật** (QA_REPORT mục 8) |
 | TASK-10 Sửa lỗi | Chưa bắt đầu | | |
 
 ## Câu hỏi mở (chờ chủ dự án)
 
 - Không còn câu hỏi chặn. R23–R25 (mới v1.2) áp dụng theo đề xuất; chủ dự án có thể góp ý trong quá trình làm.
+- **Quyết định mới (TASK-09):** có bỏ `user-scalable=no` trong viewport (cho bé phóng to bằng 2 ngón) không? Đây là mục **duy nhất** axe-core còn báo; bỏ đi thì Lighthouse Accessibility tăng, nhưng bé có thể lỡ phóng to khi chạm nhanh. Mặc định em **giữ nguyên** cho tới khi anh quyết định.
+- **Việc anh cần làm cho TASK-09:** (1) cho phép gộp nhánh `claude/handover-task-continuation-aaaede` vào `main` (= deploy bản **0.9.1**); (2) thử máy thật theo **`docs/QA_REPORT.md` mục 8** (9 việc, mỗi việc ghi rõ vì sao cần máy thật) – quan trọng nhất: bấm “Cập nhật” trên app đã cài, G5 bằng 2 ngón thật, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**, sao lưu → khôi phục thật.
 - **Duyệt nội dung mẫu G6/G7** trong `docs/samples/` (câu nào quá khó/dễ với bé lớp 2?).
 - **Duyệt hình thưởng TASK-06**: 40 sticker (tên + độ hiếm), 2 trang phục, 2 hình nền – xem bằng `npm run dev` rồi mở `http://localhost:5173/?gallery=1` (thêm `&theme=animal|fruit|space|vehicle` để xem to) và `?gallery=1&view=rewards`. Hình nào chưa ưng thì báo số `stk-xx` để em vẽ lại.
 - **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
@@ -40,9 +42,39 @@
 - G6: M11 (nhân/chia số 2–3 chữ số) ở dạng tìm số thiếu ra số khá lớn (vd `? : 5 = 57`); đây là chủ đề lớp 3, không bật mặc định – nếu anh thấy khó quá thì giới hạn dạng tìm số thiếu cho M11 ở TASK-10.
 - G7 cấp 5 (mẫu 2 thuộc tính): khi sai hiện tô sáng cả dãy 6 ô; có thể làm lời giải thích riêng “màu lặp 2 nhịp, hình lặp 3 nhịp” nếu anh muốn (TASK-10).
 - G6 hình minh họa khi sai hiện 1,5 giây đúng SPEC; nếu thấy bé chưa kịp nhìn thì tăng hằng số `SHOW_MS` (`games/g6-math/view.ts`).
-- Hai test e2e cũ phụ thuộc thời gian thực – G1 TC-004 và G3 TC-013 – thỉnh thoảng chập chờn khi máy bận và chạy 4 luồng song song (một lần chạy đầy đủ có 2 lỗi, chạy riêng từng test đều pass; chạy đầy đủ lại bằng `--workers=3` được 204/204). TASK-09 (QA) nên ổn định hóa (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
+- ~~Hai test e2e chập chờn (G1 TC-004, G3 TC-013)~~ → **đã sửa ở TASK-09** (nguyên nhân là test, không phải game).
+- **G3 trên tablet khi giả lập CPU ×4: 44–57 fps** (G1, G5 ≈ 60): chưa rõ điểm nghẽn (không phải chữ “z” của Nhím). Cần đo thật bằng `?debug=1` trên Galaxy Tab trước khi tối ưu (TASK-10 nếu anh thấy giật).
+- Khu phụ huynh: xuất CSV, so sánh nhiều bé; nhắc sao lưu ngay ở Home (chưa làm).
 
 ## Nhật ký
+
+### 2026-10-11 – TASK-09 (kiểm thử tự động & rà soát chất lượng)
+- Anh đã “Đồng ý” kế hoạch 8 bước + 4 quyết định mặc định (axe-core chạy một lần bằng gói riêng; sửa test chứ không đổi game; lỗi nhỏ sửa luôn, lỗi lớn ghi “Đề xuất”; version 0.9.1). Báo cáo đầy đủ: **`docs/QA_REPORT.md`**.
+- Đã làm:
+  - **Test chập chờn G1 TC-004 / G3 TC-013 → ổn định.** Nguyên nhân là **test**: chạm “chỗ trống” cách mép 5px lúc khung đang lắc ±6px (`.shake`) nên điểm chạm trượt ra ngoài khung. Sửa helper (chờ hết lắc, cách mép 14px, bot chạm bóng trước rồi chạm chỗ trống và chờ số liệu tăng). Trước: hỏng 11/96 lần; sau: **0/144 lần** (12 lần × 3 khung hình × 4 luồng).
+  - **`playwright.config.ts` đặt `screen` = viewport:** trước đó cả 3 khung hình bị app coi là “tablet” (Playwright mặc định screen 1920×1080) nên nhánh điện thoại chưa từng được kiểm.
+  - **Test mới:** `qa.spec.ts` (TC-028 đọc hình bóng từ canvas, TC-035 không rung ở tablet + lắc + âm “bụp”, 2 test qua nửa đêm bằng đồng hồ giả), `a11y.spec.ts` (7 test × 3 khung: vùng chạm ≥ 48px + nút không bị nút khác đè, không hoạt ảnh lặp vô hạn khi giảm chuyển động, tương phản AA từ màu thật), `src/qa/rules.test.ts` (26 test quét mã nguồn bảo vệ các quy tắc 1, 5, 6, 8, 9a, 9b, 10, 11, 13, 14, 16, 17), `validate.test.ts` (25), `today.test.ts` (2).
+  - **Lỗi thật của app đã sửa:** (1) app mở qua đêm vẫn khóa “hết giờ”/nhiệm vụ của hôm qua → `app/today.ts`; (2) dữ liệu hỏng / file sao lưu bị sửa tay có thể làm sập biểu đồ → `app/validate.ts` (loại phần tử sai, thay trường thiếu/sai bằng mặc định; dữ liệu hợp lệ giữ nguyên 100%; hồ sơ không nhận ra được → khôi phục từ chối cả file, mở app thì giữ bản gốc `ntm.state.bak`); (3) G5 tô lại 4 làn mỗi khung hình → vẽ một lần ở canvas dưới (FPS G5 ở tablet dọc, CPU ×4: 29 → 59); lúc đếm ngược G5 giờ hiện sẵn 4 làn (trước đó canvas trống); (4) accessibility: nút “Dễ” rộng 43px, 31 hoạt ảnh lặp vô hạn khi giảm chuyển động, nút hộp quà sai tên truy cập.
+  - **Một lần tự gây lỗi rồi tự bắt:** lần sửa nút “Dễ” đầu tiên làm chữ “★ Tự động” tràn đè nút “Khó” trên tablet; test e2e cũ bắt được, em sửa lại và thêm bộ quét “nút bị nút khác đè lên”.
+  - **Công cụ:** `npm run perf` (đo FPS bản thật), `scripts/qa-table.mjs` (bảng TC từ báo cáo Playwright). axe-core chạy một lần ngoài dự án: chỉ còn `user-scalable=no`.
+  - Cập nhật `docs/01_SPEC.md` (đọc dữ liệu có kiểm tra, đổi ngày khi app mở), `docs/04_ACCEPTANCE.md` (TC-028/035 có bản mô phỏng), `docs/HANDOVER.md`, version **0.9.1**.
+- Test case tự kiểm: **35/35 TC có ít nhất một test tự động Pass ở cả 3 khung hình** (408 e2e + 523 unit); bảng chi tiết ở `docs/QA_REPORT.md` mục 2. TC-028 và TC-035 (trước đây chỉ “Thủ công”) nay có bản mô phỏng.
+- Số đo: gói chính 366,8 KB = **112,1 KB gzip** (Chart.js tách riêng 54,7 KB gzip; giới hạn 350 KB gzip); precache 17 mục ≈ 1,08 MB. FPS (bản thật, CPU thường): G1/G3/G5 **60 fps, 0% khung > 20 ms** ở cả 3 khung hình; CPU ×4: G1 60, G5 59–60, G3 44–57 (tablet).
+- Cách thử thủ công (sau khi anh cho phép gộp `main` và Pages deploy xong, ~2 phút):
+  1. Mở app đã cài từ icon khi có mạng, đợi vài giây → Home hiện **“Có bản mới – Cập nhật”** → bấm → vào Khu phụ huynh → Dữ liệu: “Phiên bản 0.9.1”, hồ sơ/sao còn nguyên (**TC-029**).
+  2. Mở màn Giới thiệu bất kỳ game: 4 nút **Dễ / Vừa / ★ Tự động / Khó** nằm cùng hàng, chạm “Khó” chọn đúng “Khó” (không bị “Tự động” đè).
+  3. Chơi **G5** trên tablet: lúc đếm ngược đã thấy 4 làn; chơi mượt. Bật `?debug=1` xem FPS (G3 và G5 là hai game cần kiểm FPS thật).
+  4. Để app mở Home qua đêm rồi sáng hôm sau mở lại: thẻ game phải mở khóa và nhiệm vụ mới (không cần chạm gì trước).
+  5. Các việc còn lại (2 ngón thật, Quay lại, chia đôi màn hình, tablet không rung, đen trắng G1, sao lưu → khôi phục thật, Samsung Internet): theo **`docs/QA_REPORT.md` mục 8**.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - Dữ liệu hỏng: lượt/tổng hợp thiếu thông tin cốt lõi (game, thời điểm, điểm) bị **bỏ**, trường phụ sai kiểu thì **thay bằng mặc định**; khi khôi phục từ file có hồ sơ không nhận ra được thì **từ chối cả file** thay vì lặng lẽ bỏ hồ sơ.
+  - `activeProfileId` trỏ vào hồ sơ không tồn tại: giữ nguyên (app đã coi là “chưa chọn”).
+  - Chỉ đặt `min-width` cho nút “Dễ” (nhãn ngắn), không đặt cho mọi nút lựa chọn.
+  - G5: sửa hiệu năng bằng canvas nền riêng (không đổi hình; so điểm ảnh lệch tối đa 2/255). **G3 chưa tối ưu** vì chưa rõ điểm nghẽn và số đo giả lập bi quan.
+  - `user-scalable=no` giữ nguyên chờ anh quyết định.
+  - Không chạy lại Lighthouse (không thêm vào dự án); axe-core chỉ chạy một lần ngoài dự án.
+- Còn lại / nợ kỹ thuật: danh sách thử máy thật (QA_REPORT mục 8); G3 FPS thật; `user-scalable`; khu phụ huynh chưa có xuất CSV; `AppState.installedVersion` chưa cập nhật khi lên bản mới.
+- Commit: `test: …`, `fix: data repair …`, `perf(G5): …`, `fix(a11y): …`, `docs: …` (xem `git log`).
 
 ### 2026-10-11 – TASK-07 gộp `main` + lập kế hoạch TASK-09 (chưa sửa mã)
 - Chủ dự án đồng ý gộp: `main` = `cd9aa62`, CI + Deploy xanh, **bản 0.9.0 đang chạy trên Pages** (đã kiểm: trang trả 200, bản live có mã khu phụ huynh và gói Chart.js trong precache).
