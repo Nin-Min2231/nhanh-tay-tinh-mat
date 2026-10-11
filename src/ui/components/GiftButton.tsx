@@ -11,7 +11,9 @@ export function GiftButton({ size = 64, label = true }: { size?: number; label?:
       class={`gift-chip${n > 0 ? ' has-gifts' : ''}`}
       disabled={n === 0}
       onClick={openGiftModal}
-      aria-label={n > 0 ? vi.home.giftWaiting(n) : vi.home.giftNone}
+      // Có chữ hiển thị thì để trình duyệt lấy tên từ nội dung (aria-label khác chữ hiển thị vi phạm WCAG 2.5.3);
+      // biến thể chỉ có biểu tượng thì cần aria-label.
+      aria-label={label ? undefined : n > 0 ? vi.home.giftWaiting(n) : vi.home.giftNone}
       data-testid="gift-button"
     >
       <span class="gift-chip-art">

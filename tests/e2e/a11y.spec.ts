@@ -42,6 +42,43 @@ function findSmallTargets(min: number): string[] {
   return out;
 }
 
+/**
+ * Chạy trong trang: nút mà tâm của nó thuộc về MỘT NÚT KHÁC (bị đè lên). Ví dụ từng gặp: ép `min-width` làm chữ “★ Tự động”
+ * tràn sang đè nút “Khó” → chạm vào “Khó” lại chọn “Tự động”. Phần phủ không bấm được (hộp thoại, màn tạm dừng) không tính.
+ */
+function findObstructed(): string[] {
+  const SEL =
+    'button, a[href], input, select, textarea, summary, [role="button"], [role="radio"], [role="tab"], [role="checkbox"], [role="switch"]';
+  const out: string[] = [];
+  for (const el of Array.from(document.querySelectorAll<HTMLElement>(SEL))) {
+    if (el.closest('[aria-hidden="true"], [inert]')) continue;
+    const closed = el.closest('details:not([open])');
+    if (closed && !el.matches('summary')) continue; // nội dung của khối đang đóng (không hiển thị)
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) continue; // đang nằm ngoài màn hình
+    const top = document.elementFromPoint(x, y);
+    if (!top || el.contains(top) || top.contains(el)) continue;
+    const other = top.closest(SEL);
+    // nút nằm trong lớp phủ cố định (hộp thoại, màn tạm dừng) phủ lên nền phía sau là hợp lệ
+    let overlay = false;
+    for (let n: HTMLElement | null = other as HTMLElement | null; n; n = n.parentElement) {
+      if (getComputedStyle(n).position === 'fixed' || n.getAttribute('role') === 'dialog')
+        overlay = true;
+    }
+    if (other && other !== el && !overlay) {
+      out.push(
+        `"${(el.textContent ?? '').trim().slice(0, 20)}" bị nút "${(other.textContent ?? '').trim().slice(0, 20)}" đè lên`,
+      );
+    }
+  }
+  return out;
+}
+
 /** Chạy trong trang: hoạt ảnh lặp vô hạn đang chạy. */
 function findInfiniteAnimations(): string[] {
   const out = new Set<string>();
@@ -167,6 +204,7 @@ function findLowContrast(): { measured: number; failures: string[]; lowest: stri
 async function scan(page: Page, label: string, issues: Issues, opts: { canvas?: boolean } = {}) {
   await page.waitForTimeout(80); // cho hoạt ảnh vào màn hình (rút ngắn khi reduce) kịp xong
   for (const t of await page.evaluate(findSmallTargets, 48)) issues.touch.push(`${label}: ${t}`);
+  for (const t of await page.evaluate(findObstructed)) issues.touch.push(`${label}: ${t}`);
   for (const m of await page.evaluate(findInfiniteAnimations)) issues.motion.push(`${label}: ${m}`);
   const contrast = await page.evaluate(findLowContrast);
   for (const c of contrast.failures) issues.contrast.push(`${label}: ${c}`);
@@ -211,6 +249,10 @@ test('bộ quét accessibility bắt được vi phạm giả (và không báo o
       .once { width: 10px; height: 10px; animation: spin 1s linear 1; }
       .grad { background: linear-gradient(90deg, #fff, #ffd93d); padding: 8px; }
     </style>
+    <div style="display:flex;width:200px">
+      <button id="wide" style="flex:0 0 60px;min-width:0;white-space:nowrap;text-align:left;padding:0;transform:translateY(-2px)">Nhãn rất dài tràn sang nút bên cạnh</button>
+      <button id="next" style="flex:0 0 100px">Kế bên</button>
+    </div>
     <button id="small" style="width:30px;height:30px">x</button>
     <button id="big" style="width:64px;height:64px">Lớn</button>
     <div class="spinner"></div><div class="once"></div>
@@ -220,8 +262,11 @@ test('bộ quét accessibility bắt được vi phạm giả (và không báo o
     <div class="grad"><span id="grad" style="color:#ffe066">Chữ vàng trên gradient trắng–vàng</span></div>
   `);
   const small = await page.evaluate(findSmallTargets, 48);
-  expect(small).toHaveLength(1);
-  expect(small[0]).toContain('30×30');
+  expect(small.some((s) => s.includes('30×30'))).toBe(true);
+  expect(small.some((s) => s.includes('Lớn'))).toBe(false);
+  const covered = await page.evaluate(findObstructed);
+  expect(covered).toHaveLength(1); // chữ tràn của nút đầu đè lên tâm nút “Kế bên”
+  expect(covered[0]).toContain('Kế bên');
   const anims = await page.evaluate(findInfiniteAnimations);
   expect(anims).toHaveLength(1);
   expect(anims[0]).toContain('spinner');

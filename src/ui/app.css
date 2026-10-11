@@ -177,8 +177,6 @@
   --s: #ffffff;
   --sel: var(--color-yellow);
   flex: 1;
-  /* vùng chạm ≥ 48px cả hai chiều: nhãn ngắn như “Dễ” không được co về bằng chữ (từng chỉ rộng 43px trên tablet) */
-  min-width: 56px;
   min-height: 56px;
   padding: 8px 4px;
   border: var(--border);
@@ -198,6 +196,9 @@
 .seg-easy {
   --s: var(--color-green-soft);
   --sel: var(--color-green);
+  /* vùng chạm ≥ 48px: nhãn ngắn “Dễ” từng chỉ rộng 43px trên tablet. Chỉ đặt cho nút nhãn ngắn – đặt min-width cho mọi
+     .segment sẽ bỏ mức tối thiểu theo nội dung của “★ Tự động” và chữ của nó tràn đè lên nút “Khó”. */
+  min-width: 52px;
 }
 .seg-normal {
   --s: var(--color-sky-soft);
