@@ -40,6 +40,16 @@ export interface DayUsage {
   restOnTimeRewarded: boolean;
 }
 
+/** Phụ huynh thưởng ngoài đời (F15): tặng thêm giờ hoặc tặng hộp quà, kèm lý do. */
+export type RewardReason = 'goodStudy' | 'wellBehaved' | 'chores' | 'other';
+export interface RewardLogEntry {
+  at: string;
+  kind: 'time' | 'box';
+  /** Số phút (kind = time) hoặc số hộp (kind = box). */
+  amount: number;
+  reason: RewardReason;
+}
+
 export interface Profile {
   id: string;
   name: string;
@@ -57,6 +67,8 @@ export interface Profile {
   math: { topics: string[]; facts: Record<string, MathFact> };
   days: Record<string, DayUsage>;
   lastBenchmarkAt: string | null;
+  /** Nhật ký phụ huynh thưởng (mới nhất ở cuối, giữ tối đa 50). Thêm ở schema 2. */
+  rewardLog: RewardLogEntry[];
 }
 
 export interface AppState {

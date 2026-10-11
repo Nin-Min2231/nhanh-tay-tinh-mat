@@ -169,4 +169,36 @@ describe('migrateState', () => {
     expect(migrateState({ schemaVersion: 1 })).toEqual({ ok: false, reason: 'invalid' });
     expect(migrateState({ ...base })).toEqual({ ok: false, reason: 'invalid' });
   });
+
+  it('migration thật 1 → 2 (TASK-07): thêm rewardLog rỗng cho mọi hồ sơ, giữ nguyên phần còn lại', () => {
+    const legacy = {
+      schemaVersion: 1,
+      deviceId: 'd',
+      activeProfileId: 'p1',
+      profiles: [
+        { id: 'p1', name: 'An', totalStars: 12 },
+        { id: 'p2', name: 'Bình', totalStars: 3, rewardLog: [{ at: 'x' }] },
+      ],
+      settings: { sound: true },
+    };
+    const r = migrateState(legacy);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.state.schemaVersion).toBe(CURRENT_SCHEMA);
+    const [a, b] = r.state.profiles as unknown as Record<string, unknown>[];
+    expect(a).toEqual({ id: 'p1', name: 'An', totalStars: 12, rewardLog: [] });
+    expect(b!.rewardLog).toEqual([{ at: 'x' }]); // đã có thì không xóa
+    expect(r.state.activeProfileId).toBe('p1');
+  });
+
+  it('đọc dữ liệu schema 1 từ localStorage → được nâng lên schema hiện tại', () => {
+    const backend = memoryBackend();
+    backend.data.set(
+      STATE_KEY,
+      JSON.stringify({ schemaVersion: 1, deviceId: 'd', profiles: [{ id: 'p1', name: 'An' }] }),
+    );
+    const st = createStorage(() => backend).loadState();
+    expect(st.schemaVersion).toBe(CURRENT_SCHEMA);
+    expect((st.profiles[0] as unknown as { rewardLog: unknown[] }).rewardLog).toEqual([]);
+  });
 });

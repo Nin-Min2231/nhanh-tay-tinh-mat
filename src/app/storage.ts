@@ -1,9 +1,10 @@
 // Mọi truy cập localStorage đi qua đây (CLAUDE.md mục 5, quy tắc 11–12).
 import { generateId } from './device';
+import type { DataSnapshot } from './backup';
 import type { AppState, DailyAggregate, RoundRecord } from './types';
 import { APP_VERSION } from './version';
 
-export const CURRENT_SCHEMA = 1;
+export const CURRENT_SCHEMA = 2;
 export const STATE_KEY = 'ntm.state';
 export const roundsKey = (profileId: string) => `ntm.rounds.${profileId}`;
 export const dailyKey = (profileId: string) => `ntm.daily.${profileId}`;
@@ -16,7 +17,21 @@ export interface KeyValueBackend {
 
 /** migrations[v] nâng dữ liệu từ phiên bản v lên v+1. */
 export type MigrationFn = (state: Record<string, unknown>) => Record<string, unknown>;
-export const MIGRATIONS: Record<number, MigrationFn> = {};
+export const MIGRATIONS: Record<number, MigrationFn> = {
+  // 1 → 2 (TASK-07): thêm nhật ký phụ huynh thưởng `rewardLog` vào mỗi hồ sơ.
+  1: (state) => {
+    const profiles = Array.isArray(state.profiles)
+      ? (state.profiles as Record<string, unknown>[])
+      : [];
+    return {
+      ...state,
+      profiles: profiles.map((p) => ({
+        ...p,
+        rewardLog: Array.isArray(p.rewardLog) ? p.rewardLog : [],
+      })),
+    };
+  },
+};
 
 export function defaultState(): AppState {
   return {
@@ -149,6 +164,29 @@ export function createStorage(getBackend: () => KeyValueBackend = () => window.l
     removeProfileData(profileId: string): void {
       remove(roundsKey(profileId));
       remove(dailyKey(profileId));
+    },
+    /** Chụp toàn bộ dữ liệu (state + lượt chơi + tổng hợp theo ngày của mọi hồ sơ) để sao lưu. */
+    snapshot(state: AppState): DataSnapshot {
+      const rounds: Record<string, RoundRecord[]> = {};
+      const daily: Record<string, DailyAggregate[]> = {};
+      for (const p of state.profiles) {
+        rounds[p.id] = loadList<RoundRecord>(roundsKey(p.id));
+        daily[p.id] = loadList<DailyAggregate>(dailyKey(p.id));
+      }
+      return { state, rounds, daily };
+    },
+    /** Ghi đè TOÀN BỘ dữ liệu bằng bản khôi phục (xóa dữ liệu của các hồ sơ hiện có trước). */
+    restoreAll(data: DataSnapshot): void {
+      const old = loadState();
+      for (const p of old.profiles) {
+        remove(roundsKey(p.id));
+        remove(dailyKey(p.id));
+      }
+      for (const p of data.state.profiles) {
+        write(roundsKey(p.id), JSON.stringify(data.rounds[p.id] ?? []));
+        write(dailyKey(p.id), JSON.stringify(data.daily[p.id] ?? []));
+      }
+      write(STATE_KEY, JSON.stringify(data.state));
     },
     /** true nếu đang chạy bằng bộ nhớ tạm (dữ liệu sẽ mất khi đóng app). */
     isDegraded: () => degraded,

@@ -69,6 +69,7 @@ export function createProfile(input: NewProfileInput, id: string, now: Date): Pr
     math: { topics: [...topics], facts: {} },
     days: {},
     lastBenchmarkAt: null,
+    rewardLog: [],
   };
 }
 

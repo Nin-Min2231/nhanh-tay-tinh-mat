@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
 import { levelForRound } from '../../app/adaptive';
+import { benchmarkLevel } from '../../app/benchmark';
 import { setBackInterceptor } from '../../app/backButton';
 import { E2E, TIME_SCALE } from '../../app/e2e';
 import { freshSeed, mulberry32 } from '../../app/rng';
@@ -23,6 +24,7 @@ import { Countdown } from '../../games/common/Countdown';
 import { PauseOverlay } from '../../games/common/PauseOverlay';
 import type { GameInstance, RoundResult } from '../../games/common/types';
 import { getGameModule } from '../../games/registry';
+import { levelsConfig } from '../../games/levels';
 import { Button } from '../components/Button';
 import { IconPause } from '../components/Icons';
 
@@ -63,19 +65,26 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
     setRemainingSec(Math.ceil(clock.remainingMs / 1000));
 
     const progress = profile.games[gameId];
-    const level = levelForRound(progress, pending.choice);
+    // Bài đo tuần (F16): cấp cố định theo levels.json, tùy chọn mặc định, toán theo chủ đề mặc định của lớp.
+    const benchmark = pending.benchmark === true;
+    const level = benchmark ? benchmarkLevel(gameId) : levelForRound(progress, pending.choice);
     // Cố định > lựa chọn của bé. Chỉ lượt Tự động + bé chọn “Tự động” mới tính vào độ khó thích ứng.
-    const mode: RoundMode =
-      progress.mode === 'fixed' ? 'fixed' : pending.choice === 'auto' ? 'auto' : pending.choice;
-    const benchmark = false;
+    const mode: RoundMode = benchmark
+      ? 'fixed'
+      : progress.mode === 'fixed'
+        ? 'fixed'
+        : pending.choice === 'auto'
+          ? 'auto'
+          : pending.choice;
     const countsForAdaptive = progress.mode === 'auto' && pending.choice === 'auto' && !benchmark;
+    const gameOptions = benchmark ? {} : progress.options;
 
     const settle = (result: RoundResult | null): void => {
       if (settledRef.current) return;
       settledRef.current = true;
       if (result) {
         clock.finish();
-        const { stars, change, newLevel, rewards } = recordRound({
+        const { stars, change, newLevel, rewards, benchmarkNext } = recordRound({
           profileId: profile.id,
           gameId,
           level,
@@ -85,7 +94,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
           playedMs: clock.playedMs,
           countsForAdaptive,
           benchmark,
-          options: progress.options,
+          options: gameOptions,
         });
         lastResult.value = {
           gameId,
@@ -96,6 +105,8 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
           newLevel,
           outOfTime: clock.remainingMs <= 0,
           rewards,
+          benchmark,
+          benchmarkNext,
         };
         // Vừa hết giờ: màn Nghỉ kế tiếp được tính “nghỉ đúng giờ” (F20)
         restPending.value = clock.remainingMs <= 0;
@@ -109,11 +120,13 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
 
     const instance = mod.create(host, {
       level,
-      options: progress.options,
+      options: gameOptions,
       profile: {
         grade: profile.grade,
-        mathTopics: profile.math.topics,
-        mathFacts: profile.math.facts,
+        mathTopics: benchmark
+          ? [...levelsConfig.mathDefaultByGrade[`${profile.grade}`]]
+          : profile.math.topics,
+        mathFacts: benchmark ? {} : profile.math.facts,
       },
       rng: mulberry32(E2E.enabled ? E2E.seed : freshSeed()),
       audio,

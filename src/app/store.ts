@@ -2,6 +2,8 @@
 import { computed, signal } from '@preact/signals';
 import type { RoundResult } from '../games/common/types';
 import { applyRound, type KidChoice, type LevelChange } from './adaptive';
+import { benchmarkComplete, benchmarkQueue } from './benchmark';
+import { pruneRounds, syncDaily } from './daily';
 import { createAudio } from './audio';
 import { generateId, getDeviceClass } from './device';
 import { E2E, TIME_SCALE } from './e2e';
@@ -36,7 +38,7 @@ import type {
 } from './types';
 
 /** Đối chiếu mốc mở khóa theo tổng sao (hồ sơ có sẵn từ trước TASK-06 cũng được mở phần thưởng đã đủ sao). */
-function reconcileUnlocks(state: AppState): AppState {
+export function reconcileUnlocks(state: AppState): AppState {
   let changed = false;
   const profiles = state.profiles.map((p) => {
     const r = syncUnlocks(p);
@@ -46,9 +48,23 @@ function reconcileUnlocks(state: AppState): AppState {
   return changed ? { ...state, profiles } : state;
 }
 
+/**
+ * Cập nhật tổng hợp theo ngày (DailyAggregate) từ các lượt chi tiết rồi dọn lượt cũ hơn 120 ngày (NF09).
+ * Trả về danh sách lượt còn giữ. Gọi khi mở app (dựng tổng hợp cho dữ liệu cũ) và sau mỗi lượt chơi.
+ */
+export function maintainRounds(profileId: string, now: Date = new Date()): RoundRecord[] {
+  const rounds = storage.loadRounds(profileId);
+  const daily = syncDaily(storage.loadDaily(profileId), rounds);
+  storage.saveDaily(profileId, daily);
+  const kept = pruneRounds(rounds, now);
+  if (kept.length !== rounds.length) storage.saveRounds(profileId, kept);
+  return kept;
+}
+
 const loadedState = storage.loadState();
 const startState = reconcileUnlocks(loadedState);
 if (startState !== loadedState) storage.saveState(startState);
+for (const p of startState.profiles) maintainRounds(p.id);
 
 export const appState = signal<AppState>(startState);
 /** true nếu localStorage không dùng được → đang chạy bằng bộ nhớ tạm. */
@@ -65,7 +81,7 @@ export const deviceClass = getDeviceClass();
 export const audio = createAudio(() => appState.value.settings.sound);
 export const haptics = createHaptics(() => appState.value.settings.vibration, deviceClass);
 
-function commit(next: AppState): void {
+export function commit(next: AppState): void {
   appState.value = next;
   storage.saveState(next);
   storageWarning.value = storage.isDegraded();
@@ -133,6 +149,8 @@ export function setGameProgress(
 export interface PendingPlay {
   gameId: GameId;
   choice: KidChoice;
+  /** Bài đo tuần (F16): cấp cố định theo levels.json, tùy chọn mặc định, không tính độ khó thích ứng. */
+  benchmark?: boolean;
 }
 /** Lựa chọn ở màn Giới thiệu, đọc bởi màn Chơi. */
 export const pendingPlay = signal<PendingPlay | null>(null);
@@ -150,6 +168,10 @@ export interface LastResult {
   outOfTime: boolean;
   /** Nhiệm vụ, hộp quà, mở khóa phát sinh từ lượt này. */
   rewards: RoundRewards;
+  /** Lượt này là bài đo tuần. */
+  benchmark: boolean;
+  /** Bài đo tuần: game kế tiếp còn phải làm (null = đã đủ bộ 7 game). */
+  benchmarkNext: GameId | null;
 }
 export const lastResult = signal<LastResult | null>(null);
 
@@ -175,6 +197,7 @@ export function recordRound(args: RecordRoundArgs): {
   change: LevelChange;
   newLevel: number;
   rewards: RoundRewards;
+  benchmarkNext: GameId | null;
 } {
   const stars = starsForScore(args.result.score);
   const record: RoundRecord = {
@@ -194,8 +217,12 @@ export function recordRound(args: RecordRoundArgs): {
     deviceClass,
   };
   storage.appendRound(record);
-
   const key = dateKey(args.startedAt);
+  const rounds = maintainRounds(args.profileId, args.startedAt);
+  // Bài đo tuần: đủ 7 game trong tuần → ghi nhận lần đo (tắt banner “Thử thách tuần”)
+  const queue = args.benchmark ? benchmarkQueue(rounds, key) : [];
+  const benchDone = args.benchmark === true && benchmarkComplete(rounds, key);
+
   let change: LevelChange = 'none';
   let newLevel = args.level;
   let rewards!: RoundRewards;
@@ -213,6 +240,7 @@ export function recordRound(args: RecordRoundArgs): {
           ? applyRoundToMath(p.math, args.result.extra, before.plays + 1)
           : p.math,
       days: { ...p.days, [key]: { ...day, playMs: day.playMs + args.playedMs } },
+      lastBenchmarkAt: benchDone ? new Date().toISOString() : p.lastBenchmarkAt,
       games: {
         ...p.games,
         [args.gameId]: {
@@ -227,7 +255,7 @@ export function recordRound(args: RecordRoundArgs): {
     rewards = granted.rewards;
     return granted.profile;
   });
-  return { stars, record, change, newLevel, rewards };
+  return { stars, record, change, newLevel, rewards, benchmarkNext: queue[0] ?? null };
 }
 
 // ---- Hộp quà, trang phục, nghỉ đúng giờ (TASK-06) ----
