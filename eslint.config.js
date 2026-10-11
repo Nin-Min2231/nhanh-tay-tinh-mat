@@ -5,7 +5,7 @@ import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'dist-e2e', 'dev-dist', 'coverage', 'playwright-report', 'test-results', 'node_modules'],
+    ignores: ['dist', 'dist-e2e', 'dist-e2e-base', 'dev-dist', 'coverage', 'playwright-report', 'test-results', 'node_modules'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -14,7 +14,7 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    files: ['*.js', '*.config.ts'],
+    files: ['*.js', '*.config.ts', 'scripts/**/*.mjs'],
     languageOptions: { globals: { ...globals.node } },
   },
   prettier,

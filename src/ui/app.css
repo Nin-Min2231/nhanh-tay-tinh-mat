@@ -542,6 +542,13 @@
 .banner-info {
   background: var(--color-sky-soft);
 }
+.update-banner {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+}
 .toast {
   position: fixed;
   left: 50%;
@@ -969,6 +976,12 @@
   max-width: 480px;
   font-size: 20px;
   font-weight: 700;
+}
+.app-version {
+  margin: 0;
+  font-size: var(--font-body);
+  font-weight: 700;
+  opacity: 0.8;
 }
 .result-actions {
   display: flex;

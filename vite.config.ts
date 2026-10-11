@@ -13,18 +13,40 @@ export default defineConfig({
   plugins: [
     preact(),
     VitePWA({
+      // 'prompt': SW mới chỉ báo cờ updateAvailable, bé/phụ huynh bấm “Cập nhật” mới tải lại (src/app/pwa.ts).
       registerType: 'prompt',
-      // TODO (TASK-08): manifest đầy đủ, icon 192/512/maskable, precache hoàn chỉnh
+      injectRegister: false, // tự đăng ký trong src/app/pwa.ts (tránh đăng ký hai lần)
+      includeManifestIcons: false, // icon đã nằm trong globPatterns bên dưới
       manifest: {
+        id: base,
         name: 'Nhanh Tay Tinh Mắt',
         short_name: 'Nhanh Tay',
+        description: 'Mini-game rèn tập trung, phản xạ, tính nhẩm và tư duy logic cho bé lớp 2.',
+        lang: 'vi',
+        dir: 'ltr',
+        categories: ['education', 'games', 'kids'],
         display: 'standalone',
         orientation: 'any',
         start_url: base,
         scope: base,
         background_color: '#FFF4D6',
         theme_color: '#29B6F6',
-        icons: [],
+        icons: [
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          {
+            src: 'icons/maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+      workbox: {
+        // Precache MỌI tài nguyên của bản build (kể cả font Nunito, icon, svg) để mở offline vẫn đủ.
+        // Chỉ lấy woff2 (Chrome/Samsung Internet đều hỗ trợ); bỏ woff cho nhẹ.
+        globPatterns: ['**/*.{js,css,html,woff2,svg,png,webmanifest}'],
+        cleanupOutdatedCaches: true,
       },
     }),
   ],

@@ -1,6 +1,7 @@
 import { vi } from '../../i18n/vi';
 import { navigate } from '../../app/router';
 import { getDay, dateKey } from '../../app/profile';
+import { applyUpdate } from '../../app/pwa';
 import { MISSION_GROUPS, boxRoomToday, starsToNextBox, BOX_EVERY_STARS } from '../../app/rewards';
 import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
 import { activeProfile, updateAvailable } from '../../app/store';
@@ -110,7 +111,13 @@ export function Home() {
         </nav>
       </header>
 
-      {updateAvailable.value && <div class="banner banner-info">{vi.home.updateAvailable}</div>}
+      {updateAvailable.value && (
+        <div class="banner banner-info update-banner">
+          <Button variant="primary" onClick={applyUpdate} data-testid="update-button">
+            {vi.home.updateAvailable}
+          </Button>
+        </div>
+      )}
 
       <section
         class={`home-hello${p.backgroundId ? ' has-scene' : ''}`}

@@ -403,6 +403,8 @@ export const vi = {
     album: 'Album sticker',
     parentGate: 'Khu phụ huynh',
     parent: 'Khu phụ huynh',
+    /** Số phiên bản app (tạm hiện ở trang này; khu phụ huynh thật ở TASK-07 sẽ có mục riêng). */
+    version: (v: string) => `Phiên bản ${v}`,
   },
   /** Bảng gỡ lỗi (?debug=1) – chỉ có khi chạy dev; giao diện phụ huynh thật làm ở TASK-07. */
   debug: {

@@ -59,9 +59,9 @@ function Screen() {
     case 'album':
       return <Album />;
     case 'parent-gate':
-      return <UnderConstruction title={vi.wip.parentGate} />;
+      return <UnderConstruction title={vi.wip.parentGate} showVersion />;
     case 'parent':
-      return <UnderConstruction title={vi.wip.parent} />;
+      return <UnderConstruction title={vi.wip.parent} showVersion />;
     case 'not-found':
       return null;
   }

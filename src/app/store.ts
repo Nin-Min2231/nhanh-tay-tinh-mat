@@ -54,7 +54,7 @@ export const appState = signal<AppState>(startState);
 /** true nếu localStorage không dùng được → đang chạy bằng bộ nhớ tạm. */
 export const storageWarning = signal<boolean>(storage.isDegraded());
 export const toast = signal<string | null>(null);
-/** Có service worker mới (TASK-08 sẽ bật cờ này; chỉ hiện nút ở Home/khu PH). */
+/** Có service worker mới (do app/pwa.ts bật; nút “Cập nhật” chỉ hiện ở Home, không bao giờ giữa lượt). */
 export const updateAvailable = signal(false);
 
 export const activeProfile = computed<Profile | null>(

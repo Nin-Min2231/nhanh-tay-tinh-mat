@@ -5,6 +5,7 @@ import './ui/games.css';
 import './ui/games2.css';
 import './ui/rewards.css';
 import { installBackButton } from './app/backButton';
+import { initPwa } from './app/pwa';
 import { initRouter, replace, route } from './app/router';
 import { appState, audio, selectProfile, showToast } from './app/store';
 import './app/viewport';
@@ -44,4 +45,5 @@ if ((import.meta.env.DEV || import.meta.env.VITE_E2E === 'true') && galleryParam
   );
 } else {
   render(<App />, root);
+  initPwa();
 }
