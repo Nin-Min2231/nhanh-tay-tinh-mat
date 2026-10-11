@@ -172,6 +172,8 @@ export interface LastResult {
   benchmark: boolean;
   /** Bài đo tuần: game kế tiếp còn phải làm (null = đã đủ bộ 7 game). */
   benchmarkNext: GameId | null;
+  /** Bài đo tuần: số game còn phải làm trong tuần này. */
+  benchmarkLeft: number;
 }
 export const lastResult = signal<LastResult | null>(null);
 
@@ -198,6 +200,7 @@ export function recordRound(args: RecordRoundArgs): {
   newLevel: number;
   rewards: RoundRewards;
   benchmarkNext: GameId | null;
+  benchmarkLeft: number;
 } {
   const stars = starsForScore(args.result.score);
   const record: RoundRecord = {
@@ -255,7 +258,15 @@ export function recordRound(args: RecordRoundArgs): {
     rewards = granted.rewards;
     return granted.profile;
   });
-  return { stars, record, change, newLevel, rewards, benchmarkNext: queue[0] ?? null };
+  return {
+    stars,
+    record,
+    change,
+    newLevel,
+    rewards,
+    benchmarkNext: queue[0] ?? null,
+    benchmarkLeft: queue.length,
+  };
 }
 
 // ---- Hộp quà, trang phục, nghỉ đúng giờ (TASK-06) ----

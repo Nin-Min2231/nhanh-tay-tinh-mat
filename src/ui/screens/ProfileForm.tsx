@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
-import { goBack, goHome, stackDepth } from '../../app/router';
+import { goBack, goHome, navigate, stackDepth } from '../../app/router';
 import { NAME_MAX_LENGTH, isValidProfileName } from '../../app/profile';
 import { addProfile, appState } from '../../app/store';
 import type { Grade } from '../../app/types';
@@ -85,6 +85,15 @@ export function ProfileForm() {
         <Button type="submit" variant="primary" size="lg" disabled={!valid}>
           {vi.profiles.submit}
         </Button>
+        {appState.value.profiles.length === 0 && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/parent-gate')}
+            data-testid="restore-first"
+          >
+            {vi.parent.gate.restore}
+          </Button>
+        )}
       </form>
     </main>
   );

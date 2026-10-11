@@ -1,9 +1,13 @@
 import { vi } from '../../i18n/vi';
+import { useEffect, useMemo } from 'preact/hooks';
 import { navigate } from '../../app/router';
+import { BENCHMARK_ORDER, benchmarkDue, doneRecently } from '../../app/benchmark';
+import { benchmarkMode, startBenchmark } from '../../app/parentStore';
 import { getDay, dateKey } from '../../app/profile';
 import { applyUpdate } from '../../app/pwa';
 import { MISSION_GROUPS, boxRoomToday, starsToNextBox, BOX_EVERY_STARS } from '../../app/rewards';
 import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
+import { storage } from '../../app/storage';
 import { activeProfile, updateAvailable } from '../../app/store';
 import type { GameId } from '../../app/types';
 import { GAME_GROUPS, isGameAvailable } from '../../games/registry';
@@ -59,8 +63,16 @@ function GameCard({ id, locked }: { id: GameId; locked: boolean }) {
 
 export function Home() {
   const p = activeProfile.value;
-  if (!p) return null;
   const key = dateKey(new Date());
+  // Về Home = thoát luồng bài đo tuần (nếu có)
+  useEffect(() => {
+    benchmarkMode.value = false;
+  }, []);
+  const benchDone = useMemo(
+    () => (p ? doneRecently(storage.loadRounds(p.id), key).size : 0),
+    [p?.id, p?.games, key],
+  );
+  if (!p) return null;
   const remaining = dayRemainingMs(p, key);
   const allowance = dayAllowanceMs(p, key);
   const out = remaining <= 0;
@@ -117,6 +129,27 @@ export function Home() {
             {vi.home.updateAvailable}
           </Button>
         </div>
+      )}
+
+      {!out && benchmarkDue(p.lastBenchmarkAt, key) && (
+        <section
+          class="benchmark-banner"
+          data-testid="benchmark-banner"
+          aria-label={vi.home.benchmarkTitle}
+        >
+          <div>
+            <h2 class="benchmark-title">{vi.home.benchmarkTitle}</h2>
+            <p>{vi.home.benchmarkText}</p>
+            {benchDone > 0 && (
+              <p class="benchmark-progress" data-testid="benchmark-progress">
+                {vi.home.benchmarkProgress(benchDone, BENCHMARK_ORDER.length)}
+              </p>
+            )}
+          </div>
+          <Button variant="primary" onClick={() => startBenchmark()} data-testid="benchmark-start">
+            {benchDone > 0 ? vi.home.benchmarkContinue : vi.home.benchmarkStart}
+          </Button>
+        </section>
       )}
 
       <section

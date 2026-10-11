@@ -84,7 +84,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
       settledRef.current = true;
       if (result) {
         clock.finish();
-        const { stars, change, newLevel, rewards, benchmarkNext } = recordRound({
+        const { stars, change, newLevel, rewards, benchmarkNext, benchmarkLeft } = recordRound({
           profileId: profile.id,
           gameId,
           level,
@@ -107,6 +107,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
           rewards,
           benchmark,
           benchmarkNext,
+          benchmarkLeft,
         };
         // Vừa hết giờ: màn Nghỉ kế tiếp được tính “nghỉ đúng giờ” (F20)
         restPending.value = clock.remainingMs <= 0;

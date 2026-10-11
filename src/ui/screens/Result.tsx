@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
+import { BENCHMARK_ORDER } from '../../app/benchmark';
 import { replace } from '../../app/router';
 import { activeProfile, audio, lastResult, openGiftModal } from '../../app/store';
 import { Button } from '../components/Button';
@@ -58,6 +59,16 @@ export function Result() {
           {line}
         </p>
       ))}
+      {r.benchmark && (
+        <p class="result-mission" data-testid="bench-progress">
+          {r.benchmarkNext
+            ? vi.result.benchmarkProgress(
+                BENCHMARK_ORDER.length - r.benchmarkLeft,
+                BENCHMARK_ORDER.length,
+              )
+            : vi.result.benchmarkDone}
+        </p>
+      )}
       {rewards.newMission && (
         <p class="result-mission" data-testid="result-mission">
           {vi.result.missionDone(vi.home.missions[rewards.group])}{' '}
@@ -97,14 +108,27 @@ export function Result() {
           </Button>
         ) : (
           <>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => replace(`/play/${r.gameId}/intro`)}
-              data-testid="play-again"
-            >
-              {vi.common.playAgain}
-            </Button>
+            {r.benchmark && r.benchmarkNext ? (
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => replace(`/play/${r.benchmarkNext}/intro`)}
+                data-testid="bench-next"
+              >
+                {vi.result.benchmarkNext}
+              </Button>
+            ) : (
+              !r.benchmark && (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => replace(`/play/${r.gameId}/intro`)}
+                  data-testid="play-again"
+                >
+                  {vi.common.playAgain}
+                </Button>
+              )
+            )}
             <Button
               variant="secondary"
               size="lg"

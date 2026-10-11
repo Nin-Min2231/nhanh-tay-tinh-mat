@@ -2,6 +2,7 @@ import { useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
 import type { KidChoice } from '../../app/adaptive';
 import { goBack, navigate } from '../../app/router';
+import { benchmarkMode } from '../../app/parentStore';
 import { activeProfile, appState, pendingPlay } from '../../app/store';
 import type { GameId } from '../../app/types';
 import { Button } from '../components/Button';
@@ -17,10 +18,13 @@ export function GameIntro({ gameId }: { gameId: GameId }) {
   const [choice, setChoice] = useState<KidChoice>('auto');
   const [animKey, setAnimKey] = useState(0);
   if (!p) return null;
-  const canChoose = appState.value.settings.allowKidDifficultyChoice;
+  const bench = benchmarkMode.value;
+  const canChoose = appState.value.settings.allowKidDifficultyChoice && !bench;
 
   const start = () => {
-    pendingPlay.value = { gameId, choice: canChoose ? choice : 'auto' };
+    pendingPlay.value = bench
+      ? { gameId, choice: 'normal', benchmark: true }
+      : { gameId, choice: canChoose ? choice : 'auto' };
     navigate(`/play/${gameId}`);
   };
 
@@ -33,6 +37,11 @@ export function GameIntro({ gameId }: { gameId: GameId }) {
       </div>
       <GameIcon id={gameId} size={72} />
       <h1 class="title">{vi.games[gameId]?.name}</h1>
+      {bench && (
+        <p class="intro-bench" data-testid="intro-bench">
+          {vi.intro.benchmark} – {vi.intro.benchmarkNote}
+        </p>
+      )}
       <IntroAnimation key={animKey} id={gameId} />
       <p class="intro-hint" data-testid="intro-hint">
         {vi.games[gameId]?.hint}
@@ -62,7 +71,7 @@ export function GameIntro({ gameId }: { gameId: GameId }) {
         </fieldset>
       )}
 
-      <DebugPanel gameId={gameId} />
+      {!bench && <DebugPanel gameId={gameId} />}
 
       <Button variant="primary" size="lg" onClick={start} data-testid="start-game">
         {vi.common.start}

@@ -1,8 +1,8 @@
 import { useEffect } from 'preact/hooks';
-import { vi } from '../i18n/vi';
 import { replace, route } from '../app/router';
 import { dateKey } from '../app/profile';
 import { isOutOfTime } from '../app/session';
+import { parentUnlocked } from '../app/parentStore';
 import { activeProfile, appState, lastResult, pendingPlay } from '../app/store';
 import { isGameAvailable } from '../games/registry';
 import { GiftModal } from './components/GiftBox';
@@ -15,7 +15,8 @@ import { ProfileForm } from './screens/ProfileForm';
 import { ProfileSelect } from './screens/ProfileSelect';
 import { Rest } from './screens/Rest';
 import { Result } from './screens/Result';
-import { UnderConstruction } from './screens/UnderConstruction';
+import { ParentArea } from './screens/ParentArea';
+import { ParentGate } from './screens/ParentGate';
 
 /** Nếu màn hình hiện tại không hợp lệ (chưa có hồ sơ, tải lại giữa lượt...) → đường dẫn cần chuyển tới. */
 function redirectFor(): string | null {
@@ -26,6 +27,9 @@ function redirectFor(): string | null {
     if (r.name === 'profiles' && !hasProfiles) return '/profiles/new';
     return null;
   }
+  // Khu phụ huynh dùng được cả khi chưa có hồ sơ (để khôi phục từ file sao lưu); vào khu phải qua khóa.
+  if (r.name === 'parent-gate') return null;
+  if (r.name === 'parent') return parentUnlocked.value ? null : '/parent-gate';
   if (!profile) return hasProfiles ? '/profiles' : '/profiles/new';
   if (r.name === 'not-found') return '/home';
   if (r.name === 'play' && (!pendingPlay.value || pendingPlay.value.gameId !== r.gameId))
@@ -59,9 +63,9 @@ function Screen() {
     case 'album':
       return <Album />;
     case 'parent-gate':
-      return <UnderConstruction title={vi.wip.parentGate} showVersion />;
+      return <ParentGate />;
     case 'parent':
-      return <UnderConstruction title={vi.wip.parent} showVersion />;
+      return <ParentArea tab={r.tab} />;
     case 'not-found':
       return null;
   }

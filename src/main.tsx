@@ -4,6 +4,7 @@ import './ui/app.css';
 import './ui/games.css';
 import './ui/games2.css';
 import './ui/rewards.css';
+import './ui/parent.css';
 import { installBackButton } from './app/backButton';
 import { initPwa } from './app/pwa';
 import { initRouter, replace, route } from './app/router';
