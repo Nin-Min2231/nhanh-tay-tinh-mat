@@ -13,9 +13,9 @@
 | TASK-04 G3 + G4 + G5 | Xong | 2026-10-10 | lint, 170 unit test, build, 135 e2e (45 × 3 khung hình) đều pass; cần anh thử TC-007 (2 ngón thật), TC-032 và cảm giác chơi/FPS trên tablet |
 | TASK-05 G6 + G7 | Xong | 2026-10-10 | lint, 373 unit test, build, 204 e2e (68 × 3 khung hình) đều pass; cần anh **duyệt nội dung mẫu** `docs/samples/` + thử cảm giác chơi trên máy thật |
 | TASK-06 Thưởng | Xong | 2026-10-10 | lint, 409 unit test, build, 267 e2e (89 × 3 khung hình) đều pass; **đã gộp vào `main`**; cần anh **duyệt 40 sticker + trang phục/hình nền** và thử hộp quà/album trên máy thật |
-| TASK-07 Khu phụ huynh | Xong (nhánh `claude/task-07-parent-area`, chờ gộp `main`) | 2026-10-11 | lint, 470 unit test, build, 375 e2e (125 × 3 khung hình) đều pass; TC-010/023/025/026/027 tự kiểm Pass; **cần anh thử trên máy thật** + duyệt chữ R13 |
+| TASK-07 Khu phụ huynh | Xong, **đã gộp `main`, v0.9.0 đang live** | 2026-10-11 | lint, 470 unit test, build, 375 e2e (125 × 3 khung hình) đều pass; TC-010/023/025/026/027 tự kiểm Pass; **cần anh thử trên máy thật** + duyệt chữ R13 |
 | TASK-08 PWA + deploy | Xong, **đã gộp `main`, Pages đang chạy** | 2026-10-11 | Pages: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ ; còn chờ anh thử cài + máy bay trên máy thật (TC-001/002/012) và TC-029 sau bản 0.9.0 |
-| TASK-09 QA | Chưa bắt đầu | | |
+| TASK-09 QA | **Kế hoạch đã trình bày, chờ anh “Đồng ý”** | 2026-10-11 | Chi tiết kế hoạch + phát hiện sơ bộ: `docs/HANDOVER.md` mục 6 (chưa sửa mã) |
 | TASK-10 Sửa lỗi | Chưa bắt đầu | | |
 
 ## Câu hỏi mở (chờ chủ dự án)
@@ -26,7 +26,7 @@
 - **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
 
 - **Việc anh cần làm cho TASK-08 (còn lại)**: cài thử lên điện thoại/Galaxy Tab + chế độ máy bay (TC-001, 002, 012), mở thử bằng Samsung Internet; **duyệt icon** (`public/icons/icon-512.png`). Hướng dẫn từng bước ở nhật ký TASK-08.
-- **Việc anh cần làm cho TASK-07**: (1) cho phép gộp nhánh `claude/task-07-parent-area` vào `main` (= deploy bản 0.9.0, cũng là lần thử TC-029 – cập nhật); (2) thử khu phụ huynh trên máy thật theo “Cách thử thủ công” ở nhật ký TASK-07 (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → khôi phục**); (3) **duyệt chữ “khi nào nên cho bé đi khám” (R13)** do em tự soạn (`vi.parent.data.note`); (4) quyết định có bỏ `user-scalable=no` ở viewport (Lighthouse trừ điểm accessibility) hay không.
+- **Việc anh cần làm cho TASK-07** (đã gộp + deploy 0.9.0): (1) thử khu phụ huynh trên máy thật theo “Cách thử thủ công” ở nhật ký TASK-07 (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → khôi phục**) và **bấm “Cập nhật” trên app đã cài** (TC-029); (2) **duyệt chữ “khi nào nên cho bé đi khám” (R13)** do em tự soạn (`vi.parent.data.note`); (3) quyết định có bỏ `user-scalable=no` ở viewport (Lighthouse trừ điểm accessibility) hay không.
 
 ## Đề xuất (ngoài phạm vi, để sau)
 
@@ -43,6 +43,10 @@
 - Hai test e2e cũ phụ thuộc thời gian thực – G1 TC-004 và G3 TC-013 – thỉnh thoảng chập chờn khi máy bận và chạy 4 luồng song song (một lần chạy đầy đủ có 2 lỗi, chạy riêng từng test đều pass; chạy đầy đủ lại bằng `--workers=3` được 204/204). TASK-09 (QA) nên ổn định hóa (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
 
 ## Nhật ký
+
+### 2026-10-11 – TASK-07 gộp `main` + lập kế hoạch TASK-09 (chưa sửa mã)
+- Chủ dự án đồng ý gộp: `main` = `cd9aa62`, CI + Deploy xanh, **bản 0.9.0 đang chạy trên Pages** (đã kiểm: trang trả 200, bản live có mã khu phụ huynh và gói Chart.js trong precache).
+- Đã đọc tài liệu TASK-09 và **rà soát sơ bộ, chưa sửa gì**: 2 test chập chờn ≈ 8% (chỉ ở khung tablet, lỗi của test), nút “Dễ” ở màn Giới thiệu trên tablet rộng 43px (< 48px), TC-028/035 chưa có test tự động, `parseBackup` chưa kiểm từng phần tử → rủi ro khi khôi phục file sửa tay. **Kế hoạch 8 bước + 4 quyết định mặc định + số đo đã trình bày cho chủ dự án, chờ “Đồng ý”** – toàn bộ ở `docs/HANDOVER.md` mục 6. Nhánh `claude/task-09-qa` (từ `main`) đã tạo.
 
 ### 2026-10-11 – TASK-07 (Khu phụ huynh)
 - Anh đã dặn “làm luôn không cần hỏi” nên em bỏ bước chờ duyệt kế hoạch (CLAUDE.md mục 6.2) ở TASK này; các quyết định tự chọn ghi bên dưới để anh góp ý.
