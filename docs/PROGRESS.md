@@ -13,8 +13,8 @@
 | TASK-04 G3 + G4 + G5 | Xong | 2026-10-10 | lint, 170 unit test, build, 135 e2e (45 × 3 khung hình) đều pass; cần anh thử TC-007 (2 ngón thật), TC-032 và cảm giác chơi/FPS trên tablet |
 | TASK-05 G6 + G7 | Xong | 2026-10-10 | lint, 373 unit test, build, 204 e2e (68 × 3 khung hình) đều pass; cần anh **duyệt nội dung mẫu** `docs/samples/` + thử cảm giác chơi trên máy thật |
 | TASK-06 Thưởng | Xong | 2026-10-10 | lint, 409 unit test, build, 267 e2e (89 × 3 khung hình) đều pass; **đã gộp vào `main`**; cần anh **duyệt 40 sticker + trang phục/hình nền** và thử hộp quà/album trên máy thật |
-| TASK-07 Khu phụ huynh | Chưa bắt đầu | | **Làm tiếp theo** (sau TASK-08); nhận thêm 2 mục dời từ TASK-08: số phiên bản + nút Cập nhật trong khu PH |
-| TASK-08 PWA + deploy | Xong (chờ gộp `main` + anh bấm bật Pages) | 2026-10-11 | lint, 409 unit test, build, e2e đều pass (có thêm 8 test PWA × 3 khung hình); **cần anh bật GitHub Pages rồi cài thử lên Samsung** – hướng dẫn từng bước ở nhật ký TASK-08 |
+| TASK-07 Khu phụ huynh | Xong (nhánh `claude/task-07-parent-area`, chờ gộp `main`) | 2026-10-11 | lint, 470 unit test, build, 375 e2e (125 × 3 khung hình) đều pass; TC-010/023/025/026/027 tự kiểm Pass; **cần anh thử trên máy thật** + duyệt chữ R13 |
+| TASK-08 PWA + deploy | Xong, **đã gộp `main`, Pages đang chạy** | 2026-10-11 | Pages: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ ; còn chờ anh thử cài + máy bay trên máy thật (TC-001/002/012) và TC-029 sau bản 0.9.0 |
 | TASK-09 QA | Chưa bắt đầu | | |
 | TASK-10 Sửa lỗi | Chưa bắt đầu | | |
 
@@ -25,7 +25,8 @@
 - **Duyệt hình thưởng TASK-06**: 40 sticker (tên + độ hiếm), 2 trang phục, 2 hình nền – xem bằng `npm run dev` rồi mở `http://localhost:5173/?gallery=1` (thêm `&theme=animal|fruit|space|vehicle` để xem to) và `?gallery=1&view=rewards`. Hình nào chưa ưng thì báo số `stk-xx` để em vẽ lại.
 - **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
 
-- **Việc anh cần làm cho TASK-08**: bật GitHub Pages (Settings → Pages → Source: **GitHub Actions**), cho phép gộp vào `main`, rồi cài thử lên điện thoại/Galaxy Tab – hướng dẫn từng bước đánh số ở nhật ký TASK-08 bên dưới. **Duyệt icon** (`public/icons/icon-512.png`: Sóc Bo cười trên nền trời xanh, có sao lấp lánh) – chưa ưng chỗ nào thì báo, em vẽ lại bằng `npm run icons`.
+- **Việc anh cần làm cho TASK-08 (còn lại)**: cài thử lên điện thoại/Galaxy Tab + chế độ máy bay (TC-001, 002, 012), mở thử bằng Samsung Internet; **duyệt icon** (`public/icons/icon-512.png`). Hướng dẫn từng bước ở nhật ký TASK-08.
+- **Việc anh cần làm cho TASK-07**: (1) cho phép gộp nhánh `claude/task-07-parent-area` vào `main` (= deploy bản 0.9.0, cũng là lần thử TC-029 – cập nhật); (2) thử khu phụ huynh trên máy thật theo “Cách thử thủ công” ở nhật ký TASK-07 (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → khôi phục**); (3) **duyệt chữ “khi nào nên cho bé đi khám” (R13)** do em tự soạn (`vi.parent.data.note`); (4) quyết định có bỏ `user-scalable=no` ở viewport (Lighthouse trừ điểm accessibility) hay không.
 
 ## Đề xuất (ngoài phạm vi, để sau)
 
@@ -42,6 +43,45 @@
 - Hai test e2e cũ phụ thuộc thời gian thực – G1 TC-004 và G3 TC-013 – thỉnh thoảng chập chờn khi máy bận và chạy 4 luồng song song (một lần chạy đầy đủ có 2 lỗi, chạy riêng từng test đều pass; chạy đầy đủ lại bằng `--workers=3` được 204/204). TASK-09 (QA) nên ổn định hóa (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
 
 ## Nhật ký
+
+### 2026-10-11 – TASK-07 (Khu phụ huynh)
+- Anh đã dặn “làm luôn không cần hỏi” nên em bỏ bước chờ duyệt kế hoạch (CLAUDE.md mục 6.2) ở TASK này; các quyết định tự chọn ghi bên dưới để anh góp ý.
+- Đã làm:
+  - **Khóa phụ huynh** (`screens/ParentGate.tsx`, `app/parentGate.ts` thuần + test): phép nhân a × b (a 12–49, b 3–9), bàn phím số to (≥ 56px; gõ bằng bàn phím máy tính cũng được), sai 3 lần → khóa 30 giây có đếm ngược rồi ra **phép tính mới**. Vào khu PH phải qua khóa mỗi lần; rời khu là khóa lại (kể cả gõ thẳng địa chỉ `#/parent/...`).
+  - **Khu phụ huynh** (`screens/ParentArea.tsx` + `ui/parent/*`, 6 tab, chữ thường, gọn): chọn hồ sơ của bé ở đầu trang; **nhắc sao lưu** ở mọi tab khi chưa sao lưu hoặc > 14 ngày.
+  - **Tiến bộ** (F06, F18): lọc game (7) × chỉ số (2–4 chỉ số/game, có “thấp hơn là tốt”) × khoảng ngày (7/30/tất cả) × thiết bị (điện thoại/máy tính bảng/tất cả); biểu đồ **Chart.js** (đường chỉ số + đường cấp độ nét đứt, trục phải 0–10), bảng **10 lượt gần nhất**. Chart.js được nạp **sau** (tách gói riêng ≈ 57 KB gzip, chỉ tải khi mở tab Tiến bộ, vẫn nằm trong cache offline). **`DailyAggregate`** (`app/daily.ts`) dựng/cập nhật khi mở app và sau mỗi lượt; lượt chi tiết cũ hơn **120 ngày bị dọn** (tổng hợp theo ngày giữ mãi).
+  - **Bài đo tuần** (F16): banner **“Thử thách tuần”** ở Home (khi chưa làm đủ bộ hoặc ≥ 7 ngày; hiện “đã làm n/7” nếu làm dở), nút **“Bắt đầu bài đo cho bé”** ở tab. Luồng: Giới thiệu (nhãn “Thử thách tuần”, không có Dễ/Vừa/Khó) → chơi ở **cấp cố định `levels.json → benchmark`**, tùy chọn mặc định, G6 dùng chủ đề mặc định của lớp → Kết quả “Thử thách tuần: n/7” + nút **Game tiếp theo** → xong 7 game thì ghi `lastBenchmarkAt` và tắt banner. Không tính độ khó thích ứng; có +sao như thường; thời gian bài đo tính vào giới hạn ngày. Tab hiện **so sánh tuần đầu ↔ tuần gần nhất** cho đủ 7 game dạng thẻ (mũi tên ▲▼ + chữ “Tiến bộ/Giảm/Như nhau” + viền màu; chiều “thấp hơn là tốt” cho thời gian phản ứng, thời gian hoàn thành).
+  - **Cài đặt** (F07, F09, F11, F12, F17): thời gian/ngày (5–60, bước 5), hộp tối đa/ngày (0–5); âm thanh/nhạc/rung; “cho bé chọn độ khó”; **từng game**: Tự động (cấp thấp nhất–cao nhất) hoặc Cố định (chọn cấp) + tùy chọn riêng (G1 số màu/bóng cùng lúc, G2 cỡ bảng/thứ tự/gợi ý, G3 tốc độ/Nhím, G4 số ô/tốc độ/độ dài, G5 tốc độ rơi/nốt đôi, G6/G7 đồng hồ); **G6**: lớp + chủ đề M01–M14 (luôn còn ≥ 1); **G7**: nhóm dạng câu Hình/Số/Ma trận (luôn còn ≥ 1).
+  - **Hồ sơ** (F02): thêm/sửa (tên, hình, lớp); **xóa phải gõ đúng tên** (xác nhận 2 bước), xóa luôn lượt chơi + tổng hợp của hồ sơ đó. Tối đa 5 hồ sơ.
+  - **Thưởng** (F15): +5/+10/+15 phút cho hôm nay, tặng 1/2/3 hộp quà (không tính giới hạn hộp/ngày), kèm **lý do** (Học tốt/Ngoan/Giúp việc nhà/Khác) và nhật ký 10 lần gần nhất.
+  - **Dữ liệu** (F10, NF07): **Sao lưu** ra `nhanhtay-backup-YYYYMMDD.json` (Blob + `a[download]` → thư mục Tải xuống); **Khôi phục** (chọn file → **xem trước** số hồ sơ/lượt/khoảng ngày/phiên bản → xác nhận ghi đè); cảnh báo xóa dữ liệu trình duyệt/ẩn danh/Chrome ≠ Samsung Internet; trạng thái lưu trữ bền; số phiên bản + nút Cập nhật; ghi chú “khi nào nên cho bé đi khám”. Máy **chưa có hồ sơ nào** (vừa xóa dữ liệu) có nút **“Khôi phục dữ liệu”** ngay trên màn tạo hồ sơ đầu tiên (đi qua khóa PH) và khôi phục xong về thẳng Home.
+  - **Dữ liệu/cấu trúc**: `schemaVersion` **1 → 2** (thêm `Profile.rewardLog`, có **migration + test**); `storage.snapshot/restoreAll`; `docs/01_SPEC.md` mục 5 đã cập nhật.
+  - Dọn: bỏ trang “Đang xây dựng” (`UnderConstruction`). Phiên bản app **0.9.0**.
+- Test case tự kiểm (Playwright 3 khung hình + unit): **TC-010 Pass** (biểu đồ đúng số liệu theo ngày từng game kèm cấp độ, lọc thiết bị/khoảng ngày, dựng tổng hợp từ lượt cũ) · **TC-023 Pass** (hết giờ → +10 phút → thẻ game mở lại, đồng hồ còn đúng 10 phút) · **TC-025 Pass** (sao lưu → xóa localStorage → khôi phục từ file: hồ sơ, sao, sticker, lịch sử, cài đặt quay lại đủ) · **TC-026 Pass** (sai 3 lần → khóa + đếm ngược → phép tính mới) · **TC-027 Pass** (so sánh tuần đầu/gần nhất đủ 7 game, mũi tên, chiều “thấp hơn là tốt”) · **TC-015 Pass qua giao diện khu PH** (G2 Cố định cấp 5, chơi 3 lượt vẫn cấp 5). Thêm: bài đo chạy trọn vẹn (cấp cố định, không tính adaptive, sang game kế tiếp, đủ bộ → tắt banner), dọn lượt > 120 ngày (lượt bài đo giữ lại), 5 hồ sơ tối đa, file sao lưu sai báo lỗi và không ghi đè, nhắc sao lưu, nút Quay lại, không tràn ngang + vùng chạm ≥ 48px ở cả 3 khung hình.
+- Unit test: **470** (+61: `daily`, `benchmark`, `parentGate`, `backup` (gồm **sao lưu → khôi phục khứ hồi giữ nguyên dữ liệu**), `parentOps`, migration schema 1 → 2). E2E: **375** (125 test × 3 khung hình; +28 test mới ở `parent.spec.ts` × 3 khung hình = +84).
+- Số đo: gói chính **≈ 114 KB gzip** (+15 KB so với 99 KB; giới hạn 350 KB), Chart.js tách riêng ≈ 57 KB gzip.
+- Cách thử thủ công (điện thoại/tablet; bản Pages sau khi anh gộp, hoặc `npm run dev -- --host`):
+  1. **Khóa:** Home → icon ổ khóa → giải phép nhân bằng bàn phím trên màn hình → vào khu PH. Thử sai 3 lần (khóa 30 giây, rồi phép tính mới).
+  2. **Tiến bộ:** cho bé (hoặc anh) chơi vài lượt G1/G2 trong 2 ngày liền (hoặc cả điện thoại lẫn tablet) → tab Tiến bộ → đổi game/chỉ số/khoảng ngày/thiết bị, xem biểu đồ và “10 lượt gần nhất”.
+  3. **Bài đo tuần:** Home → banner “Thử thách tuần” → chơi lần lượt 7 game (≈ 8–10 phút; có thể dừng giữa chừng và làm tiếp). Tuần sau làm lại rồi xem tab “Bài đo tuần” có so sánh. Để xem nhanh: dùng `?debug=1` không thay được – cần 2 tuần dữ liệu thật hoặc để em seed dữ liệu thử.
+  4. **Cài đặt:** đổi thời gian/ngày xuống 5 phút rồi chơi để thấy nhắc “Còn 2 phút”/hết giờ; đặt G1 “Cố định” cấp 3; tắt “cho bé chọn độ khó” rồi mở màn Giới thiệu.
+  5. **Thưởng (TC-023):** để hết giờ chơi → Khu PH → Thưởng → +10 phút → về Home: thẻ game mở lại, còn 10 phút. Tặng 1 hộp quà → bé mở ở Home.
+  6. **Dữ liệu (TC-025):** Sao lưu → kiểm tra file trong thư mục **Tải xuống** → (thử trên bản Pages) xóa dữ liệu trang web: Chrome ⋮ → Cài đặt → Cài đặt trang web → Lưu trữ → xóa dữ liệu của `nin-min2231.github.io` → mở app: màn tạo hồ sơ có nút “Đã có file sao lưu? Khôi phục dữ liệu” → chọn file → xem trước → Khôi phục.
+  7. **Cập nhật (TC-029):** đây là bản deploy thứ 2 sau TASK-08 → mở app đã cài khi có mạng, đợi vài giây → Home hiện “Có bản mới – Cập nhật” → bấm → vào Khu PH → tab Dữ liệu thấy “Phiên bản 0.9.0”, hồ sơ còn nguyên.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - Khóa PH **không tự khóa khi ẩn tab** (cửa sổ chọn file sao lưu trên Android có thể làm trang bị ẩn) – chỉ khóa khi rời khu PH. Bộ đếm “sai 3 lần” nằm trong bộ nhớ: tải lại trang là được thử lại.
+  - **Lượt bài đo không tính vào `DailyAggregate`/biểu đồ tiến bộ** (cấp cố định làm lệch đường cấp độ); chúng hiện ở bảng “10 lượt gần nhất” (nhãn “Bài đo”) và tab Bài đo tuần. **Lượt bài đo được giữ mãi** (không dọn sau 120 ngày) để còn so với tuần đầu – SPEC chỉ nói chung “120 ngày”.
+  - “Tuần” của bài đo = các khoảng 7 ngày tính từ ngày đo đầu tiên; “tuần gần nhất” = khoảng chứa lần đo mới nhất; nhiều lượt cùng tuần/game lấy trung bình. `lastBenchmarkAt` chỉ ghi khi làm **đủ 7 game** trong 7 ngày (làm dở thì banner vẫn hiện và nhớ đã làm mấy game).
+  - Banner “Thử thách tuần” ở Home bấm là chạy luôn (**không cần qua khóa PH**), vì mục đích là để bé tự làm; bé không chọn được độ khó, không có “Chơi lại” trong bài đo.
+  - Bài đo G6 dùng chủ đề mặc định của lớp hồ sơ và **sổ lỗi trống** (để đề giống nhau giữa các tuần); kết quả bài đo G6 vẫn cập nhật sổ lỗi như lượt thường.
+  - Cài đặt G6: “Lớp” chính là lớp của hồ sơ (đổi lớp → chủ đề toán về mặc định của lớp mới). Tùy chọn `topics`/`grade` kiểu cũ của bảng `?debug=1` vẫn ghi đè nếu có (chỉ dev).
+  - Thưởng: **lý do** áp dụng cho cả tặng giờ lẫn tặng hộp (SPEC chỉ ghi lý do cho hộp) để nhật ký thống nhất; lưu 50 mục mới nhất ở `rewardLog` (schema 2).
+  - Thêm hồ sơ từ khu PH **không đổi người đang chơi**. Khôi phục giữ `deviceId` của **máy đang khôi phục** (lượt mới không gán nhầm sang máy cũ).
+  - **Chữ “khi nào nên cho bé đi khám” (R13) do em tự soạn** vì file Excel gốc không có trong repo – anh xem lại nội dung ở `vi.parent.data.note` (`src/i18n/vi.ts`) và sửa theo ý anh.
+  - Khu PH dùng chữ ≥ 16px (bảng) và ≥ 17–18px (thân), tiêu đề 24px – nhỏ hơn mức 28px của giao diện bé (SPEC: “chữ thường”); vùng chạm ≥ 48px.
+  - `DebugPanel` (`?debug=1`) vẫn giữ để test e2e dùng; khu PH thật đã có đủ chức năng tương đương.
+- Còn lại / nợ kỹ thuật: chưa kiểm trên máy thật (tải file về thư mục Tải xuống trên Android Chrome, cửa sổ chọn file, FPS); khu PH chưa có “xuất CSV”; biểu đồ chưa có tooltip bằng tiếng Việt cho trục ngày dài; `AppState.installedVersion` vẫn chưa cập nhật khi lên bản mới; hai test e2e thời gian thực cũ (G1 TC-004, G3 TC-013) có thể chập chờn (TASK-09).
+- Commit: `feat: parent area (gate, progress charts, benchmark flow, settings, profiles, rewards, backup/restore) with e2e`
 
 ### 2026-10-11 – TASK-08 (PWA offline + deploy GitHub Pages)
 - Đã làm:

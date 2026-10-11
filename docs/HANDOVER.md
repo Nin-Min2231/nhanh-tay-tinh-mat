@@ -1,17 +1,17 @@
 # HANDOVER – Bàn giao sang phiên làm việc mới
 
-> Viết ngày 2026-10-11, sau khi **làm xong TASK-08 (PWA offline + deploy GitHub Pages)** trên nhánh `claude/handover-file-task-5ad07c`. Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
-> Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) làm tiếp **TASK-07 (khu phụ huynh)** mà không phải đoán lại ngữ cảnh.
+> Viết ngày 2026-10-11, sau khi **làm xong TASK-07 (khu phụ huynh)** trên nhánh `claude/task-07-parent-area`. Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
+> Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) làm tiếp **TASK-09 (kiểm thử tự động & rà soát chất lượng)** mà không phải đoán lại ngữ cảnh.
 
 ---
 
 ## 0. Trạng thái git
 
-- **TASK-00 → TASK-06 đều đã ở `main` và `origin/main`** (lịch sử thẳng: `9e27852` docs → `7c69cbc` scaffold → `ab46084` TASK-02 → `76ec054` TASK-03 → `6aa2f82` TASK-04 → `69aa393` TASK-05 → `793d95d` + `daf2e6c` handover → `c73b4a9` TASK-06 `feat: daily missions, gift boxes, 40-sticker album…` → `5fe6d64` handover TASK-08).
-- **TASK-08 nằm trên nhánh `claude/handover-file-task-5ad07c`** (1 commit `feat: PWA offline, install icons, update flow, GitHub Pages deploy` đi sau `5fe6d64`). **Có thể chưa gộp vào `main`** – kiểm bằng `git log origin/main --oneline -3`; nếu chưa, hỏi chủ dự án trước khi làm TASK-07 (nhánh TASK-07 nên xuất phát từ `main` đã có TASK-08). Gộp = `git -C <thư mục gốc> merge --ff-only claude/handover-file-task-5ad07c` rồi `git push origin main` – **push `main` kích hoạt workflow Deploy**, nên chủ dự án nên bật Pages trước (hướng dẫn từng bước: PROGRESS, nhật ký TASK-08).
-- Các nhánh `claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84` chỉ còn là bản sao cũ của `main` – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main`** (gợi ý tên `claude/task-07-parent-area`; worktree mới chưa có `node_modules` → `npm ci`).
+- **TASK-00 → TASK-08 đã ở `main` và `origin/main`** (lịch sử thẳng: `9e27852` docs → `7c69cbc` scaffold → `ab46084` TASK-02 → `76ec054` TASK-03 → `6aa2f82` TASK-04 → `69aa393` TASK-05 → `c73b4a9` TASK-06 → `5fe6d64` handover → **`5999963` TASK-08 PWA + deploy**). **GitHub Pages đã bật và deploy chạy** (chủ dự án xác nhận 2026-10-11): https://nin-min2231.github.io/nhanh-tay-tinh-mat/ – **mỗi lần push `main` là một lần deploy**.
+- **TASK-07 nằm trên nhánh `claude/task-07-parent-area`** (các commit `feat: parent-area data layer …`, `feat: parent area …`, `docs: …` đi sau `5999963`). **Có thể chưa gộp vào `main`** – kiểm bằng `git log origin/main --oneline -3`; nếu chưa, hỏi chủ dự án (gộp = `git -C <thư mục gốc> merge --ff-only claude/task-07-parent-area` rồi `git push origin main` = deploy bản 0.9.0, cũng là lần thử TC-029 – cập nhật). Nhánh TASK-09 nên xuất phát từ `main` đã có TASK-07.
+- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`) chỉ còn là bản sao cũ của `main` – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main`** (gợi ý tên `claude/task-09-qa`; worktree mới chưa có `node_modules` → `npm ci`).
 - **Máy chủ `npm run dev` của chủ dự án chạy ở thư mục gốc (nhánh `main`, cổng 5173, `--host`, địa chỉ LAN `192.168.1.14`)** và tự cập nhật khi `main` đổi. Khi cần dev server của worktree: dùng **cổng khác** (`npm run dev -- --port 5174 --strictPort`; thêm một mục tạm trong `.claude/launch.json` để dùng `preview_start`, **đừng commit mục này**).
-- Việc còn chờ chủ dự án (không chặn TASK-07): **bật GitHub Pages + cài thử PWA lên máy thật** (TC-001/002/012/029); **duyệt icon** (`public/icons/icon-512.png`); **duyệt nội dung mẫu** `docs/samples/G6.md`, `G7.md`, `G7.html`; **duyệt 40 sticker + trang phục + hình nền** (`/?gallery=1` ở bản dev); quyết định **Nhạc Cụ Gõ + Cú Mèo**; thử G1–G7, hộp quà, album trên điện thoại/tablet thật.
+- Việc còn chờ chủ dự án (không chặn TASK-09): **thử khu phụ huynh + bài đo tuần + sao lưu/khôi phục trên máy thật**; **cài thử PWA** (TC-001/002/012; TC-029 sau bản 0.9.0); **duyệt icon** (`public/icons/icon-512.png`); **duyệt chữ R13** (`vi.parent.data.note`); **duyệt nội dung mẫu** `docs/samples/G6.md`, `G7.md`, `G7.html`; **duyệt 40 sticker + trang phục + hình nền** (`/?gallery=1` ở bản dev); quyết định **Nhạc Cụ Gõ + Cú Mèo**; thử G1–G7, hộp quà, album trên điện thoại/tablet thật.
 
 ---
 
@@ -20,13 +20,13 @@
 Chủ dự án (PM, không phải lập trình viên, xưng “anh”, trao đổi **tiếng Việt**) chỉ cần nhắn:
 
 ```
-Làm TASK-07
+Làm TASK-09
 ```
 
 (hoặc “Đọc handover và thực hiện task tiếp theo”). Quy trình bắt buộc (CLAUDE.md mục 6) – đã áp dụng ở mọi TASK trước:
 
-1. Đọc `CLAUDE.md`, `docs/PROGRESS.md`, rồi tài liệu TASK yêu cầu (với TASK-07: `docs/01_SPEC.md` mục 5, 6, 9, 10; `docs/03_TASKS.md` mục TASK-07; `docs/04_ACCEPTANCE.md` TC-010, 023, 025, 026, 027; và **mục 6 của file này**).
-2. **TASK-07 chưa có kế hoạch nào được duyệt**: trình bày **kế hoạch ngắn** rồi **chờ “Đồng ý”** mới viết code. TASK-07 là TASK lớn nhất (6 tab) nên nên chia bước; đề xuất thứ tự: Khóa PH + khung tab → Cài đặt → Hồ sơ + Thưởng → Dữ liệu (sao lưu/khôi phục) → Tiến bộ (Chart.js) → Bài đo tuần.
+1. Đọc `CLAUDE.md`, `docs/PROGRESS.md`, rồi tài liệu TASK yêu cầu (với TASK-09: `docs/03_TASKS.md` mục TASK-09, `docs/04_ACCEPTANCE.md` toàn bộ, `CLAUDE.md` mục 5 (17 quy tắc) và **mục 6 của file này**).
+2. **Trình bày kế hoạch ngắn và chờ “Đồng ý”** rồi mới viết code. *Lưu ý:* ở TASK-07 chủ dự án đã dặn **“làm luôn không cần hỏi”** nên phiên đó bỏ bước chờ duyệt; lời dặn đó chỉ áp dụng cho lần đó – nếu chủ dự án lặp lại thì cứ làm luôn (vẫn ghi rõ các quyết định tự chọn), còn không thì theo CLAUDE.md. **Gộp `main` + push luôn phải hỏi** (push `main` = deploy công khai).
 3. Làm từng bước nhỏ, chạy `npm run lint` + `npm run test` sau mỗi bước lớn; giao diện thì tự xem bằng ảnh chụp Playwright ở 3 khung hình.
 4. Cuối TASK: cập nhật `docs/PROGRESS.md` (trạng thái + nhật ký trên cùng), commit Conventional Commits, push, báo cáo ngắn bằng tiếng Việt (đã làm gì, cách thử trên máy thật, điểm cần quyết định). Gộp vào `main` + push `main` **chỉ khi chủ dự án đồng ý** (cách đã dùng: commit trên nhánh task, `git -C <thư mục gốc> merge --ff-only <nhánh>`, rồi `git push origin main`). **Từ nay push `main` = tự động deploy lên GitHub Pages** (`deploy.yml`): chủ dự án thấy bản mới trên máy sau ~2 phút + bấm “Cập nhật” ở Home.
 
@@ -38,18 +38,16 @@ Làm TASK-07
 
 | Hạng mục | Trạng thái |
 |---|---|
-| TASK-00 → TASK-06 | **Xong**, đã ở `main` và `origin/main` |
-| TASK-08 PWA + deploy | **Xong** trên nhánh `claude/handover-file-task-5ad07c` (chờ chủ dự án đồng ý gộp `main`, bật Pages, thử trên máy thật) |
-| Tiếp theo | **TASK-07 khu phụ huynh** (mục 6) |
-| Sau đó | TASK-09 QA · TASK-10 sửa lỗi |
+| TASK-00 → TASK-08 | **Xong**, đã ở `main` và `origin/main`; Pages đang chạy |
+| TASK-07 Khu phụ huynh | **Xong** trên nhánh `claude/task-07-parent-area` (chờ chủ dự án đồng ý gộp `main`, thử trên máy thật) |
+| Tiếp theo | **TASK-09 QA** (mục 6) |
+| Sau đó | TASK-10 sửa lỗi theo góp ý của chủ dự án (mẫu lặp lại) |
 
-- **Thứ tự TASK-08 trước TASK-07 là quyết định của chủ dự án (2026-10-10)** sau khi được giải thích 3 hệ quả: (1) bản đưa lên Pages chưa chỉnh được gì vì khu PH vẫn là “Đang xây dựng” (`?debug=1`/`?e2e=1` chỉ chạy ở bản dev: không đổi được độ khó/tùy chọn, không tặng giờ/hộp, giới hạn cố định 15 phút/ngày); (2) chưa có sao lưu nên dữ liệu bé trên bản cài không có lưới an toàn → coi bản Pages là **bản dùng thử, chưa cho bé dùng lâu dài** cho tới khi xong TASK-07; (3) mục “hiện số phiên bản + nút Cập nhật trong khu PH” của TASK-08 dời sang TASK-07 (TASK-08 đã làm nút ở Home + hiện tạm số phiên bản ở trang Khu phụ huynh “Đang xây dựng”).
-- Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (công khai), remote `origin`, địa chỉ Pages dự kiến `https://nin-min2231.github.io/nhanh-tay-tinh-mat/` (`BASE_PATH=/nhanh-tay-tinh-mat/`). Máy đã đăng nhập GitHub sẵn nên `git push` chạy thẳng (dùng `GIT_TERMINAL_PROMPT=0 timeout 90 git push` để không bị treo).
+- Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (công khai), remote `origin`, Pages `https://nin-min2231.github.io/nhanh-tay-tinh-mat/` (`BASE_PATH=/nhanh-tay-tinh-mat/`). Máy đã đăng nhập GitHub sẵn nên `git push` chạy thẳng (dùng `GIT_TERMINAL_PROMPT=0 timeout 90 git push` để không bị treo). Xem trạng thái workflow không cần `gh`: đọc API công khai `https://api.github.com/repos/Nin-Min2231/nhanh-tay-tinh-mat/actions/runs`.
 - Git user riêng cho repo: `Nin-Min2231` / `nguyennc1357@gmail.com`. Commit kèm dòng `Co-Authored-By: …` theo nhắc trong phiên.
-- Test e2e: hai test cũ phụ thuộc thời gian thực (**G1 TC-004**, **G3 TC-013**) thỉnh thoảng chập chờn khi chạy song song trên máy bận; chạy riêng thì pass. Chạy đủ bộ nên dùng `npx playwright test --workers=3` (≈ 9 phút) và chạy lại riêng test lỗi trước khi kết luận có hồi quy.
-- Chất lượng hiện tại (nhánh TASK-08): `npm run lint` pass · **409 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (JS ≈ 317 KB, **≈ 99 KB gzip**; giới hạn 350 KB; precache 16 mục ≈ 782 KiB) · **291 e2e** Playwright (97 test × 3 khung hình `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280) đều pass.
-- Home: **cả 7 game chơi được**; nhiệm vụ 3 nhóm, hộp quà, album, trang phục, hình nền, nghỉ đúng giờ **đã làm** (TASK-06). **PWA đã làm (TASK-08)**: cài được lên màn hình chính, chạy offline (kể cả font), nút “Có bản mới – Cập nhật” ở Home, deploy tự động bằng GitHub Actions.
-- Chưa làm: khu phụ huynh + Khóa PH + biểu đồ + sao lưu + bài đo tuần (TASK-07; route `/parent-gate`, `/parent/:tab` hiện là trang “Đang xây dựng” – `UnderConstruction` trong `App.tsx`, đang hiện tạm số phiên bản).
+- Test e2e: hai test cũ phụ thuộc thời gian thực (**G1 TC-004**, **G3 TC-013**) thỉnh thoảng chập chờn khi chạy song song trên máy bận; chạy riêng thì pass. Chạy đủ bộ nên dùng `npx playwright test --workers=3` (≈ 12–15 phút với 375 test) và chạy lại riêng test lỗi trước khi kết luận có hồi quy. *(TASK-09 nên ổn định hóa hai test này.)*
+- Chất lượng hiện tại (nhánh TASK-07): `npm run lint` pass · **470 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (gói chính ≈ 370 KB, **≈ 114 KB gzip**; giới hạn 350 KB; Chart.js tách riêng ≈ 57 KB gzip, tải khi mở tab Tiến bộ; precache 17 mục ≈ 1 MB) · **375 e2e** Playwright (125 test × 3 khung hình `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280) đều pass.
+- Home: **cả 7 game chơi được**; nhiệm vụ, hộp quà, album, trang phục, hình nền, nghỉ đúng giờ (TASK-06); PWA cài được + offline + nút Cập nhật (TASK-08); **khu phụ huynh đầy đủ + bài đo tuần + banner “Thử thách tuần” (TASK-07)**.
 
 ---
 
@@ -85,7 +83,17 @@ src/
     e2e.ts                 # cờ ?e2e=1 / ?debug=1 / ?freeze=1 / ?gallery=1 / ?update=1 / ?sw=1 (chỉ dev hoặc build VITE_E2E)
     pwa.ts                 # (TASK-08) initPwa(): đăng ký service worker qua virtual:pwa-register, onNeedRefresh → updateAvailable,
                            #   kiểm bản mới mỗi giờ/khi quay lại app (chỉ gọi lại sw.js cùng nguồn); applyUpdate() = nút ở Home
-    version.ts             # APP_VERSION (từ package.json lúc build) – TASK-07 hiện trong tab Dữ liệu
+    version.ts             # APP_VERSION (từ package.json lúc build) – hiện trong khu PH, tab Dữ liệu
+    daily.ts               # (TASK-07) THUẦN + test: DailyAggregate (syncDaily: tính lại ngày có lượt chi tiết, giữ ngày cũ; KHÔNG gồm lượt bài đo),
+                           #   pruneRounds (> 120 ngày; giữ lượt bài đo), PROGRESS_METRICS/BENCHMARK_METRIC (khóa chỉ số + “thấp hơn là tốt”),
+                           #   buildSeries (dữ liệu biểu đồ: game × chỉ số × thiết bị × khoảng ngày), recentRounds
+    benchmark.ts           # (TASK-07) THUẦN + test: hàng đợi bài đo (game chưa làm trong 7 ngày), benchmarkDue, compareBenchmarks (tuần đầu ↔ gần nhất)
+    parentGate.ts          # (TASK-07) THUẦN + test: phép nhân a×b, sai 3 lần khóa 30 giây (rng + đồng hồ truyền vào)
+    parentOps.ts           # (TASK-07) THUẦN + test: giveBonusTime/giveBoxes (+ rewardLog), setLimits, patchGameSettings, setGameOption, setGrade,
+                           #   toggleMathTopic, removeProfileFromState, deleteConfirmed
+    backup.ts              # (TASK-07) THUẦN + test: createBackup/parseBackup/stateForRestore/backupOverdue, tên file nhanhtay-backup-YYYYMMDD.json
+    parentStore.ts         # (TASK-07) nối thuần ↔ store: parentUnlocked, benchmarkMode, startBenchmark, parentGive*/parentPatch*/parentSet*,
+                           #   parentAdd/Edit/DeleteProfile, parentCreateBackup, parentRestore
     rng.ts                 # mulberry32 có seed + randInt, pick, shuffle
   games/
     levels.ts              # import docs/data/levels.json, kiểu an toàn (KHÔNG chép tay số liệu)
@@ -96,7 +104,9 @@ src/
     samples.test.ts        # sinh docs/samples/* khi GEN_SAMPLES=1 (`npm run samples`); bình thường bị bỏ qua
   ui/
     App.tsx                # chọn màn hình + redirect hợp lệ; gắn <GiftModal /> ở gốc
-    screens/               # Home, GameIntro, Play (vòng đời lượt), Result, Rest, Album, ProfileSelect, ProfileForm, UnderConstruction
+    screens/               # Home, GameIntro, Play (vòng đời lượt), Result, Rest, Album, ProfileSelect, ProfileForm, ParentGate, ParentArea
+    parent/                # (TASK-07) 6 tab khu PH: ProgressTab (+ chartRender.ts = Chart.js tải sau), BenchmarkTab, SettingsTab (+ gameOptions.ts),
+                           #   ProfilesTab, RewardsTab, DataTab + state.ts (hồ sơ đang xem, định dạng số/ngày). Style: ui/parent.css
     components/            # Button, Mascot (Sóc Bo 5 biểu cảm + prop outfit), Outfits (3 lớp: back/body/head), Scenes (hình nền),
                            # GiftBox (hình hộp + cửa sổ mở hộp), GiftButton, RewardIcons (huy hiệu, Nhạc Cụ Gõ), Avatar (12 + khung Cầu Vồng),
                            # GameIcon, IntroAnimation, DebugPanel, DebugRewards, Confetti, StarBurst, ProgressBar, Overlays…
@@ -112,18 +122,18 @@ docs/                      # SPEC, GAMES, TASKS, ACCEPTANCE, PROGRESS, data/leve
 - `finish?()` là phần mở rộng ngoài SPEC: host gọi khi chơi lố giờ quá 90 giây (game tự kết thúc với kết quả hiện có). G6/G7 kết thúc **ngay** (câu đang dở tính chưa làm).
 - `timeScale` chỉ >1 khi chạy e2e (`?e2e=1` → 10): game dùng để rút ngắn **độ dài lượt** hoặc **thời gian mỗi câu** (G6/G7), không đổi độ khó thật. **Từ TASK-06 cửa sổ 30 giây “Con nghỉ đây” cũng rút ×10** (`REST_WINDOW_MS` trong `store.ts`).
 - `RoundResult.extra` được `recordRound` đọc: **G6 trả `extra.factResults`** → `applyRoundToMath` cập nhật `profile.math.facts`.
-- Vòng đời lượt do `ui/screens/Play.tsx` điều phối: đếm ngược 3-2-1 → Running → tạm dừng (ẩn tab/xoay/resize/Quay lại) → kết thúc → `recordRound` (lưu `RoundRecord`, cộng giờ, `applyRound` độ khó, sổ lỗi G6, **nhiệm vụ + sao + hộp + mở khóa qua `applyRoundRewards`**) → `/result`. **`Play.tsx` hiện đặt `benchmark = false` cố định – TASK-07 (bài đo tuần) phải nối luồng benchmark vào đây** (cấp lấy từ `levelsConfig.benchmark`, không tính vào độ khó thích ứng – `countsForAdaptive` đã có `&& !benchmark`).
+- Vòng đời lượt do `ui/screens/Play.tsx` điều phối: đếm ngược 3-2-1 → Running → tạm dừng (ẩn tab/xoay/resize/Quay lại) → kết thúc → `recordRound` (lưu `RoundRecord`, cộng giờ, `applyRound` độ khó, sổ lỗi G6, **nhiệm vụ + sao + hộp + mở khóa qua `applyRoundRewards`**) → `/result`. **Từ TASK-07 `Play.tsx` hỗ trợ bài đo tuần**: `pendingPlay.benchmark = true` ⇒ cấp = `levelsConfig.benchmark[game]`, `mode: 'fixed'`, `options {}`, G6 chủ đề mặc định của lớp + sổ lỗi `{}`, `countsForAdaptive = false`, `ctx.benchmark = true`; `recordRound` ghi `benchmark: true` vào `RoundRecord`, cập nhật tổng hợp ngày/dọn lượt cũ (`maintainRounds`) và `lastBenchmarkAt` khi đủ 7 game.
 
-### Hệ thống thưởng (TASK-06) – cần biết khi làm TASK-07
+### Hệ thống thưởng (TASK-06; khu PH TASK-07 đã nối tặng hộp/giờ)
 - Mọi thay đổi sao/hộp đi qua `rewards.ts` (`addStars`, `applyRoundRewards`, `openBox`, `claimRestReward`, `grantParentBoxes`) – **thuần**, test ở `rewards.test.ts`. Store chỉ nối dây. Muốn thêm nguồn sao/hộp mới → thêm hàm thuần + test trước.
-- **TASK-07 “Thưởng” (tặng hộp / +5/+10/+15 phút)**: tặng hộp dùng sẵn `grantParentBoxes(profile, n)` (không tính giới hạn hộp/ngày; chưa có trường “lý do” trong dữ liệu – nếu muốn lưu lý do thì thêm cấu trúc + migration + test); cộng thời gian = `DayUsage.bonusMs` (hôm nay). Giới hạn hộp/ngày PH chỉnh: `profile.limits.maxBoxesPerDay` ∈ `MAX_BOXES_PER_DAY_RANGE` (0–5); thời gian/ngày `limits.dailyMinutes` ∈ `levelsConfig.session.dailyMinutesRange` (5–60).
-- Hồ sơ lưu: `totalStars`, `unlocked` (id phần thưởng), `outfitId`, `backgroundId`, `stickers`, `boxes {pending, openedTotal, sinceLastRare}`, `days[ngày] {missions, boxesEarned, starsToday, restOnTimeRewarded, playMs, bonusMs}`. **Không đổi cấu trúc ở TASK-06 → không có migration mới** (schemaVersion vẫn 1). Khi mở app, `store.ts` tự mở các phần thưởng đã đủ sao của hồ sơ cũ (`syncUnlocks`).
-- Khôi phục từ sao lưu (TASK-07) nên gọi lại đối chiếu `syncUnlocks` để dữ liệu cũ vẫn nhất quán.
-- Các nút `?debug=1` mới ở Home (`DebugRewards`): +1 hộp, +10/+15 sao, làm mới ngày hôm nay; giao diện PH thật sẽ thay cho `DebugPanel` (độ khó) – không xóa trước khi PH có đủ chức năng.
+- **Khu PH “Thưởng” (TASK-07)**: `parentOps.giveBoxes` = `grantParentBoxes` + ghi `Profile.rewardLog` (kèm lý do, giữ 50 mục; có từ schema 2); `parentOps.giveBonusTime` tăng `DayUsage.bonusMs` của hôm nay + ghi `rewardLog`. Giới hạn hộp/ngày PH chỉnh: `profile.limits.maxBoxesPerDay` ∈ `MAX_BOXES_PER_DAY_RANGE` (0–5); thời gian/ngày `limits.dailyMinutes` ∈ `levelsConfig.session.dailyMinutesRange` (5–60).
+- Hồ sơ lưu: `totalStars`, `unlocked` (id phần thưởng), `outfitId`, `backgroundId`, `stickers`, `boxes {pending, openedTotal, sinceLastRare}`, `days[ngày] {missions, boxesEarned, starsToday, restOnTimeRewarded, playMs, bonusMs}`. (TASK-06 không đổi cấu trúc; **TASK-07 nâng `schemaVersion` lên 2** – thêm `rewardLog`, có migration + test.) Khi mở app, `store.ts` tự mở các phần thưởng đã đủ sao của hồ sơ cũ (`syncUnlocks`).
+- Khôi phục từ sao lưu (`parentStore.parentRestore`) gọi lại `reconcileUnlocks` (= `syncUnlocks` cho mọi hồ sơ) để dữ liệu cũ vẫn nhất quán.
+- Các nút `?debug=1` mới ở Home (`DebugRewards`): +1 hộp, +10/+15 sao, làm mới ngày hôm nay; khu PH thật (TASK-07) đã có đủ chức năng tương đương `DebugPanel`, nhưng `DebugPanel` vẫn được giữ vì e2e dùng (`?debug=1` chỉ chạy ở dev/build e2e).
 
 ### Quy ước làm game (rút từ TASK-03/04/05, nên theo)
 1. **Logic thuần tách khỏi view** (`logic.ts`) + unit test; `config.ts` đọc `levelsConfig.games.Gx.levels` và ánh xạ nhãn tiếng Việt trong JSON sang enum/số.
-2. Tùy chọn PH đọc qua `readGxOptions(ctx.options)` (bỏ giá trị lạ, mặc định an toàn) → `resolveGxParams(level, options)`.
+2. Tùy chọn PH đọc qua `readGxOptions(ctx.options)` (bỏ giá trị lạ, mặc định an toàn) → `resolveGxParams(level, options)`. **Thêm tùy chọn mới ⇒ thêm vào `ui/parent/gameOptions.ts` (khu PH) cho khớp.**
 3. Nhiều nguồn ngẫu nhiên → tách luồng riêng từ `ctx.rng` (`mulberry32((ctx.rng()*2**32)>>>0)`) để dãy đề không phụ thuộc kích thước màn hình.
 4. Canvas: tạo `createCanvasStage`, vẽ sprite/gradient **một lần khi resize** rồi `drawImage`; **không tạo object/chuỗi/gradient mới mỗi khung hình** (quy tắc 17). Game DOM: tính bố cục trong `ResizeObserver` hoặc khi đổi câu, cập nhật thanh thời gian bằng `style.transform`.
 5. Chạm: `PointerGate('first')` hoặc `attachPointerInput`. Chạm sai luôn nhẹ nhàng: âm “bụp” + `haptics.wrong(el)` (lắc hình) + lời động viên, **không trừ sao**.
@@ -145,36 +155,39 @@ docs/                      # SPEC, GAMES, TASKS, ACCEPTANCE, PROGRESS, data/leve
   - **`?update=1`** – giả lập “có bản mới” (bật `updateAvailable`) để thử nút Cập nhật. **`?sw=1`** – **bản build e2e chỉ đăng ký service worker khi có cờ này** (để 267 test cũ không phải tải lại precache mỗi lần); bản deploy thật luôn đăng ký. Chỉ `pwa.spec.ts` dùng.
   - **`?gallery=1`** (+ `&theme=animal|fruit|space|vehicle` xem to, hoặc `&view=rewards` xem trang phục/hình nền) – trang xem trước hình, tách gói riêng, **không có trong bản deploy** (đã kiểm `dist/`).
 - `tests/e2e/helpers.ts`: `seedProfiles`, `makeProfile(name, patchProfile, patchHômNay)`, `withGame`, `startGame`, bot `playG1/playG2/g5Bot`, `readState/readRounds/lastRound`, `hidePage`, `E2E_URL`, `todayKey`; cho G6/G7: `questionState`, `waitForAsk`, `tapSelector`, `solveDisplayedText`. Mẫu hộp quà/album/nghỉ: `rewards.spec.ts`.
+- `tests/e2e/parent.spec.ts` (TASK-07) có sẵn mẫu: `solveGate`/`openParent` (đọc phép nhân trên màn hình rồi bấm phím), `seedRounds` + `mkRound(profileId, game, daysAgo, …)` (gieo `RoundRecord` cũ vào localStorage), `chartData` (đọc `data-chart` của biểu đồ – chỉ có ở dev/build e2e), `readKey` (đọc khóa localStorage bất kỳ), tải file sao lưu bằng `page.waitForEvent('download')`, khôi phục bằng `setInputFiles`.
 - Việc luôn làm trước khi báo xong: `npm run lint`, `npm test`, `npm run build`, e2e đầy đủ (`npx playwright test --workers=3`); rồi chụp ảnh 3 khung hình để tự xem giao diện (xem “Mẹo công cụ”).
 - `npm run samples` sinh lại `docs/samples/G6.md`, `G7.md`, `G7.html` (seed cố định).
 
 ---
 
-## 6. Việc cần làm: TASK-07 (khu phụ huynh)
+## 6. Việc cần làm: TASK-09 (kiểm thử tự động & rà soát chất lượng)
 
-Tài liệu nguồn: `docs/03_TASKS.md` mục TASK-07, `docs/01_SPEC.md` mục 9 (khu PH), 10 (bài đo chuẩn), 5 (dữ liệu: `DailyAggregate`), 6; F06, F08, F10, F11, F12, F15, F16, F17, F18; `docs/04_ACCEPTANCE.md` TC-010, 023, 025, 026, 027 + bảng unit test bắt buộc (`storage.ts`: backup → restore khứ hồi, dọn bản ghi > 120 ngày).
+Tài liệu nguồn: `docs/03_TASKS.md` mục TASK-09, `docs/04_ACCEPTANCE.md` (35 TC), `CLAUDE.md` mục 5 (17 quy tắc). Prompt TASK-09 (tóm tắt):
+1. Bổ sung e2e Playwright (phone + tablet) cho các TC đánh dấu “Tự động”, dùng `?e2e=1`.
+2. Rà soát 17 quy tắc của CLAUDE.md mục 5: liệt kê vi phạm và sửa.
+3. Rà soát accessibility: tương phản, vùng chạm, `prefers-reduced-motion`, màu + hình.
+4. Kiểm bundle size, 60 fps G1/G3/G5 (ghi số liệu).
+5. Xuất `docs/QA_REPORT.md`: bảng 35 TC (Tự động: Pass/Fail; Thủ công: cần chủ dự án test), lỗi đã sửa, rủi ro còn lại. Hoàn thành khi toàn bộ test pass, báo cáo hoàn chỉnh, đã deploy bản mới.
 
-Prompt TASK-07 (tóm tắt):
-1. **Khóa PH**: phép nhân a×b (a 12–49, b 3–9), bàn phím số, sai 3 lần khóa 30 giây (sau đó phép tính mới).
-2. **Tab Tiến bộ**: Chart.js (đã cài) đường theo ngày + đường cấp; lọc hồ sơ / game / chỉ số / khoảng ngày / thiết bị (phone, tablet); bảng 10 lượt gần nhất. `DailyAggregate` (giữ vĩnh viễn) + dọn `RoundRecord` > 120 ngày.
-3. **Tab Bài đo tuần**: luồng chạy 7 game ở cấp benchmark (`levels.json`), thẻ so sánh tuần đầu ↔ tuần gần nhất (chú ý chỉ số “thấp hơn là tốt”), banner “Thử thách tuần” trên Home (`profile.lastBenchmarkAt`).
-4. **Tab Cài đặt**: thời gian/ngày, hộp tối đa/ngày, âm thanh/nhạc/rung, cho bé chọn độ khó (`settings.allowKidDifficultyChoice`); từng game Tự động (min–max) / Cố định + tùy chọn riêng (chuyển từ `DebugPanel`); G6 lớp + chủ đề toán.
-5. **Tab Hồ sơ** (thêm/sửa/xóa xác nhận 2 bước), **Tab Thưởng** (+5/+10/+15 phút, tặng hộp kèm lý do).
-6. **Tab Dữ liệu**: sao lưu JSON (tải về thư mục Tải xuống), khôi phục có xem trước + xác nhận, cảnh báo xóa dữ liệu/ẩn danh, nhắc > 14 ngày chưa sao lưu (`lastBackupAt`), phiên bản app, ghi chú khi nào nên cho bé đi khám (R13).
+Gợi ý chuẩn bị (từ các nhật ký TASK-02 → TASK-07 trong `docs/PROGRESS.md`, mỗi nhật ký ghi rõ TC nào đã tự kiểm “Pass” và TC nào “mức mô phỏng/cần máy thật”):
+- Lập bảng TC trước, đối chiếu với test e2e hiện có (`grep -rn "TC-0" tests/e2e`) để biết TC nào còn thiếu test tự động. Các TC đã có test: TC-003–006, 008, 009, 010, 011, 012 (phần tự động), 013–024 (trừ vài TC thủ công), 025–027, 030, 031, 033, 034 (mô phỏng); thủ công cần thiết bị thật: TC-001, 002, 007 (2 ngón thật), 028, 029, 032, 035, và phần thật của TC-033/034.
+- **Ổn định hóa 2 test chập chờn**: G1 TC-004 và G3 TC-013 (nới dung sai hoặc hạ số luồng trong `playwright.config.ts`).
+- Quy tắc cần kiểm kỹ: 1 (không request ra ngoài – đã có test NF05 và `pwa.spec.ts`; Chart.js/khu PH không gọi mạng), 8 (vùng chạm; khu PH dùng chữ 16–18px, tiêu đề 24px nhỏ hơn mức 28px của giao diện bé – ghi rõ là cố ý), 9 (màu kèm hình), 10 (tạm dừng), 11 (mọi `localStorage` qua `storage.ts`: `grep -rn "localStorage" src` chỉ nên thấy `storage.ts`), 13 (không tự reload), 14 (random ảnh hưởng điểm/thưởng dùng `rng.ts`: `parentGate` dùng rng có seed khi `?e2e=1`), 16 (chuỗi tiếng Việt chỉ ở `vi.ts`: tên chủ đề toán/phần thưởng lấy từ `levels.json` là dữ liệu, không tính; `grep` các chuỗi tiếng Việt cứng trong `src/**/*.tsx`).
+- Accessibility đã biết: viewport có `user-scalable=no` (Lighthouse trừ điểm, chủ dự án chưa quyết định); khu PH có vai trò ARIA đơn giản (nav + `aria-current`, radiogroup, details/summary); tương phản chữ muted `#4d6270` trên trắng ≈ 6:1 (đạt AA) – nên đo lại bằng công cụ.
+- Số liệu có sẵn: gói chính ≈ 114 KB gzip; khởi động offline FCP ≈ 100 ms (TASK-08); Lighthouse (TASK-08) Performance 83 · Accessibility 93 · Best Practices 81 · SEO 60 (noindex cố ý); 60 fps G1/G3/G5 mới đo bằng script (ms JS mỗi khung) – số thật cần máy thật (`?debug=1`).
+- Muốn có “đã deploy bản mới”: gộp `main` (hỏi chủ dự án) và tăng `package.json` version (mỗi TASK một bản; hiện **0.9.0**).
 
-Điểm kỹ thuật cần lưu ý:
-- Giao diện PH theo SPEC: **chữ thường, không cần hoạt hình**, nhưng vẫn vùng chạm ≥ 48px và tiếng Việt trong `vi.ts`.
-- Chart.js đóng gói (không CDN), tree-shake (chỉ đăng ký thành phần cần dùng); nên **tải sau** (dynamic import) để không phình gói đầu.
-- `DailyAggregate` và dọn bản ghi cần **migration + test** nếu đổi cấu trúc (quy tắc 12); backup/restore phải khứ hồi giữ nguyên **cả** `ntm.state`, `ntm.rounds.<id>`, `ntm.daily.<id>`.
-- Tải file sao lưu: `Blob` + `<a download>`; trên Android Chrome vào thư mục Tải xuống. Khôi phục: `<input type=file>` + xem trước tóm tắt trước khi ghi đè (nhớ đối chiếu `syncUnlocks`).
-- Hộp quà PH tặng: dùng `grantParentBoxes`; cộng thời gian: tăng `days[hôm nay].bonusMs` (TC-023: hết giờ → +10 phút → Home mở lại thẻ game, đồng hồ còn 10 phút).
-- Không giao diện nào được gửi dữ liệu ra mạng (quy tắc 1).
-- **Chuyển từ TASK-08 sang đây:** hiện **số phiên bản** (`APP_VERSION` từ `app/version.ts`) và **nút “Có bản mới – Cập nhật”** (cờ `updateAvailable`, hàm `applyUpdate` trong `app/pwa.ts` do TASK-08 tạo) trong khu PH thật (nút Cập nhật **vẫn giữ ở Home**: TASK-08 đã làm; thêm một nút nữa trong tab Dữ liệu); gỡ chỗ hiển thị tạm số phiên bản ở `UnderConstruction` (prop `showVersion`, chuỗi `vi.wip.version`, class `.app-version`, test id `app-version`) khi trang này không còn dùng cho khu PH. TC-029 (cập nhật giữ nguyên dữ liệu, hiện số phiên bản mới) kiểm đầy đủ ở TASK-07.
-- Khôi phục sao lưu cần `navigator.storage.persist()` và bối cảnh an toàn (https) để chắc chắn lưu bền – bản GitHub Pages (TASK-08) có https, thử TC-025 trên máy thật ở đó.
-- Chart.js nên **tải sau** (`import()`); gói chia nhỏ này đã nằm trong cache offline vì Workbox precache mọi file build.
+## 6b. TASK-07 đã làm gì (khu phụ huynh – để biết khi đụng vào)
 
+- **Luồng vào**: Home → nút ổ khóa → `#/parent-gate` (`ParentGate.tsx`) → giải đúng → `parentUnlocked = true` → `replace('/parent/progress')` (hoặc `/parent/data` nếu máy chưa có hồ sơ). `App.tsx` `redirectFor`: route `parent` mà chưa mở khóa → về `/parent-gate`; cả hai route **dùng được khi chưa có hồ sơ nào** (để khôi phục sao lưu). `ParentArea` khóa lại khi unmount (rời khu). Khóa PH **không** tự khóa khi ẩn tab (cửa sổ chọn file trên Android có thể làm trang bị ẩn). Khi `?e2e=1` thời gian khóa 30 giây rút ×10.
+- **Dữ liệu** (xem `docs/01_SPEC.md` mục 5): `schemaVersion` **2** (thêm `Profile.rewardLog`, migration 1 → 2 trong `storage.ts` + test); `ntm.daily.<id>` = `DailyAggregate[]` **dựng từ `RoundRecord` còn giữ** mỗi khi mở app và sau mỗi lượt (`maintainRounds` trong `store.ts`; **không gồm lượt bài đo**); lượt chi tiết > 120 ngày bị dọn **trừ lượt bài đo (`benchmark: true`, giữ mãi)**. `storage.snapshot/restoreAll` cho sao lưu/khôi phục.
+- **Bài đo tuần**: `parentStore.startBenchmark(profileId?)` đặt `benchmarkMode`, vào `/play/<game đầu tiên chưa làm trong 7 ngày>/intro`. `GameIntro` (khi `benchmarkMode`) ẩn Dễ/Vừa/Khó + `DebugPanel`, bắt đầu với `pendingPlay = { …, benchmark: true }`; `Play.tsx` khi `benchmark`: cấp = `levels.json → benchmark`, `mode: 'fixed'`, tùy chọn `{}`, G6 dùng chủ đề mặc định của lớp + sổ lỗi `{}`, không tính adaptive. `recordRound` trả `benchmarkNext/benchmarkLeft` và ghi `lastBenchmarkAt` khi đủ 7 game; `Result.tsx` hiện tiến độ + nút “Game tiếp theo”. `Home` đặt `benchmarkMode = false` mỗi lần hiện.
+- **Tab Cài đặt** đọc/ghi qua `parentOps` (thuần): bảng tùy chọn riêng từng game ở `ui/parent/gameOptions.ts` (**phải khớp `readGxOptions` trong `games/*/config.ts`**); `'auto'`/giá trị mặc định ⇒ xóa khóa khỏi `options`. G6: lớp = `profile.grade` + chủ đề `profile.math.topics`; G7: `options.groups`.
+- **Biểu đồ**: `ui/parent/chartRender.ts` (Chart.js, chỉ đăng ký thành phần cần dùng) được `import()` trong `ProgressTab` ⇒ gói riêng `chartRender-*.js`. E2E đọc dữ liệu qua `data-chart` (không đọc canvas).
+- **Còn có thể làm (đề xuất)**: xuất CSV; so sánh nhiều bé; biểu đồ theo tuần; nhắc sao lưu ngay ở Home (hiện chỉ trong khu PH).
 
-## 6b. TASK-08 đã làm gì (tóm tắt – để biết khi đụng vào PWA/deploy)
+## 6c. TASK-08 đã làm gì (tóm tắt – để biết khi đụng vào PWA/deploy)
 
 - **Icon**: `scripts/make-icons.mjs` (`npm run icons`, cần `npx playwright install chromium`) vẽ Sóc Bo (cùng nét với `Mascot.tsx`, có gradient + vệt sáng, nền trời xanh, 3 ngôi sao lấp lánh) → `public/icons/icon.svg` (favicon), `icon-192.png`, `icon-512.png`, `maskable-512.png` (hình nằm trong vòng an toàn 80%). **PNG được commit** (GitHub Actions không phải cài trình duyệt). Muốn đổi icon: sửa script rồi chạy lại.
 - **`vite.config.ts`**: manifest đầy đủ (`id`, `lang: vi`, `description`, `categories`, 3 icon), `registerType: 'prompt'`, `injectRegister: false` (tự đăng ký trong `app/pwa.ts`), `includeManifestIcons: false`, `workbox.globPatterns` gồm `woff2,svg,png,webmanifest` (**trước TASK-08 font Nunito/icon không nằm trong cache offline**; nay precache 16 mục ≈ 782 KiB), `cleanupOutdatedCaches`. `index.html`: favicon, `description`, `robots noindex`.
@@ -216,6 +229,10 @@ Prompt TASK-07 (tóm tắt):
 - **Service worker + Playwright**: (1) `context.route('**/sw.js')` **không** chặn được lần kiểm tra cập nhật của chính `sw.js` → muốn giả lập “deploy lần 2” phải tự dựng máy chủ tĩnh (xem `startStaticServer` trong `pwa.spec.ts`); (2) mở app lần đầu thì service worker kích hoạt nhưng **chưa kiểm soát trang** (không `clientsClaim`) → test cần `reload()` một lần nếu muốn kiểm tra sự kiện `controlling`; điều hướng mới (kể cả offline) thì đã đi qua service worker; (3) `navigator.serviceWorker.ready` chỉ xong khi precache xong (kích hoạt xảy ra sau khi cài + precache) nên dùng làm mốc “đã sẵn sàng offline”.
 - Bản build e2e chỉ đăng ký service worker khi URL có `?sw=1` (xem `E2E.serviceWorker`); đừng bỏ cờ này kẻo 267 test cũ chậm lại và dễ chập chờn.
 - Lighthouse ≥ 12 không còn nhóm điểm PWA (chỉ còn Performance/Accessibility/Best Practices/SEO). GitHub Pages cache `sw.js` ~10 phút.
+- **Preact + checkbox/radio “điều khiển” (controlled)**: nếu trình xử lý `onChange` **từ chối** thay đổi (vd không cho tắt nhóm cuối cùng) mà dữ liệu không đổi, Preact không vẽ lại ⇒ ô hiện sai trạng thái. Phải tự trả lại `el.checked` (xem `GroupsPanel` trong `SettingsTab.tsx`). Playwright `check()/uncheck()` sẽ báo lỗi nếu trạng thái không đổi – dùng `click()` khi muốn thử chính trường hợp bị từ chối.
+- **E2E gieo dữ liệu**: `seedProfiles/seedRounds` dùng `page.addInitScript` và chỉ ghi khi khóa còn trống, **chạy lại ở mọi lần điều hướng** của trang đó ⇒ muốn thử “xóa dữ liệu trình duyệt” hãy dùng `context.newPage()` (không có init script) rồi `localStorage.clear()` (xem TC-025 trong `parent.spec.ts`). `readState` trả `null` khi chưa từng ghi (dùng `?.`). Có nhiều hồ sơ thì app vào `/profiles` chứ không phải Home → vào khu PH bằng `location.hash = '#/parent-gate'`.
+- `RoundRecord.startedAt` là ISO; “ngày” luôn lấy theo **giờ máy** (`dateKey(new Date(startedAt))`) – khi gieo dữ liệu thử dùng giờ địa phương giữa ngày (vd 8–17h) để không lệch ngày vì múi giờ.
+- Chart.js vẽ lên canvas – test kiểm **dữ liệu** (`data-chart`) và kích thước canvas, không so điểm ảnh.
 - Biến môi trường dạng `/ten-repo/` trong Git Bash có thể bị đổi thành đường dẫn Windows → dùng `cross-env` (đã cài; `build:pages` và `playwright.config.ts` đều dùng, đã kiểm `manifest`/`index.html` ra đúng `/nhanh-tay-tinh-mat/`) hoặc PowerShell.
 - **Đường dẫn `/tmp` của Git Bash ≠ `/tmp` mà Node thấy** (Node ghi/đọc `D:\tmp`) → ghi file trung gian vào thư mục scratchpad bằng đường dẫn Windows đầy đủ. **Đừng `cd` vào thư mục con bằng Bash** (làm đổi luôn thư mục làm việc chính của phiên) – dùng đường dẫn tuyệt đối.
 
@@ -224,11 +241,11 @@ Prompt TASK-07 (tóm tắt):
 ## 8. Việc cần chủ dự án tự làm / còn chờ (chưa có ai kiểm trên máy thật)
 
 Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
+- **TASK-07**: cho phép gộp nhánh `claude/task-07-parent-area` vào `main` (= deploy 0.9.0); thử khu PH trên máy thật (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → xóa dữ liệu trang → khôi phục**); **duyệt chữ R13**; quyết định bỏ `user-scalable=no` hay không.
+- **TASK-08**: cài thử PWA lên điện thoại/Galaxy Tab bằng Chrome + chế độ máy bay (TC-001, 002, 012), mở thử bằng Samsung Internet; TC-029 (cập nhật) sau bản 0.9.0; **duyệt icon**.
 - **Duyệt nội dung G6/G7** bằng `docs/samples/`.
 - **Duyệt hình TASK-06**: 40 sticker, 2 trang phục, 2 hình nền (`?gallery=1`); quyết định **Nhạc Cụ Gõ + Cú Mèo** (làm ở TASK-10 hay bỏ).
-- Thử trên **điện thoại Android** và **tablet Samsung** (Chrome, cùng wifi): cảm giác chơi G1–G7, **FPS thật** của G1/G3/G5 bằng `?debug=1`, TC-007 (2 ngón vào nốt đôi G5), TC-032, TC-033 (vuốt Quay lại), TC-034 (chia đôi màn hình/cửa sổ nổi), TC-035 (tablet không rung → lắc hình + âm “bụp”), TC-028 (G1 đen trắng); **hộp quà + album + nhiệm vụ + nghỉ đúng giờ** (cách thử từng bước ở PROGRESS, TASK-06).
-- Mở bằng `http://192.168.x.x` thì không cài được PWA/offline (cần https – dùng địa chỉ GitHub Pages).
-- **TASK-08 – việc GitHub chủ dự án phải bấm** (bật Pages với Source = GitHub Actions, rồi thử cài + máy bay + Samsung Internet; **TC-029 sau lần deploy thứ 2**) – hướng dẫn từng bước đánh số ở `docs/PROGRESS.md`, nhật ký TASK-08. **Duyệt icon** `public/icons/icon-512.png`.
+- Thử trên **điện thoại Android** và **tablet Samsung**: cảm giác chơi G1–G7, **FPS thật** của G1/G3/G5 bằng `?debug=1`, TC-007 (2 ngón vào nốt đôi G5), TC-032, TC-033 (vuốt Quay lại), TC-034 (chia đôi màn hình/cửa sổ nổi), TC-035 (tablet không rung → lắc hình + âm “bụp”), TC-028 (G1 đen trắng); **hộp quà + album + nhiệm vụ + nghỉ đúng giờ** (cách thử từng bước ở PROGRESS, TASK-06).
 
 ---
 
@@ -242,7 +259,8 @@ Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
 - Tỷ lệ độ hiếm thật ≈ 66 / 28,3 / 5,7 do “bảo đảm Hiếm” (SPEC không thể đúng cả 70/25/5 lẫn bảo đảm) – nếu cần chỉnh: `rollRarity` trong `rewards.ts`.
 - Bộ âm Nhạc Cụ Gõ + Linh vật Cú Mèo: đã mở khóa nhưng chưa dùng được.
 - G6: M11 tìm số thiếu ra số lớn (chủ đề lớp 3, không mặc định); G7 cấp 5 chưa có lời giải thích riêng cho hai nhịp lặp khác nhau.
-- Chưa có: `DailyAggregate` + dọn bản ghi > 120 ngày (TASK-07).
+- Khu PH: chưa có xuất CSV; nhắc sao lưu chỉ hiện trong khu PH (chưa nhắc ở Home); bộ đếm “sai 3 lần” nằm trong bộ nhớ (tải lại trang là thử lại được); `ParentArea` dùng nav + `aria-current` (chưa có điều hướng bằng phím mũi tên kiểu tablist).
+- Gói chính tăng lên ≈ 114 KB gzip vì giao diện khu PH (6 tab) nằm cùng gói; có thể tách `ui/parent/*` thành gói tải sau nếu TASK-09 thấy cần (Chart.js đã tách).
 - `AppState.installedVersion` chỉ ghi lúc tạo dữ liệu, chưa cập nhật khi app lên phiên bản mới (khu PH dùng `APP_VERSION` từ `version.ts`, không dùng trường này; nếu muốn biết “phiên bản đã từng cài”, thêm cập nhật khi mở app + test).
 - Chưa kiểm trên **Samsung Internet** thật (TASK-08 chỉ kiểm bằng Chromium/Playwright); `gh` CLI chưa đăng nhập (chưa cần).
 - Thư viện cài ngoài danh sách CLAUDE.md đã được chấp nhận: `@types/node`, `@eslint/js`, `typescript-eslint`, `globals`, `eslint-config-prettier`. Phiên bản mới nhất: Vite 8, Preact 11, TypeScript 6, ESLint 10, Vitest 5, vite-plugin-pwa 2 (chạy ổn).
@@ -255,11 +273,11 @@ Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
 npm install            # (worktree mới: npm ci)
 npm run dev            # http://localhost:5173 (+ địa chỉ Network cho điện thoại/tablet)
 npm run lint           # eslint + tsc --noEmit
-npm test               # Vitest (409 test)
+npm test               # Vitest (470 test)
 npm run build          # production
 npm run build:pages    # production với BASE_PATH=/nhanh-tay-tinh-mat/ (giống bản deploy)
 npm run icons          # vẽ lại icon PWA vào public/icons/ (cần `npx playwright install chromium`)
-npm run test:e2e       # Playwright 3 khung hình (tự build dist-e2e + dist-e2e-base)
+npm run test:e2e       # Playwright 3 khung hình, 375 test (tự build dist-e2e + dist-e2e-base)
 npm run samples        # sinh docs/samples/G6.md, G7.md, G7.html
 npx playwright test rewards --project=phone --reporter=line   # chạy 1 file / 1 khung hình
 git add -A && git commit -m "feat: …" && GIT_TERMINAL_PROMPT=0 timeout 90 git push

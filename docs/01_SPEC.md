@@ -147,7 +147,7 @@ Khóa lưu trữ: `ntm.state` (AppState), `ntm.rounds.<profileId>` (RoundRecord[
 
 ```ts
 interface AppState {
-  schemaVersion: 1;
+  schemaVersion: 2;                    // 1 → 2 (TASK-07): thêm Profile.rewardLog
   deviceId: string;                    // uuid tạo lần đầu
   activeProfileId: string | null;
   profiles: Profile[];                 // tối đa 5
@@ -172,7 +172,15 @@ interface Profile {
   games: Record<GameId, GameProgress>;
   math: { topics: string[]; facts: Record<string, MathFact> };  // F17, F19
   days: Record<string, DayUsage>;      // khóa 'YYYY-MM-DD' theo giờ máy
-  lastBenchmarkAt: string | null;
+  lastBenchmarkAt: string | null;      // lần làm ĐỦ 7 game bài đo của tuần (banner “Thử thách tuần”)
+  rewardLog: RewardLogEntry[];         // nhật ký phụ huynh thưởng (F15), giữ 50 mục mới nhất
+}
+
+interface RewardLogEntry {
+  at: string;                          // ISO
+  kind: 'time' | 'box';
+  amount: number;                      // phút hoặc số hộp
+  reason: 'goodStudy' | 'wellBehaved' | 'chores' | 'other';
 }
 
 interface GameProgress {
@@ -209,6 +217,7 @@ interface DailyAggregate {  // giữ vĩnh viễn; RoundRecord chỉ giữ 120 n
 
 - `deviceClass`: `tablet` nếu cạnh ngắn của **màn hình** (`screen.width/height`, không dùng kích thước cửa sổ vì có thể đang chia đôi màn hình) ≥ 600 CSS px, ngược lại `phone`.
 - “Ngày” tính theo giờ địa phương của máy, đổi ngày lúc 00:00.
+- `DailyAggregate` dựng từ các `RoundRecord` còn giữ (tính lại các ngày có lượt chi tiết, giữ nguyên ngày cũ đã bị dọn); **không gồm lượt bài đo** (chạy ở cấp cố định, xem tab “Bài đo tuần”). `RoundRecord` chi tiết giữ 120 ngày; **riêng lượt bài đo (`benchmark: true`) giữ mãi** để còn so sánh với tuần đầu. Việc này chạy khi mở app và sau mỗi lượt (`maintainRounds` trong `store.ts`).
 - Kích thước ước tính: ~200 byte/lượt × ~10 lượt/ngày × 120 ngày × 5 hồ sơ ≈ 1,2 MB (< giới hạn 5 MB).
 - Gọi `navigator.storage?.persist?.()` sau khi tạo hồ sơ đầu tiên.
 

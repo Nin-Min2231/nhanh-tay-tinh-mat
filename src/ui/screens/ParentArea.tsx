@@ -78,13 +78,12 @@ export function ParentArea({ tab: rawTab }: { tab: string }) {
         <h1 class="parent-title">{vi.parent.title}</h1>
       </header>
 
-      <nav class="parent-tabs" role="tablist" aria-label={vi.parent.title}>
+      <nav class="parent-tabs" aria-label={vi.parent.title}>
         {PARENT_TABS.map((t) => (
           <button
             key={t}
             type="button"
-            role="tab"
-            aria-selected={tab === t}
+            aria-current={tab === t ? 'page' : undefined}
             class={`parent-tab${tab === t ? ' is-selected' : ''}`}
             data-testid={`tab-${t}`}
             onClick={() => replace(`/parent/${t}`)}

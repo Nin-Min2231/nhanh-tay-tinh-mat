@@ -54,8 +54,10 @@ export function reconcileUnlocks(state: AppState): AppState {
  */
 export function maintainRounds(profileId: string, now: Date = new Date()): RoundRecord[] {
   const rounds = storage.loadRounds(profileId);
-  const daily = syncDaily(storage.loadDaily(profileId), rounds);
-  storage.saveDaily(profileId, daily);
+  if (rounds.length === 0) return rounds;
+  const before = storage.loadDaily(profileId);
+  const daily = syncDaily(before, rounds);
+  if (JSON.stringify(daily) !== JSON.stringify(before)) storage.saveDaily(profileId, daily);
   const kept = pruneRounds(rounds, now);
   if (kept.length !== rounds.length) storage.saveRounds(profileId, kept);
   return kept;
