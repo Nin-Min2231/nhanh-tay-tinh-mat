@@ -32,14 +32,14 @@
 | TC-025 | Có dữ liệu ≥ 1 ngày | 1. Khu PH → Sao lưu (lưu file)<br>2. Xóa dữ liệu trang web<br>3. Mở app → Khôi phục từ file | Hồ sơ, sao, album, lịch sử, cài đặt quay lại đầy đủ | Trung bình | F10, R07 | Tự động (e2e/unit) |
 | TC-026 | Ở màn hình khóa phụ huynh | 1. Nhập sai 3 lần | Khóa 30 giây, đếm ngược; sau đó hiện phép tính mới | Thấp | F08 | Tự động (e2e/unit) |
 | TC-027 | Đã làm bài đo chuẩn ở 2 tuần khác nhau | 1. Khu PH → Tiến bộ → So sánh tuần | Bảng so sánh tuần đầu và tuần gần nhất cho đủ 7 game, có mũi tên tăng/giảm | Cao | F16, R16 | Tự động (e2e/unit) |
-| TC-028 | Đang chơi G1 cấp ≥ 8 | 1. Chụp màn hình, chuyển ảnh đen trắng | Vẫn phân biệt được 4 loại bóng nhờ hình dạng/biểu tượng | Trung bình | UI03 | Thủ công (thiết bị thật) |
+| TC-028 | Đang chơi G1 cấp ≥ 8 | 1. Chụp màn hình, chuyển ảnh đen trắng | Vẫn phân biệt được 4 loại bóng nhờ hình dạng/biểu tượng | Trung bình | UI03 | Tự động (mô phỏng: hình bóng từ canvas, không dùng màu) + Thủ công (đen trắng thật) |
 | TC-029 | App đã cài; có bản mới được deploy | 1. Mở app khi có mạng<br>2. Bấm “Cập nhật” ở màn hình chính | Thông báo không xuất hiện giữa lượt chơi; sau cập nhật hiện số phiên bản mới, dữ liệu giữ nguyên | Trung bình | NF07, R18 | Thủ công (thiết bị thật) |
 | TC-030 | Vừa hết giờ chơi | 1. Bấm “Con nghỉ đây” trong 30 giây | Được +2 sao “Nghỉ đúng giờ”, màn hình nghỉ gợi ý vận động | Trung bình | F20 | Tự động (e2e/unit) |
 | TC-031 | Đang chơi G1 hoặc G2 | 1. Chạm 2 ngón cùng lúc vào 2 vị trí | Chỉ lần chạm đầu được tính | Trung bình | R05 | Tự động (e2e/unit) |
 | TC-032 | Điện thoại dọc, G5 cấp ≥ 4 | 1. Chơi 1 lượt bằng 2 ngón cái | 4 làn vừa màn hình, mỗi làn ≥ 48px; nốt đôi tính đủ | Trung bình | G5, NF04 | Thủ công (thiết bị thật) |
 | TC-033 | Đang chơi một game bất kỳ | 1. Vuốt từ cạnh màn hình (cử chỉ Quay lại)<br>2. Bấm “Chơi tiếp”<br>3. Về màn hình chính, vuốt Quay lại 1 lần | Bước 1: game tạm dừng, không thoát; bước 2: chơi tiếp được; bước 3: hiện nhắc “Bấm lần nữa để thoát”, app chưa thoát | Cao | NF10, R23 | Tự động + Thủ công |
 | TC-034 | Tablet Samsung, đang chơi G3 | 1. Mở chia đôi màn hình / cửa sổ nổi<br>2. Thu cửa sổ thật nhỏ<br>3. Trở lại toàn màn hình | Game tạm dừng, bố cục sắp lại; cửa sổ quá nhỏ hiện “Mở toàn màn hình để chơi”; trở lại toàn màn hình chơi tiếp được | Trung bình | NF11, R24 | Thủ công (thiết bị thật) |
-| TC-035 | Tablet Samsung (không có rung), đang chơi G1 | 1. Chạm bóng đỏ | Bóng/khung chơi lắc nhẹ + âm “bụp” nhẹ; không báo lỗi | Thấp | F09, R25 | Thủ công (thiết bị thật) |
+| TC-035 | Tablet Samsung (không có rung), đang chơi G1 | 1. Chạm bóng đỏ | Bóng/khung chơi lắc nhẹ + âm “bụp” nhẹ; không báo lỗi | Thấp | F09, R25 | Tự động (mô phỏng: không gọi rung, có lắc + âm bụp) + Thủ công (tablet thật) |
 
 ## Unit test bắt buộc (Vitest)
 

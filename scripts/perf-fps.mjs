@@ -1,6 +1,7 @@
 /* global document, requestAnimationFrame */
 // Đo nhịp khung hình (FPS) của game canvas G1, G3, G5 ở cấp 10 (nặng nhất) trên 3 khung hình, có/không giả lập CPU chậm.
-// Cách chạy:  npm run perf      (script tự build bản e2e vào dist-perf rồi mở máy chủ xem thử ở cổng 4175)
+// Cách chạy:  npm run perf      (script tự build bản THẬT (không có cờ test) vào dist-perf rồi mở máy chủ xem thử ở cổng 4175)
+// Đo bản thật vì bản e2e ghi thuộc tính data-* mỗi khung hình (G3) nên chậm hơn bản deploy.
 // Kết quả là số đo trên MÁY CHẠY SCRIPT (Chromium không có GPU) – chỉ để so sánh/phát hiện hồi quy; FPS thật trên
 // điện thoại/tablet phải xem bằng `?debug=1` trên máy thật.
 import { spawn, spawnSync } from 'node:child_process';
@@ -11,23 +12,33 @@ import { chromium } from '@playwright/test';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 4175;
 const BASE = `http://localhost:${PORT}`;
-const GAMES = ['G1', 'G3', 'G5'];
-const VIEWPORTS = [
+// Bộ lọc tùy chọn:  npm run perf -- --games=G5 --viewports=tablet-portrait --cpu=4 --no-build
+const arg = (name) =>
+  process.argv
+    .find((a) => a.startsWith(`--${name}=`))
+    ?.split('=')[1]
+    ?.split(',');
+const ALL_VIEWPORTS = [
   { name: 'phone', width: 360, height: 740 },
   { name: 'tablet', width: 1280, height: 800 },
   { name: 'tablet-portrait', width: 800, height: 1280 },
 ];
-const THROTTLES = [1, 4];
-const ROUNDS = 3;
+const GAMES = arg('games') ?? ['G1', 'G3', 'G5'];
+const VIEWPORTS = ALL_VIEWPORTS.filter(
+  (v) => !arg('viewports') || arg('viewports').includes(v.name),
+);
+const THROTTLES = (arg('cpu') ?? ['1', '4']).map(Number);
+const ROUNDS = 2;
+const SAMPLE_MS = 6000; // lấy mẫu 6 giây đầu của lượt thật (60 giây), sau đó đóng trang
 
 const viteBin = path.join(root, 'node_modules', 'vite', 'bin', 'vite.js');
 
 function build() {
-  console.log('Build bản e2e (có cờ ?e2e=1) vào dist-perf…');
+  console.log('Build bản thật vào dist-perf…');
   const r = spawnSync(process.execPath, [viteBin, 'build', '--outDir', 'dist-perf'], {
     cwd: root,
     stdio: 'inherit',
-    env: { ...process.env, VITE_E2E: 'true' },
+    env: { ...process.env, VITE_E2E: '' },
   });
   if (r.status !== 0) throw new Error('Build thất bại');
 }
@@ -110,17 +121,17 @@ async function measure(browser, vp, game, throttle) {
     const page = await context.newPage();
     const cdp = await context.newCDPSession(page);
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: throttle });
-    await page.goto(`${BASE}/?e2e=1&seed=${12345 + i}`);
+    await page.goto(`${BASE}/`);
     await page.getByTestId(`game-${game}`).click();
     await page.getByTestId('start-game').click();
     await page.getByTestId('countdown').waitFor({ state: 'hidden', timeout: 15000 });
-    all.push(...(await page.evaluate(sampleFrames, 9000)));
+    all.push(...(await page.evaluate(sampleFrames, SAMPLE_MS)));
     await context.close();
   }
   return stats(all);
 }
 
-build();
+if (!process.argv.includes('--no-build')) build();
 const server = await startServer();
 const browser = await chromium.launch();
 const rows = [];

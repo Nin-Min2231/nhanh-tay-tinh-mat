@@ -75,7 +75,6 @@ export function createG5(host: HTMLElement, ctx: GameContext): GameInstance {
   let laneW = 90;
   let gemD = 64;
   let barGradient: CanvasGradient | null = null;
-  let laneGradients: CanvasGradient[] = [];
   let beamGradients: CanvasGradient[] = [];
   let gems: HTMLCanvasElement[] = [];
   let gemsGrey: HTMLCanvasElement[] = [];
@@ -85,6 +84,34 @@ export function createG5(host: HTMLElement, ctx: GameContext): GameInstance {
   let comboLabelN = -1;
   let comboLabel = '';
 
+  // Nền các làn (gradient phủ cả khung) chỉ đổi khi đổi kích thước → vẽ MỘT LẦN vào canvas riêng nằm dưới canvas chính,
+  // không tô lại mỗi khung hình. Đo (CPU chậm ×4, tablet dọc): tô 4 làn mỗi khung làm G5 chỉ còn ~29 fps, bỏ đi thì ~57 fps.
+  const underlay = document.createElement('canvas');
+  underlay.className = 'game-canvas g5-underlay';
+  underlay.setAttribute('aria-hidden', 'true');
+  host.appendChild(underlay);
+
+  function drawUnderlay(w: number, h: number): void {
+    const dpr = window.devicePixelRatio || 1;
+    underlay.width = Math.max(1, Math.round(w * dpr));
+    underlay.height = Math.max(1, Math.round(h * dpr));
+    const u = underlay.getContext('2d');
+    if (!u) return;
+    u.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (let l = 0; l < LANES; l++) {
+      const p = LANE_COLORS[l] as { base: string };
+      const g = u.createLinearGradient(0, HUD_HEIGHT, 0, h);
+      g.addColorStop(0, `${p.base}00`);
+      g.addColorStop(1, `${p.base}55`);
+      u.fillStyle = g;
+      u.fillRect(l * laneW, HUD_HEIGHT, laneW, h - HUD_HEIGHT);
+      if (l > 0) {
+        u.fillStyle = 'rgba(255,255,255,0.14)';
+        u.fillRect(l * laneW - 1, HUD_HEIGHT, 2, h - HUD_HEIGHT);
+      }
+    }
+  }
+
   const stage = createCanvasStage(host, (w, h, cx) => {
     laneW = w / LANES;
     gemD = Math.max(44, Math.min(laneW * 0.74, 96));
@@ -92,12 +119,7 @@ export function createG5(host: HTMLElement, ctx: GameContext): GameInstance {
     spawnY = HUD_HEIGHT + 2;
     hitY = Math.round(h * HIT_LINE);
     barGradient = makeBarGradient(cx, w);
-    laneGradients = LANE_COLORS.map((p) => {
-      const g = cx.createLinearGradient(0, HUD_HEIGHT, 0, h);
-      g.addColorStop(0, `${p.base}00`);
-      g.addColorStop(1, `${p.base}55`);
-      return g;
-    });
+    drawUnderlay(w, h);
     beamGradients = LANE_COLORS.map((p) => {
       const g = cx.createLinearGradient(0, HUD_HEIGHT, 0, hitY + 20);
       g.addColorStop(0, `${p.base}00`);
@@ -250,14 +272,8 @@ export function createG5(host: HTMLElement, ctx: GameContext): GameInstance {
     const w = stage.width;
     const h = stage.height;
     c.clearRect(0, 0, w, h);
-    // làn
+    // tia sáng làn khi chạm (nền làn nằm ở canvas dưới, xem drawUnderlay)
     for (let l = 0; l < LANES; l++) {
-      c.fillStyle = laneGradients[l] as CanvasGradient;
-      c.fillRect(l * laneW, HUD_HEIGHT, laneW, h - HUD_HEIGHT);
-      if (l > 0) {
-        c.fillStyle = 'rgba(255,255,255,0.14)';
-        c.fillRect(l * laneW - 1, HUD_HEIGHT, 2, h - HUD_HEIGHT);
-      }
       const f = (flash[l] as number) > 0 ? (flash[l] as number) / FLASH_MS : 0;
       if (f > 0) {
         c.globalAlpha = (flashSoft[l] ? 0.25 : 0.7) * f;
@@ -399,6 +415,7 @@ export function createG5(host: HTMLElement, ctx: GameContext): GameInstance {
       stopLoop();
       detach();
       stage.destroy();
+      underlay.remove();
       host.classList.remove('theme-night');
       host.style.maxWidth = '';
       delete host.dataset.g5;

@@ -216,7 +216,8 @@ interface DailyAggregate {  // giữ vĩnh viễn; RoundRecord chỉ giữ 120 n
 ```
 
 - `deviceClass`: `tablet` nếu cạnh ngắn của **màn hình** (`screen.width/height`, không dùng kích thước cửa sổ vì có thể đang chia đôi màn hình) ≥ 600 CSS px, ngược lại `phone`.
-- “Ngày” tính theo giờ địa phương của máy, đổi ngày lúc 00:00.
+- “Ngày” tính theo giờ địa phương của máy, đổi ngày lúc 00:00. **App đang mở thì vẫn tự sang ngày mới** (TASK-09): `app/today.ts` có signal `today`, làm mới lúc 00:00 và mỗi khi app hiện lại/lấy lại tiêu điểm (máy ngủ qua đêm); Home và việc khóa theo giờ đọc từ đây.
+- **Đọc dữ liệu có kiểm tra** (TASK-09, `app/validate.ts`): khi mở app, khi đọc lượt chơi/tổng hợp ngày và khi khôi phục từ file sao lưu, mọi phần tử được kiểm; lượt/tổng hợp thiếu thông tin cốt lõi (game, ngày, điểm) bị bỏ, trường thiếu hoặc sai kiểu trong hồ sơ/cài đặt được thay bằng giá trị mặc định (dữ liệu hợp lệ giữ nguyên 100%). Hồ sơ không nhận ra được (thiếu `id`/`name`, trùng `id`): khi mở app thì bỏ hồ sơ đó nhưng **giữ bản gốc ở `ntm.state.bak`**; khi khôi phục thì **từ chối cả file**.
 - `DailyAggregate` dựng từ các `RoundRecord` còn giữ (tính lại các ngày có lượt chi tiết, giữ nguyên ngày cũ đã bị dọn); **không gồm lượt bài đo** (chạy ở cấp cố định, xem tab “Bài đo tuần”). `RoundRecord` chi tiết giữ 120 ngày; **riêng lượt bài đo (`benchmark: true`) giữ mãi** để còn so sánh với tuần đầu. Việc này chạy khi mở app và sau mỗi lượt (`maintainRounds` trong `store.ts`).
 - Kích thước ước tính: ~200 byte/lượt × ~10 lượt/ngày × 120 ngày × 5 hồ sơ ≈ 1,2 MB (< giới hạn 5 MB).
 - Gọi `navigator.storage?.persist?.()` sau khi tạo hồ sơ đầu tiên.

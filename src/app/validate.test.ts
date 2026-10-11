@@ -369,6 +369,19 @@ describe('sanitizeRound / sanitizeDaily', () => {
   });
 });
 
+describe('hiệu năng kiểm tra dữ liệu', () => {
+  it('6.000 lượt (5 hồ sơ × 120 ngày × 10 lượt) được kiểm trong thời gian rất ngắn', () => {
+    const list = Array.from({ length: 6000 }, (_, i) =>
+      round({ id: `r${i}`, startedAt: `2026-0${1 + (i % 9)}-1${i % 9}T08:30:00` }),
+    );
+    const t0 = performance.now();
+    const out = sanitizeRounds(JSON.parse(JSON.stringify(list)));
+    const ms = performance.now() - t0;
+    expect(out).toHaveLength(6000);
+    expect(ms).toBeLessThan(500); // thực tế vài chục ms; ngưỡng rộng để không chập chờn khi máy bận
+  });
+});
+
 describe('storage: dữ liệu hỏng trong localStorage không làm sập app', () => {
   it('loadRounds / loadDaily bỏ phần tử hỏng và vẫn đọc được phần còn lại', () => {
     const backend = memoryBackend();

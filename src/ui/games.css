@@ -15,6 +15,17 @@
     radial-gradient(ellipse at 50% 0%, #7a4be0 0%, #3a1f8a 55%, #1a0c47 100%);
   border-inline: 3px solid var(--ink);
 }
+/* G5: nền các làn vẽ một lần ở canvas dưới (không tô lại mỗi khung hình); canvas chính trong suốt xếp chồng lên trên */
+.g5-underlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.g5-underlay + .game-canvas {
+  position: relative;
+  z-index: 1;
+}
 
 /* ---------- G4 Chuỗi Ánh Sáng ---------- */
 .g4 {
