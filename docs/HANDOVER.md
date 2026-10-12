@@ -15,18 +15,46 @@
 
 ---
 
+## 0b. VIỆC CÒN LẠI – TASK-10 đợt 2 (checklist sống: cập nhật mỗi khi xong một mục)
+
+Chủ dự án (2026-10-13, sau khi 0.9.2 đã deploy) dặn: **“Viết handover để qua session mới rồi thực hiện các việc còn lại cho xong luôn.”** → coi là lệnh **“làm luôn”**: **không chờ duyệt kế hoạch** từng mục (vẫn ghi rõ các quyết định tự chọn vào `docs/PROGRESS.md` để anh góp ý), nhưng **gộp/push `main` vẫn phải hỏi** (= deploy công khai). Chủ dự án chưa gửi danh sách lỗi từ máy thật nên đợt này làm hết **tồn đọng đã ghi nhận**.
+
+- **Nhánh làm việc:** `claude/task-10-part2` (xuất phát từ `main` = `f2af811` = v0.9.2; đã push lên origin). Version mục tiêu **0.9.3** (patch, theo mẫu TASK-10). Worktree mới chưa có `node_modules` → `npm ci`. *(Nếu nhánh này chưa ở `main`, phiên mới phải `git fetch` rồi `git switch claude/task-10-part2` – bộ nhớ dự án cũng ghi điều này.)*
+- **Cách làm:** mỗi mục = 1 commit (mã + test); sau mỗi mục chạy `npm run lint` + `npm test` + e2e liên quan; giao diện thì chụp ảnh 3 khung hình bằng spec tạm `tests/e2e/tmp-*.spec.ts` (**xóa trước khi commit**); cuối cùng chạy **e2e đầy đủ** (giữ máy thức bằng `request_keep_awake`), cập nhật docs, push nhánh, rồi **hỏi chủ dự án** gộp `main`. Quyết định tự chọn → ghi vào PROGRESS (mục “Quyết định khi làm”).
+
+| # | Việc | Tiêu chí xong | Trạng thái |
+|---|---|---|---|
+| A1 | **Dữ liệu cho 2 phần thưởng mốc sao**: `Profile.mascotId` + `Profile.soundSetId` (`null` = mặc định: Sóc Bo / âm gốc); `schemaVersion` **3** + migration 2→3 + `validate.ts` + SPEC mục 5; `canEquip`/`equipReward` mở rộng cho `soundSet` và `mascot` (không tự mặc khi mở khóa) | unit test migration, validate, canEquip, khứ hồi sao lưu | ☐ |
+| A2 | **Bộ âm thanh Nhạc Cụ Gõ** (mốc 80 sao): `app/audioSets.ts` (dữ liệu thuần: đàn gõ/mộc cầm/tam giác, không chê) + `createAudio` đọc bộ đang chọn; “Nghe thử” ở Album | unit test dữ liệu bộ âm; e2e bắt `OscillatorNode` đổi theo bộ đang chọn | ☐ |
+| A3 | **Linh vật Cú Mèo Thông Thái** (mốc 230 sao): `ui/components/Owl.tsx` 5 biểu cảm bóng bẩy (chuyển sắc, vệt sáng, kính tròn); `Mascot` chọn Sóc/Cú theo hồ sơ (Home, Rest, Result, G6, G7, Overlays); trang phục chỉ dành cho Sóc Bo | ảnh 3 khung hình đẹp, e2e Home hiện Cú sau khi dùng | ☐ |
+| A4 | **Album → tab Đặc biệt**: nút “Dùng/Đang dùng” cho bộ âm + linh vật (kèm thẻ mặc định “Âm thanh gốc”, “Linh vật Sóc Bo”), “Nghe thử”; bỏ chữ “Dùng được ở bản sau” | e2e: mở khóa → dùng → tải lại vẫn giữ, tách theo hồ sơ | ☐ |
+| B | **Bóng/khối G1 trong game bóng bẩy** (vẽ sprite một lần khi resize, `drawImage` mỗi khung; giữ hình dạng + dấu ✕/!/~ cho mù màu) | TC-028 (đọc hình bóng) vẫn pass; `npm run perf -- --gpu` G1 vẫn 60 fps; ảnh đẹp | ☐ |
+| C | **G7 cấp 5** (mẫu 2 thuộc tính): lời giải thích riêng “màu lặp mỗi 2 ô, hình lặp mỗi 3 ô” khi sai | unit test (kind giải thích) + e2e G7 | ☐ |
+| D | **G6 M11** (nhân/chia số 2–3 chữ số): giới hạn dạng “tìm số thiếu” cho đỡ ra số quá lớn | unit test 1.000 câu vẫn đúng 1 đáp án, số thiếu ≤ ngưỡng | ☐ |
+| E1 | **Khu PH: xuất CSV** (tab Dữ liệu): lịch sử từng lượt + tổng hợp theo ngày của hồ sơ đang xem (UTF-8 có BOM để Excel đọc tiếng Việt) | unit test `toCsv`; e2e tải file | ☐ |
+| E2 | **Nhắc sao lưu từ Home**: chấm cảnh báo trên nút khóa phụ huynh khi `backupOverdue` (không có chữ cho bé) | e2e + nhãn truy cập | ☐ |
+| F | **`installedVersion`** cập nhật khi lên bản mới (mở app) | unit test | ☐ |
+| G | **QA cuối**: lint, unit, **e2e đầy đủ**, a11y spec, `npm run perf -- --gpu`; chạy lại **Lighthouse + axe** (bản Pages build, ghi số vào QA_REPORT) | tất cả pass, số liệu ghi vào PROGRESS/QA_REPORT | ☐ |
+| H | **Hoàn tất**: docs (SPEC, PROGRESS nhật ký + Changelog 0.9.3, QA_REPORT, HANDOVER này), version **0.9.3**, bộ nhớ dự án, push nhánh, **hỏi chủ dự án gộp `main` + deploy** | CI xanh | ☐ |
+
+**Việc em không làm thay được (chờ chủ dự án):** thử máy thật (danh sách ở `docs/QA_REPORT.md` mục 8 + “Cách thử thủ công” của TASK-10 trong PROGRESS), Samsung Internet, **gửi danh sách lỗi/góp ý** (→ TASK-10 đợt 3), duyệt hình mới (Cú Mèo, icon G1/G2, bóng G1), quyết định gộp/deploy.
+
+**Tiến độ chi tiết + quyết định tự chọn của đợt này:** xem nhật ký mới nhất trong `docs/PROGRESS.md` (“TASK-10 đợt 2”).
+
+---
+
 ## 1. Cách bắt đầu phiên mới
 
 Chủ dự án (PM, không phải lập trình viên, xưng “anh”, trao đổi **tiếng Việt**) chỉ cần nhắn:
 
 ```
-Làm TASK-10
+Làm tiếp TASK-10 đợt 2 theo docs/HANDOVER.md mục 0b
 ```
 
 (hoặc “Đọc handover và thực hiện task tiếp theo”). Quy trình bắt buộc (CLAUDE.md mục 6) – đã áp dụng ở mọi TASK trước:
 
 1. Đọc `CLAUDE.md`, `docs/PROGRESS.md`, rồi tài liệu TASK yêu cầu (với TASK-10: `docs/03_TASKS.md` mục TASK-10, `docs/QA_REPORT.md` – nhất là mục 8 –, `CLAUDE.md` mục 5 (17 quy tắc) và **mục 6 của file này**).
-2. **Trình bày kế hoạch ngắn và chờ “Đồng ý”** rồi mới sửa mã (chủ dự án đã duyệt kế hoạch TASK-09 đúng cách này). *Lưu ý:* ở TASK-07 chủ dự án đã dặn **“làm luôn không cần hỏi”** nên phiên đó bỏ bước chờ duyệt; lời dặn đó chỉ áp dụng cho lần đó – nếu chủ dự án lặp lại thì cứ làm luôn (vẫn ghi rõ các quyết định tự chọn), còn không thì theo CLAUDE.md. **Gộp `main` + push luôn phải hỏi** (push `main` = deploy công khai).
+2. **Trình bày kế hoạch ngắn và chờ “Đồng ý”** rồi mới sửa mã (chủ dự án đã duyệt kế hoạch TASK-09 đúng cách này). *Lưu ý:* ở TASK-07 chủ dự án đã dặn **“làm luôn không cần hỏi”** và **lặp lại ở TASK-10 đợt 2 (2026-10-13: “thực hiện các việc còn lại cho xong luôn”)** nên hai lần đó bỏ bước chờ duyệt kế hoạch; mỗi lần chủ dự án lặp lại thì cứ làm luôn (vẫn ghi rõ các quyết định tự chọn), còn không thì theo CLAUDE.md. **Gộp `main` + push luôn phải hỏi** (push `main` = deploy công khai).
 3. Làm từng bước nhỏ, chạy `npm run lint` + `npm run test` sau mỗi bước lớn; giao diện thì tự xem bằng ảnh chụp Playwright ở 3 khung hình.
 4. Cuối TASK: cập nhật `docs/PROGRESS.md` (trạng thái + nhật ký trên cùng), commit Conventional Commits, push, báo cáo ngắn bằng tiếng Việt (đã làm gì, cách thử trên máy thật, điểm cần quyết định). Gộp vào `main` + push `main` **chỉ khi chủ dự án đồng ý** (cách đã dùng: commit trên nhánh task, `git -C <thư mục gốc> merge --ff-only <nhánh>`, rồi `git push origin main`). **Từ nay push `main` = tự động deploy lên GitHub Pages** (`deploy.yml`): chủ dự án thấy bản mới trên máy sau ~2 phút + bấm “Cập nhật” ở Home.
 
