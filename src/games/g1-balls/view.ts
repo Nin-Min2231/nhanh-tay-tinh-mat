@@ -8,6 +8,7 @@ import { createHintBubble } from '../common/HintBubble';
 import { drawHud, makeBarGradient } from '../common/hud';
 import { attachPointerInput, type TapEvent } from '../common/PointerInput';
 import type { GameContext, GameInstance } from '../common/types';
+import { renderBallSprite, type BallSprite } from './art';
 import { readG1Options, resolveG1Params, type BallKind, type G1Params } from './config';
 import {
   ROUND_MS,
@@ -26,19 +27,7 @@ const SHRINK_MS = 160;
 const FIRST_SPAWN_MS = 350;
 const PARTICLES = 28;
 
-const FILL: Record<BallKind, string> = {
-  green: '#3DDC6E',
-  red: '#FF4D5E',
-  yellow: '#FFD93D',
-  brown: '#B9774A',
-};
-const STROKE: Record<BallKind, string> = {
-  green: '#1B8F3E',
-  red: '#B3202F',
-  yellow: '#C79A00',
-  brown: '#6B3F1F',
-};
-const INK = '#263238';
+const BALL_KINDS: readonly BallKind[] = ['green', 'red', 'yellow', 'brown'];
 const SPARK = ['#FFD93D', '#FF5FA2', '#29B6F6', '#8E6CF0', '#43D675', '#FF8A3D'] as const;
 
 interface Ball {
@@ -105,9 +94,17 @@ export function createG1(host: HTMLElement, ctx: GameContext): GameInstance {
 
   let barGradient: CanvasGradient | null = null;
   let diameter = 64;
+  // Sprite bóng/khối bóng bẩy: vẽ một lần mỗi khi đổi kích thước (art.ts), mỗi khung chỉ drawImage.
+  // Khai báo TRƯỚC createCanvasStage vì callback resize chạy đồng bộ lúc tạo (tránh TDZ).
+  const sprites: Partial<Record<BallKind, BallSprite>> = {};
+  function buildSprites(): void {
+    const dpr = window.devicePixelRatio || 1;
+    for (const k of BALL_KINDS) sprites[k] = renderBallSprite(k, diameter, dpr);
+  }
   const stage = createCanvasStage(host, (w, h, cx) => {
     diameter = ballDiameter(w, h);
     barGradient = makeBarGradient(cx, w);
+    buildSprites();
   });
   const c = stage.ctx;
 
@@ -285,92 +282,9 @@ export function createG1(host: HTMLElement, ctx: GameContext): GameInstance {
     c.ellipse(0, r * 1.02, r * 0.78, r * 0.16, 0, 0, TAU);
     c.fillStyle = 'rgba(38,50,56,0.16)';
     c.fill();
-    c.lineWidth = 5;
-    c.lineJoin = 'round';
-    c.lineCap = 'round';
-    c.fillStyle = FILL[b.kind];
-    c.strokeStyle = STROKE[b.kind];
-    switch (b.kind) {
-      case 'green': {
-        c.beginPath();
-        c.arc(0, 0, r, 0, TAU);
-        c.fill();
-        c.stroke();
-        c.fillStyle = INK; // mặt cười
-        c.beginPath();
-        c.arc(-r * 0.32, -r * 0.2, r * 0.1, 0, TAU);
-        c.arc(r * 0.32, -r * 0.2, r * 0.1, 0, TAU);
-        c.fill();
-        c.beginPath();
-        c.arc(0, r * 0.02, r * 0.52, 0.2 * Math.PI, 0.8 * Math.PI);
-        c.lineWidth = r * 0.12;
-        c.strokeStyle = INK;
-        c.stroke();
-        break;
-      }
-      case 'red': {
-        const h = r * 0.9;
-        c.beginPath();
-        c.roundRect(-h, -h, h * 2, h * 2, r * 0.3);
-        c.fill();
-        c.stroke();
-        c.beginPath(); // ✕
-        c.moveTo(-r * 0.42, -r * 0.42);
-        c.lineTo(r * 0.42, r * 0.42);
-        c.moveTo(r * 0.42, -r * 0.42);
-        c.lineTo(-r * 0.42, r * 0.42);
-        c.lineWidth = r * 0.2;
-        c.strokeStyle = '#FFFFFF';
-        c.stroke();
-        break;
-      }
-      case 'yellow': {
-        c.beginPath();
-        c.moveTo(0, -r * 1.02);
-        c.lineTo(r * 1.0, r * 0.82);
-        c.lineTo(-r * 1.0, r * 0.82);
-        c.closePath();
-        c.fill();
-        c.stroke();
-        c.beginPath(); // !
-        c.moveTo(0, -r * 0.3);
-        c.lineTo(0, r * 0.22);
-        c.lineWidth = r * 0.2;
-        c.strokeStyle = INK;
-        c.stroke();
-        c.beginPath();
-        c.arc(0, r * 0.5, r * 0.11, 0, TAU);
-        c.fillStyle = INK;
-        c.fill();
-        break;
-      }
-      case 'brown': {
-        c.beginPath();
-        c.moveTo(0, -r * 1.06);
-        c.lineTo(r * 1.06, 0);
-        c.lineTo(0, r * 1.06);
-        c.lineTo(-r * 1.06, 0);
-        c.closePath();
-        c.fill();
-        c.stroke();
-        c.beginPath(); // ~
-        c.moveTo(-r * 0.5, r * 0.04);
-        c.quadraticCurveTo(-r * 0.25, -r * 0.34, 0, 0);
-        c.quadraticCurveTo(r * 0.25, r * 0.34, r * 0.5, -r * 0.04);
-        c.lineWidth = r * 0.17;
-        c.strokeStyle = '#FFFFFF';
-        c.stroke();
-        break;
-      }
-    }
-    if (b.kind === 'green' || b.kind === 'yellow') {
-      // vệt sáng
-      c.beginPath();
-      c.arc(-r * 0.5, -r * 0.5, r * 0.18, Math.PI, Math.PI * 1.5);
-      c.lineWidth = r * 0.1;
-      c.strokeStyle = 'rgba(255,255,255,0.55)';
-      c.stroke();
-    }
+    // hình bóng bóng bẩy đã vẽ sẵn (art.ts): chỉ drawImage, không tạo gradient/đối tượng mới mỗi khung hình
+    const sp = sprites[b.kind];
+    if (sp) c.drawImage(sp.canvas, -sp.half, -sp.half, sp.half * 2, sp.half * 2);
     c.restore();
   }
 
