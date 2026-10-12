@@ -11,6 +11,7 @@ import { createHaptics } from './haptics';
 import { applyRoundToMath } from './mathFacts';
 import { MAX_PROFILES, createProfile, dateKey, emptyDay, type NewProfileInput } from './profile';
 import {
+  activeSoundSet,
   addStars,
   applyRoundRewards,
   canEquip,
@@ -81,7 +82,10 @@ export const activeProfile = computed<Profile | null>(
 );
 
 export const deviceClass = getDeviceClass();
-export const audio = createAudio(() => appState.value.settings.sound);
+export const audio = createAudio(
+  () => appState.value.settings.sound,
+  () => activeSoundSet(activeProfile.value),
+);
 export const haptics = createHaptics(() => appState.value.settings.vibration, deviceClass);
 
 export function commit(next: AppState): void {
