@@ -1,15 +1,15 @@
 # HANDOVER – Bàn giao sang phiên làm việc mới
 
-> Viết ngày 2026-10-11, cập nhật 2026-10-12 sau khi **làm xong TASK-10 đợt 1 (mục tồn đọng đã biết, v0.9.2)** trên nhánh `claude/handover-task-handoff-6bd5eb` (TASK-09 – kiểm thử tự động & rà soát chất lượng – đã gộp `main` = v0.9.1). Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
+> Viết ngày 2026-10-11, cập nhật 2026-10-13 sau khi **làm xong TASK-10 đợt 1 (mục tồn đọng đã biết, v0.9.2) và gộp `main` + deploy** (TASK-09 – kiểm thử tự động & rà soát chất lượng – đã gộp trước đó, v0.9.1). Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
 > Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) làm tiếp **TASK-10 đợt 2 (sửa lỗi/tinh chỉnh theo góp ý của chủ dự án sau khi thử máy thật)** mà không phải đoán lại ngữ cảnh. Báo cáo QA đầy đủ: **`docs/QA_REPORT.md`**.
 
 ---
 
 ## 0. Trạng thái git
 
-- **TASK-00 → TASK-09 đều đã ở `main` và `origin/main`** (`main` = `ac285bc`, **bản 0.9.1 đang chạy trên GitHub Pages** từ 2026-10-12: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ – **mỗi lần push `main` là một lần deploy**, kể cả commit chỉ sửa tài liệu).
-- **TASK-10 đợt 1 nằm trên nhánh `claude/handover-task-handoff-6bd5eb`** (đi sau `main` = `ac285bc`; version **0.9.2**). **CHƯA gộp `main`, CHƯA deploy** – chờ chủ dự án đồng ý. Gộp = ở thư mục gốc `git merge --ff-only claude/handover-task-handoff-6bd5eb` rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main` (= deploy 0.9.2; chủ dự án bấm “Cập nhật” ở Home).
-- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`, `claude/task-07-parent-area`, `claude/task-09-qa`, `claude/handover-task-continuation-aaaede`) chỉ còn là bản sao cũ của `main`/tài liệu – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main` sau khi TASK-10 đợt 1 đã gộp** (gợi ý `claude/task-10-fixes-2`; worktree mới chưa có `node_modules` → `npm ci`).
+- **TASK-00 → TASK-10 đợt 1 đều đã ở `main` và `origin/main`** (gộp fast-forward ngày 2026-10-13, anh “Đồng ý”; `git log origin/main -1` cho commit cuối), **bản 0.9.2 chạy trên GitHub Pages sau lần deploy tự động**: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ – **mỗi lần push `main` là một lần deploy**, kể cả commit chỉ sửa tài liệu. Bản 0.9.1 (`ac285bc`) là bản deploy ngay trước đó.
+- Nhánh `claude/handover-task-handoff-6bd5eb` (TASK-10 đợt 1) giờ chỉ là bản sao của `main` – không cần dùng nữa. Cách gộp đã dùng (cho đợt sau): ở thư mục gốc (đang ở nhánh `main`, sạch) `git merge --ff-only <nhánh>` rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main`.
+- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`, `claude/task-07-parent-area`, `claude/task-09-qa`, `claude/handover-task-continuation-aaaede`, `claude/handover-task-handoff-6bd5eb`) chỉ còn là bản sao cũ của `main`/tài liệu – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main`** (gợi ý `claude/task-10-fixes-2`; worktree mới chưa có `node_modules` → `npm ci`).
 - **Máy chủ `npm run dev` của chủ dự án chạy ở thư mục gốc (nhánh `main`, cổng 5173, `--host`, địa chỉ LAN `192.168.1.14`)** và tự cập nhật khi `main` đổi. Khi cần dev server của worktree: dùng **cổng khác** (`npm run dev -- --port 5174 --strictPort`; thêm một mục tạm trong `.claude/launch.json` để dùng `preview_start`, **đừng commit mục này**).
 - Việc còn chờ chủ dự án (không chặn TASK-10 đợt 2): **toàn bộ danh sách thử trên máy thật ở `docs/QA_REPORT.md` mục 8** (cài PWA, “Cập nhật”, 2 ngón thật G5, cử chỉ Quay lại, chia đôi màn hình, tablet không rung, đen trắng G1, **FPS thật G3/G5 bằng `?debug=1`**, sao lưu → khôi phục thật, Samsung Internet, **phóng to 2 ngón ở Home rồi vào game**); duyệt icon PWA, chữ R13, nội dung mẫu G6/G7, 40 sticker + trang phục + hình nền, **icon thẻ G1/G2 mới**; quyết định **Nhạc Cụ Gõ + Cú Mèo**; **gửi danh sách lỗi/góp ý** từ lần thử máy thật.
 
@@ -40,8 +40,8 @@ Làm TASK-10
 |---|---|
 | TASK-00 → TASK-08 | **Xong**, đã ở `main`/`origin/main` |
 | TASK-07 Khu phụ huynh | **Xong, đã gộp `main`** (chờ chủ dự án thử trên máy thật) |
-| TASK-09 QA | **Xong, đã gộp `main`**; Pages chạy **v0.9.1** từ 2026-10-12 |
-| TASK-10 đợt 1 | **Xong** trên nhánh `claude/handover-task-handoff-6bd5eb` (v0.9.2) – chờ chủ dự án đồng ý gộp `main` + deploy |
+| TASK-09 QA | **Xong, đã gộp `main`** (v0.9.1, deploy 2026-10-12) |
+| TASK-10 đợt 1 | **Xong, đã gộp `main` + deploy v0.9.2** (2026-10-13, chủ dự án “Đồng ý”); chờ chủ dự án thử máy thật |
 | Tiếp theo | **TASK-10 đợt 2**: sửa lỗi theo góp ý của chủ dự án sau khi thử máy thật (mẫu lặp lại, `docs/03_TASKS.md`) |
 
 - Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (công khai), remote `origin`, Pages `https://nin-min2231.github.io/nhanh-tay-tinh-mat/` (`BASE_PATH=/nhanh-tay-tinh-mat/`). Máy đã đăng nhập GitHub sẵn nên `git push` chạy thẳng (dùng `GIT_TERMINAL_PROMPT=0 timeout 90 git push` để không bị treo). Xem trạng thái workflow không cần `gh`: đọc API công khai `https://api.github.com/repos/Nin-Min2231/nhanh-tay-tinh-mat/actions/runs`.
