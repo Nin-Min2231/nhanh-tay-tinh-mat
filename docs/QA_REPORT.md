@@ -15,6 +15,8 @@
 | Lỗi thật của app tìm thấy và đã sửa | **4** (mục 3, #3–#4, #7–#8) + 2 lỗi về test/cấu hình + 3 lỗi accessibility (#5, #6, #9) |
 | Rủi ro còn lại | Mục 8 – chủ yếu là việc cần máy thật (cài PWA, 2 ngón thật, FPS thật, Samsung Internet) |
 
+**Cập nhật sau TASK-10 (v0.9.2):** unit **529** pass (+6) · e2e **417 pass + 15 bỏ qua có chủ ý** (432 test; `zoom.spec.ts` chỉ chạy ở khung `phone`, `home-layout.spec.ts` chỉ ở khung phù hợp), **0 lỗi, 0 chập chờn** (một lượt chạy bị 3 test hỏng vì **máy ngủ giữa chừng**, đã chạy lại toàn bộ pass) · 35 TC không đổi kết quả · chi tiết ở `docs/PROGRESS.md` (nhật ký TASK-10).
+
 **Có thể cho bé dùng bản 0.9.1 không?** Về mặt kiểm thử tự động: có – không còn test đỏ, không có lỗi chặn. Trước khi giao cho bé dùng lâu dài nên làm hết mục 8 (đặc biệt: sao lưu → khôi phục thật, cài PWA, thử G5/G3 trên Galaxy Tab).
 
 ## 2. Bảng 35 test case
@@ -110,11 +112,11 @@ Kiểm tự động (`tests/e2e/a11y.spec.ts`, 3 khung hình, bật `prefers-red
 - **Giảm chuyển động:** 0 hoạt ảnh lặp vô hạn đang chạy (trước đó 31).
 - **Tương phản chữ/nền (WCAG AA, tính từ màu thật đang hiển thị, nền gradient lấy trường hợp xấu nhất):** 0 vi phạm. Bộ quét đo **4–151 chữ mỗi màn hình** (có test chống “xanh giả”); sát ngưỡng nhất: chữ lớn 3,5:1 (yêu cầu 3:1), chữ thường 4,6:1 (yêu cầu 4,5:1). Chữ “muted” `#4d6270` trên trắng ≈ 6,4:1.
 - **axe-core 4.14** (chạy **một lần** bằng gói tải riêng, **không thêm vào dự án**) trên các màn hình chính ở 360×740 và 1280×800: **42 lượt quét** (21 màn hình × 2 khung hình) lúc đầu có **2 loại vi phạm**: (1) `meta-viewport` – `user-scalable=no` (ở cả 42 lượt, mức vừa; **chờ anh quyết định**, xem dưới); (2) `label-content-name-mismatch` mức nghiêm trọng ở **nút hộp quà trên Home** (tên đọc cho người khiếm thị không chứa chữ “Hộp quà” hiển thị) → **đã sửa**. Sau khi sửa chỉ còn mục (1).
-- **Đã biết, chưa đổi (chờ anh quyết định):** viewport có `user-scalable=no` (có từ TASK-01 để bé không lỡ phóng to khi chạm nhanh) – Lighthouse trừ điểm accessibility vì mục này. Muốn cho phóng to thì báo, em bỏ ở TASK-10.
+- **~~Đã biết, chưa đổi~~ → đã xử lý ở TASK-10 (v0.9.2):** viewport từng có `user-scalable=no` (từ TASK-01, để bé không lỡ phóng to khi chạm nhanh) nên Lighthouse/axe trừ điểm. Nay viewport **cho phóng to bằng 2 ngón** ở mọi màn trừ màn chơi: cả màn chơi (`.play`) có `touch-action: none`; nếu bé phóng to ở màn khác rồi vào game thì game **tự tạm dừng và nhắc chụm 2 ngón để thu nhỏ**. Kiểm bằng cử chỉ 2 ngón thật (CDP) ở `tests/e2e/zoom.spec.ts` và test quét viewport ở `src/qa/rules.test.ts`. Chưa chạy lại axe-core/Lighthouse.
 
 ## 6. Hiệu năng và kích thước
 
-**Kích thước (bản build thật):** gói chính `index-*.js` 366,8 KB = **112,1 KB gzip**; Chart.js tách riêng (chỉ tải khi mở tab Tiến bộ) 54,7 KB gzip; CSS 13,2 KB gzip. Tổng JS gzip ≈ 169 KB (**giới hạn 350 KB gzip: đạt**). Precache 17 mục ≈ 1,08 MB. Khởi động offline (TASK-08): FCP ≈ 100 ms.
+**Kích thước (bản build thật):** gói chính `index-*.js` 366,8 KB = **112,1 KB gzip**; Chart.js tách riêng (chỉ tải khi mở tab Tiến bộ) 54,7 KB gzip; CSS 13,2 KB gzip. Tổng JS gzip ≈ 169 KB (**giới hạn 350 KB gzip: đạt**). Precache 17 mục ≈ 1,08 MB. Khởi động offline (TASK-08): FCP ≈ 100 ms. *(TASK-10, v0.9.2: gói chính 378,6 KB = 116,9 KB gzip theo số Vite báo; dựng lại 0.9.1 bằng đúng cách đó cho 375,6 KB = 116,2 KB gzip, nên số 112,1 KB ở trên là đo ở thời điểm/cách khác – mức tăng thật của 0.9.2 chỉ ≈ 0,7 KB gzip.)*
 
 **FPS của game canvas** (`npm run perf`: bản build thật, cấp 10 = nặng nhất, lấy mẫu 6 giây đầu của lượt thật × 2 lượt; Chromium không có GPU nên chỉ để **so sánh/phát hiện hồi quy**, không thay được số đo trên máy thật):
 
@@ -133,7 +135,23 @@ Kiểm tự động (`tests/e2e/a11y.spec.ts`, 3 khung hình, bật `prefers-red
 *Trước khi sửa G5 (CPU ×4): điện thoại 57,0 · tablet ngang 40,1 · tablet dọc 28,6 fps.* Số đo dao động ±10% giữa các lần chạy (G3 tablet dọc có lần ra 44 fps).
 
 - Với CPU bình thường của máy dev: cả 3 game **60 fps, 0% khung > 20 ms** ở cả 3 khung hình.
-- Giả lập CPU chậm ×4 là mức **bi quan** (canvas trên Android chạy bằng GPU nên khác). G1 vẫn 60 fps; G5 sau khi sửa (#7) đạt 59–60 fps; **G3 ở tablet còn 44–57 fps** (dao động giữa các lần đo) – đã thử loại chữ “z” của Nhím (không phải điểm nghẽn); chưa tìm ra nguyên nhân chắc chắn → ghi ở mục 8, cần đo thật bằng `?debug=1` trên Galaxy Tab.
+- Giả lập CPU chậm ×4 là mức **bi quan** (canvas trên Android chạy bằng GPU nên khác). G1 vẫn 60 fps; G5 sau khi sửa (#7) đạt 59–60 fps; **G3 ở tablet còn 44–57 fps** (dao động giữa các lần đo) – đã thử loại chữ “z” của Nhím (không phải điểm nghẽn); ~~chưa tìm ra nguyên nhân chắc chắn~~ → **đã điều tra ở TASK-10, xem ngay dưới**.
+
+**Cập nhật TASK-10 – nguyên nhân G3 thấp là do môi trường đo, không phải lỗi của game.** Hồ sơ CPU (CDP `Profiler`) của G3 trên Chromium của Playwright (tablet ngang, CPU ×4): main thread bận **96,6%** nhưng JS chỉ **10,2%**; **87% mẫu nằm ở “(program)”** = việc gốc của trình duyệt, tức rasterize canvas bằng phần mềm (Chromium của Playwright **không có GPU**, WebGL báo SwiftShader). Cùng bản build, đo lại bằng **Chrome 155 cài sẵn có GPU (Intel Iris Xe)** (`npm run perf -- --gpu`; cột “bận” = % thời gian main thread làm việc):
+
+| Khung hình | Game | CPU thường (fps · bận) | CPU ×4 (fps · bận) |
+|---|---|---|---|
+| Điện thoại 360×740 | G1 | 60,1 · 5% | 60,1 · 21% |
+| | G3 | 60,1 · 6% | 60,1 · 30% |
+| | G5 | 60,1 · 5% | 60,1 · 24% |
+| Tablet ngang 1280×800 | G1 | 60,1 · 4% | 60,2 · 25% |
+| | G3 | 60,1 · 6% | 60,1 · 37% |
+| | G5 | 60,2 · 5% | 60,1 · 27% |
+| Tablet dọc 800×1280 | G1 | 60,2 · 4% | 60,2 · 26% |
+| | G3 | 60,1 · 7% | 60,2 · 30% |
+| | G5 | 60,2 · 6% | 60,2 · 30% |
+
+Cả 18 tổ hợp: **60 fps, 0% khung > 20 ms**. Đo thêm riêng G3 với CPU chậm hơn nữa: **×6 và ×8 vẫn 60 fps** ở tablet ngang và tablet dọc (main thread bận 47–53% ở ×6, 63–65% ở ×8) và điện thoại ×4 60 fps (bận 30–34%). Kết luận: **không có điểm nghẽn riêng của G3 trong mã** (ở ×4 G3 chiếm main thread 30–37%, hơn G1 khoảng 5–12 điểm phần trăm và gần mức G5 24–30%), nên **không sửa game**. Lưu ý: GPU Intel Iris Xe mạnh hơn GPU của Galaxy Tab dòng A rất nhiều, nên đây là bằng chứng “mã không lãng phí”, **không thay được số đo thật** trên máy anh (`?debug=1`).
 
 ## 7. Độ bền dữ liệu
 
@@ -151,11 +169,11 @@ Kiểm tự động (`tests/e2e/a11y.spec.ts`, 3 khung hình, bật `prefers-red
 | 4 | Vuốt cử chỉ Quay lại của Android khi đang chơi và ở Home; chia đôi màn hình/cửa sổ nổi trên Galaxy Tab | Mô phỏng bằng `page.goBack()` và đổi cỡ cửa sổ | TC-033, 034 |
 | 5 | Tablet Samsung: chạm bóng đỏ G1 → khung lắc + âm “bụp” | Mô phỏng chỉ kiểm không gọi rung | TC-035 |
 | 6 | Chụp màn hình G1 cấp ≥ 8, chuyển ảnh đen trắng (hoặc bật bộ lọc thang xám của Android) | Mô phỏng đọc hình bóng từ canvas | TC-028 |
-| 7 | Bật `?debug=1` trên máy thật xem FPS G1/G3/G5, **đặc biệt G3 trên Galaxy Tab dọc** | Số đo ở đây là giả lập CPU | NF Hiệu năng |
+| 7 | Bật `?debug=1` trên máy thật xem FPS G1/G3/G5 (G3 đã đo lại ở TASK-10 bằng Chrome có GPU: 60 fps tới CPU ×8) | GPU máy dev mạnh hơn nhiều so với Galaxy Tab dòng A; chỉ máy thật mới cho số cuối cùng | NF Hiệu năng |
 | 8 | **Sao lưu → xóa dữ liệu trang → khôi phục** trên bản Pages thật; thử Samsung Internet | Lưu/mở file trên Android, trình duyệt khác | TC-025, NF07 |
-| 9 | Quyết định giữ/bỏ `user-scalable=no` | Ảnh hưởng accessibility (mục 5) | – |
+| 9 | ~~Quyết định giữ/bỏ `user-scalable=no`~~ → **đã bỏ ở 0.9.2**: thử trên máy thật: phóng to ở Home bằng 2 ngón (được), vào một game khi đang phóng (game tạm dừng + nhắc thu nhỏ), đang chơi chụm 2 ngón (không phóng) | Cử chỉ thật của Chrome Android/Samsung Internet có thể khác Chromium giả lập | – |
 
-Rủi ro kỹ thuật còn lại (không chặn): (a) G3 trên tablet 44–57 fps khi giả lập CPU ×4 (mục 6); (b) khu phụ huynh chưa có xuất CSV; (c) bộ đếm “sai 3 lần” của khóa phụ huynh nằm trong bộ nhớ (tải lại trang là thử lại được); (d) `AppState.installedVersion` chưa cập nhật khi lên bản mới (không ảnh hưởng chức năng).
+Rủi ro kỹ thuật còn lại (không chặn): (a) ~~G3 trên tablet 44–57 fps khi giả lập CPU ×4~~ → là do Chromium thử nghiệm không có GPU, đã đo lại 60 fps bằng Chrome có GPU (mục 6, TASK-10); chỉ còn việc xem FPS thật trên Galaxy Tab; (b) khu phụ huynh chưa có xuất CSV; (c) bộ đếm “sai 3 lần” của khóa phụ huynh nằm trong bộ nhớ (tải lại trang là thử lại được); (d) `AppState.installedVersion` chưa cập nhật khi lên bản mới (không ảnh hưởng chức năng).
 
 ## 9. Cách chạy lại
 
@@ -163,7 +181,8 @@ Rủi ro kỹ thuật còn lại (không chặn): (a) G3 trên tablet 44–57 fp
 npm run lint && npm test                          # lint + 500+ unit test (gồm test quét 17 quy tắc)
 npx playwright test --workers=3                   # e2e đầy đủ, 3 khung hình (~12 phút)
 npx playwright test a11y --workers=3              # chỉ accessibility
-npm run perf                                      # đo FPS G1/G3/G5 (build bản thật vào dist-perf)
+npm run perf                                      # đo FPS G1/G3/G5 (build bản thật vào dist-perf) bằng Chromium của Playwright (KHÔNG GPU → fps ở CPU ×4 bi quan)
+npm run perf -- --gpu                             # như trên nhưng dùng Chrome/Edge cài sẵn có GPU (sát thiết bị thật hơn); hoặc --chrome=<đường dẫn> / biến CHROME_PATH
 npm run perf -- --games=G5 --cpu=4 --no-build     # lọc: --games, --viewports, --cpu
 PLAYWRIGHT_JSON_OUTPUT_NAME=kq.json npx playwright test --reporter=line,json && node scripts/qa-table.mjs kq.json   # bảng TC
 ```

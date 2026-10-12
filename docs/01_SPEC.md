@@ -322,8 +322,9 @@ Khóa PH (F08): phép nhân `a × b` với a ∈ [12, 49], b ∈ [3, 9]; bàn ph
 | Chia đôi màn hình / cửa sổ nổi | `resize` → tạm dừng, sắp lại bố cục; nếu cửa sổ rộng < 360px hoặc cao < 480px → overlay “Mở toàn màn hình để chơi” |
 | S Pen | `pointerType === 'pen'` xử lý như chạm; tắt hover-only UI |
 | Thanh điều hướng & camera đục lỗ | `viewport-fit=cover` + `env(safe-area-inset-*)`; không đặt nút quan trọng sát mép dưới 16px |
-| Tablet ngang 1280×800 | Home: lưới thẻ game 4 cột; vùng chơi canh giữa, tối đa 1000px rộng (G5 làn tối đa 640px) |
+| Tablet ngang 1280×800 | Home (từ 1200px rộng, v0.9.2): khung tối đa 1240px; nửa trên 2 cột (lời chào + thời gian \| nhiệm vụ + hộp quà), **3 nhóm game đứng cạnh nhau trên một hàng** (7 thẻ) → vừa một màn, không phải cuộn. Ngang hẹp hơn (900–1199px): lưới thẻ 4 cột như cũ. Vùng chơi canh giữa, tối đa 1000px rộng (G5 làn tối đa 640px) |
 | Tablet dọc 800×1280 | Home: lưới 3 cột; game dùng toàn chiều rộng |
+| Phóng to bằng 2 ngón (v0.9.2) | Viewport **cho phép phóng to** (accessibility), riêng **màn chơi chặn phóng** (`touch-action: none` trên cả màn chơi, gồm thanh trên và lớp phủ). Nếu trang đang bị phóng khi vào game (bé phóng ở màn khác) → game **tạm dừng + nhắc “chụm 2 ngón để thu nhỏ”**, nút Chơi tiếp khóa đến khi thu nhỏ lại (`app/zoom.ts`) |
 | Không có rung | Xem mục 12 – luôn có lắc hình + âm |
 
 ## 13. Phi chức năng & kiểm thử

@@ -1,17 +1,17 @@
 # HANDOVER – Bàn giao sang phiên làm việc mới
 
-> Viết ngày 2026-10-11, sau khi **làm xong TASK-09 (kiểm thử tự động & rà soát chất lượng)** trên nhánh `claude/handover-task-continuation-aaaede`. Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
-> Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) làm tiếp **TASK-10 (sửa lỗi/tinh chỉnh theo góp ý của chủ dự án)** mà không phải đoán lại ngữ cảnh. Báo cáo QA đầy đủ: **`docs/QA_REPORT.md`**.
+> Viết ngày 2026-10-11, cập nhật 2026-10-12 sau khi **làm xong TASK-10 đợt 1 (mục tồn đọng đã biết, v0.9.2)** trên nhánh `claude/handover-task-handoff-6bd5eb` (TASK-09 – kiểm thử tự động & rà soát chất lượng – đã gộp `main` = v0.9.1). Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
+> Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) làm tiếp **TASK-10 đợt 2 (sửa lỗi/tinh chỉnh theo góp ý của chủ dự án sau khi thử máy thật)** mà không phải đoán lại ngữ cảnh. Báo cáo QA đầy đủ: **`docs/QA_REPORT.md`**.
 
 ---
 
 ## 0. Trạng thái git
 
-- **TASK-00 → TASK-08 và TASK-07 đều đã ở `main` và `origin/main`** (`main` = `cd9aa62`, **bản 0.9.0 đang chạy trên GitHub Pages**: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ – **mỗi lần push `main` là một lần deploy**, kể cả commit chỉ sửa tài liệu).
-- **TASK-09 nằm trên nhánh `claude/handover-task-continuation-aaaede`** (đi sau `main` + 1 commit tài liệu bàn giao `5666998`; các commit `test: …`, `fix: …`, `perf(G5): …`, `fix: …`, `docs: …`). Version trong nhánh = **0.9.1**. **CHƯA gộp `main`, CHƯA deploy** – chờ chủ dự án đồng ý. Gộp = ở thư mục gốc `git merge --ff-only claude/handover-task-continuation-aaaede` rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main` (= deploy 0.9.1; chủ dự án bấm “Cập nhật” ở Home để thử TC-029). *(Nhánh `claude/task-09-qa` chỉ có commit bàn giao kế hoạch cũ, đã nằm trong nhánh trên – không cần dùng.)*
-- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`, `claude/task-07-parent-area`, `claude/task-09-qa`) chỉ còn là bản sao cũ của `main`/tài liệu – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main` sau khi TASK-09 đã gộp** (gợi ý `claude/task-10-fixes`; worktree mới chưa có `node_modules` → `npm ci`).
+- **TASK-00 → TASK-09 đều đã ở `main` và `origin/main`** (`main` = `ac285bc`, **bản 0.9.1 đang chạy trên GitHub Pages** từ 2026-10-12: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ – **mỗi lần push `main` là một lần deploy**, kể cả commit chỉ sửa tài liệu).
+- **TASK-10 đợt 1 nằm trên nhánh `claude/handover-task-handoff-6bd5eb`** (đi sau `main` = `ac285bc`; version **0.9.2**). **CHƯA gộp `main`, CHƯA deploy** – chờ chủ dự án đồng ý. Gộp = ở thư mục gốc `git merge --ff-only claude/handover-task-handoff-6bd5eb` rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main` (= deploy 0.9.2; chủ dự án bấm “Cập nhật” ở Home).
+- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`, `claude/task-07-parent-area`, `claude/task-09-qa`, `claude/handover-task-continuation-aaaede`) chỉ còn là bản sao cũ của `main`/tài liệu – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main` sau khi TASK-10 đợt 1 đã gộp** (gợi ý `claude/task-10-fixes-2`; worktree mới chưa có `node_modules` → `npm ci`).
 - **Máy chủ `npm run dev` của chủ dự án chạy ở thư mục gốc (nhánh `main`, cổng 5173, `--host`, địa chỉ LAN `192.168.1.14`)** và tự cập nhật khi `main` đổi. Khi cần dev server của worktree: dùng **cổng khác** (`npm run dev -- --port 5174 --strictPort`; thêm một mục tạm trong `.claude/launch.json` để dùng `preview_start`, **đừng commit mục này**).
-- Việc còn chờ chủ dự án (không chặn TASK-10): **toàn bộ danh sách thử trên máy thật ở `docs/QA_REPORT.md` mục 8** (cài PWA, “Cập nhật”, 2 ngón thật G5, cử chỉ Quay lại, chia đôi màn hình, tablet không rung, đen trắng G1, **FPS thật G3/G5 bằng `?debug=1`**, sao lưu → khôi phục thật, Samsung Internet); **quyết định bỏ `user-scalable=no`**; duyệt icon, chữ R13, nội dung mẫu G6/G7, 40 sticker + trang phục + hình nền; quyết định **Nhạc Cụ Gõ + Cú Mèo**.
+- Việc còn chờ chủ dự án (không chặn TASK-10 đợt 2): **toàn bộ danh sách thử trên máy thật ở `docs/QA_REPORT.md` mục 8** (cài PWA, “Cập nhật”, 2 ngón thật G5, cử chỉ Quay lại, chia đôi màn hình, tablet không rung, đen trắng G1, **FPS thật G3/G5 bằng `?debug=1`**, sao lưu → khôi phục thật, Samsung Internet, **phóng to 2 ngón ở Home rồi vào game**); duyệt icon PWA, chữ R13, nội dung mẫu G6/G7, 40 sticker + trang phục + hình nền, **icon thẻ G1/G2 mới**; quyết định **Nhạc Cụ Gõ + Cú Mèo**; **gửi danh sách lỗi/góp ý** từ lần thử máy thật.
 
 ---
 
@@ -38,14 +38,15 @@ Làm TASK-10
 
 | Hạng mục | Trạng thái |
 |---|---|
-| TASK-00 → TASK-08 | **Xong**, đã ở `main`/`origin/main`; Pages chạy bản 0.9.0 |
-| TASK-07 Khu phụ huynh | **Xong, đã gộp `main`** (v0.9.0 live; chờ chủ dự án thử trên máy thật) |
-| TASK-09 QA | **Xong** trên nhánh `claude/handover-task-continuation-aaaede` (v0.9.1) – chờ chủ dự án đồng ý gộp `main` + deploy |
-| Tiếp theo | **TASK-10** sửa lỗi theo góp ý của chủ dự án (mẫu lặp lại, `docs/03_TASKS.md`) |
+| TASK-00 → TASK-08 | **Xong**, đã ở `main`/`origin/main` |
+| TASK-07 Khu phụ huynh | **Xong, đã gộp `main`** (chờ chủ dự án thử trên máy thật) |
+| TASK-09 QA | **Xong, đã gộp `main`**; Pages chạy **v0.9.1** từ 2026-10-12 |
+| TASK-10 đợt 1 | **Xong** trên nhánh `claude/handover-task-handoff-6bd5eb` (v0.9.2) – chờ chủ dự án đồng ý gộp `main` + deploy |
+| Tiếp theo | **TASK-10 đợt 2**: sửa lỗi theo góp ý của chủ dự án sau khi thử máy thật (mẫu lặp lại, `docs/03_TASKS.md`) |
 
 - Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (công khai), remote `origin`, Pages `https://nin-min2231.github.io/nhanh-tay-tinh-mat/` (`BASE_PATH=/nhanh-tay-tinh-mat/`). Máy đã đăng nhập GitHub sẵn nên `git push` chạy thẳng (dùng `GIT_TERMINAL_PROMPT=0 timeout 90 git push` để không bị treo). Xem trạng thái workflow không cần `gh`: đọc API công khai `https://api.github.com/repos/Nin-Min2231/nhanh-tay-tinh-mat/actions/runs`.
 - Git user riêng cho repo: `Nin-Min2231` / `nguyennc1357@gmail.com`. Commit kèm dòng `Co-Authored-By: …` theo nhắc trong phiên.
-- Chất lượng hiện tại (v0.9.1): `npm run lint` pass · **523 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (gói chính 366,8 KB = **112,1 KB gzip**; Chart.js tách riêng 54,7 KB gzip; giới hạn 350 KB gzip; precache 17 mục ≈ 1,08 MB) · **408 e2e** Playwright (project `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280). **Hai test chập chờn cũ (G1 TC-004, G3 TC-013) đã ổn định** (0/144 lần hỏng khi lặp 12 lần × 3 khung × 4 luồng).
+- Chất lượng hiện tại (v0.9.2): `npm run lint` pass · **529 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (gói chính 378,6 KB = **116,9 KB gzip** theo số Vite báo – dựng lại 0.9.1 cùng cách cho 116,2 KB; Chart.js tách riêng 56,6 KB gzip; giới hạn 350 KB gzip; precache 17 mục ≈ 1,0 MB) · **e2e Playwright: 417 pass + 15 bỏ qua có chủ ý = 432 test** (project `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280; `zoom.spec.ts` chỉ chạy ở `phone`, `home-layout.spec.ts` chỉ ở khung phù hợp), 0 lỗi, 0 chập chờn, ≈ 12 phút với `--workers=3`. **Hai test chập chờn cũ (G1 TC-004, G3 TC-013) đã ổn định** từ TASK-09. Nếu thấy vài test “hết hạn 30 giây” **cùng lúc** và thời gian chạy dài bất thường thì nghi **máy ngủ giữa chừng** (đã gặp ở TASK-10): chạy lại rồi mới kết luận; chạy bộ dài nên giữ máy thức.
 - Home: **cả 7 game chơi được**; nhiệm vụ, hộp quà, album, trang phục, hình nền, nghỉ đúng giờ (TASK-06); PWA cài được + offline + nút Cập nhật (TASK-08); khu phụ huynh đầy đủ + bài đo tuần (TASK-07); **QA + sửa lỗi (TASK-09)**.
 
 ---
@@ -97,7 +98,9 @@ src/
     validate.ts            # (TASK-09) THUẦN + test: đọc dữ liệu có kiểm tra – sanitizeRounds/sanitizeDaily, repairProfile/repairState
                            #   (trường thiếu/sai kiểu → mặc định, dữ liệu hợp lệ giữ nguyên). Gắn vào storage.loadState/loadRounds/loadDaily và backup.parseBackup
     today.ts               # (TASK-09) signal `today` (khóa ngày giờ máy) + watchToday(): tự sang ngày mới lúc 00:00 / khi app hiện lại
-  qa/rules.test.ts         # (TASK-09) test quét mã nguồn bảo vệ các quy tắc CLAUDE.md mục 5 (danh sách ngoại lệ ghi rõ trong test)
+    zoom.ts                # (TASK-10) THUẦN + test: isZoomed/pageZoomed (visualViewport.scale > 1,02). Play dùng để tạm dừng + nhắc thu nhỏ khi vào game lúc trang đang phóng
+  qa/rules.test.ts         # (TASK-09) test quét mã nguồn bảo vệ các quy tắc CLAUDE.md mục 5 (danh sách ngoại lệ ghi rõ trong test);
+                           #   (TASK-10) thêm: viewport không chặn phóng to, `.play` có `touch-action: none`, `.play[data-zoomed]` có `manipulation`
   games/
     levels.ts              # import docs/data/levels.json, kiểu an toàn (KHÔNG chép tay số liệu)
     registry.ts            # GAME_GROUPS + MODULES (cả 7 game đã đăng ký)
@@ -109,6 +112,8 @@ src/
   ui/
     App.tsx                # chọn màn hình + redirect hợp lệ; gắn <GiftModal /> ở gốc
     screens/               # Home, GameIntro, Play (vòng đời lượt), Result, Rest, Album, ProfileSelect, ProfileForm, ParentGate, ParentArea
+                           #   (TASK-10) Home.tsx có 3 khung bao `.home-panels` / `.home-intro` / `.home-groups`: `display: contents` ở điện thoại, tablet dọc và
+                           #   ngang < 1200px (bố cục xếp dọc như cũ); ở ngang ≥ 1200px (`@media` trong app.css) = lưới 2 cột + 3 nhóm game đứng cạnh nhau (`--n` = số thẻ của nhóm)
     parent/                # (TASK-07) 6 tab khu PH: ProgressTab (+ chartRender.ts = Chart.js tải sau), BenchmarkTab, SettingsTab (+ gameOptions.ts),
                            #   ProfilesTab, RewardsTab, DataTab + state.ts (hồ sơ đang xem, định dạng số/ngày). Style: ui/parent.css
     components/            # Button, Mascot (Sóc Bo 5 biểu cảm + prop outfit), Outfits (3 lớp: back/body/head), Scenes (hình nền),
@@ -117,8 +122,8 @@ src/
     stickers/              # Sticker.tsx (khung theo độ hiếm + nền chủ đề) · kit.tsx (Lin, Rad, Shine, Sparkle, Eye, Cheek…) ·
                            #   animals/fruits/space/vehicles.tsx (mỗi file 10 hình `stk-xx`) · Gallery.tsx (chỉ dev)
     theme.css / app.css / games.css / games2.css / rewards.css   # bảng màu rực rỡ + style (rewards.css = TASK-06)
-tests/e2e/                 # helpers.ts + framework / games / games2 / games3 / rewards / parent / pwa / qa / a11y .spec.ts
-scripts/                   # make-icons.mjs (icon PWA) · perf-fps.mjs (npm run perf) · qa-table.mjs (bảng TC từ báo cáo Playwright)
+tests/e2e/                 # helpers.ts + framework / games / games2 / games3 / rewards / parent / pwa / qa / a11y / zoom / home-layout .spec.ts
+scripts/                   # make-icons.mjs (icon PWA) · perf-fps.mjs (npm run perf; thêm --gpu để dùng Chrome cài sẵn có GPU) · qa-table.mjs (bảng TC từ báo cáo Playwright)
 docs/                      # SPEC, GAMES, TASKS, ACCEPTANCE, PROGRESS, QA_REPORT, data/levels.json, samples/, HANDOVER (file này)
 ```
 
@@ -178,8 +183,15 @@ Báo cáo đầy đủ (bảng 35 test case có kết quả thật, lỗi đã s
 - **Lỗi app đã sửa**: (1) app mở qua đêm vẫn hiện “hết giờ”/nhiệm vụ hôm qua → `app/today.ts` (signal `today`, `watchToday()` gọi ở `main.tsx`; **màn hình mới đọc “hôm nay” để phản ứng khi qua nửa đêm thì dùng `today.value`, không dùng `dateKey(new Date())` lúc vẽ**); (2) dữ liệu hỏng/file sao lưu sửa tay → `app/validate.ts` (`sanitizeRounds/Daily`, `repairProfile/State`; **thêm trường mới vào `Profile`/`RoundRecord`/`DayUsage` ⇒ cập nhật `validate.ts` + test, nếu không trường mới sẽ bị bỏ khi đọc**); (3) G5 vẽ nền làn một lần ở canvas dưới (`.g5-underlay`, `games.css`) – FPS G5 ở tablet dọc (CPU ×4) 29 → 59; (4) accessibility: nút “Dễ” `min-width: 52px` (chỉ nút này! đặt `min-width` cho mọi `.segment` làm chữ “★ Tự động” tràn đè nút “Khó”), `animation-iteration-count: 1` khi giảm chuyển động, nút hộp quà không đặt `aria-label` khi đã có chữ hiển thị.
 - **Công cụ**: `npm run perf` (`scripts/perf-fps.mjs`: build bản **thật** vào `dist-perf`, đo FPS G1/G3/G5 cấp 10 ở 3 khung × CPU ×1/×4; lọc `-- --games=G5 --viewports=tablet-portrait --cpu=4 --no-build`), `scripts/qa-table.mjs` (bảng TC từ báo cáo JSON của Playwright). axe-core đã chạy **một lần** (ngoài dự án): chỉ còn `user-scalable=no` (chờ quyết định của chủ dự án).
 
-### Việc cần làm: TASK-10
-Chủ dự án thử trên máy thật rồi gửi góp ý/lỗi (mẫu trong `docs/03_TASKS.md` mục TASK-10). Với mỗi lỗi: tìm nguyên nhân → đề xuất → chờ duyệt → sửa + thêm test để không lặp lại. Ứng viên đã biết (chưa ai yêu cầu): bỏ `user-scalable=no`; **đo FPS thật G3 trên tablet dọc** (giả lập CPU ×4 cho 44–57 fps ở tablet; chưa tìm ra điểm nghẽn – thử bỏ chữ “z” không đổi gì; nên dùng CDP profiler hoặc bật `?debug=1` trên Galaxy Tab trước khi tối ưu); Nhạc Cụ Gõ + Cú Mèo; Home tablet ngang xếp 3 nhóm; biểu tượng thẻ G1/G2.
+### TASK-10 đợt 1 đã làm gì (mục tồn đọng đã biết, v0.9.2)
+Chủ dự án chưa gửi danh sách lỗi từ máy thật nên chọn “làm các mục tồn đọng đã biết” và duyệt kế hoạch 4 mục:
+- **Cho phóng to bằng 2 ngón** (`index.html` bỏ `user-scalable=no`): màn chơi vẫn chặn phóng – `.play` (cả thanh trên, lề, lớp phủ) có `touch-action: none` (trước đây chỉ `.game-host`). `Play.tsx` nghe `visualViewport` `resize` và kiểm lúc mở màn: nếu `pageZoomed()` (`app/zoom.ts`) → `doPause()` + `data-zoomed` trên `.play` (CSS `.play[data-zoomed] { touch-action: manipulation }` để còn chụm lại được) + `PauseOverlay zoomed` (hiện `vi.play.zoomHint`, khóa nút “Chơi tiếp” tới khi thu nhỏ). **Đã thử và loại:** đổi `<meta viewport>` lúc chạy (`maximum-scale=1` / `user-scalable=no`) **không** đưa trang đang phóng về 1× nên không dùng làm cách “reset”. `window.innerWidth` không đổi khi phóng (màn “cửa sổ quá nhỏ” không bật nhầm). Test: `tests/e2e/zoom.spec.ts` (cử chỉ 2 ngón thật, 5 test, chỉ khung `phone`), `src/qa/rules.test.ts`, `src/app/zoom.test.ts`.
+- **Home tablet ngang ≥ 1200px**: nửa trên 2 cột (lời chào + giờ | nhiệm vụ + hộp quà), 7 thẻ trên một hàng chia 3 nhóm (3 : 2 : 2), khung rộng tối đa 1240px → ở 1280×800 chiều cao Home **1502 → 766px** (vừa một màn, kể cả khi banner “Thử thách tuần” đang hiện). Dưới 1200px (kể cả điện thoại ngang ~900px) giữ bố cục cũ vì thẻ sẽ quá hẹp (chip “Cấp n · ★☆☆” tràn thẻ ở ~1100px). Điện thoại và tablet dọc **không đổi một pixel** (đã đo). Test: `tests/e2e/home-layout.spec.ts`.
+- **Icon thẻ G1 và G2** (`GameIcon.tsx`) vẽ lại có chuyển sắc, vệt sáng, đổ bóng: G1 = bóng xanh mặt cười + khối đỏ dấu ✕ + ngôi sao lấp lánh; G2 = bảng 3×3 dùng **đúng 5 màu ô của game** (`g2-c0…c4`), số xáo trộn, ô “1” viền vàng. Màu vẫn kèm hình dạng/số. Id gradient `gi1g`, `gi1r`, `gi20…gi24`.
+- **G3 FPS**: **không sửa mã** – số 44–57 fps ở CPU ×4 là do **Chromium của Playwright không có GPU** (vẽ canvas bằng phần mềm: hồ sơ CPU cho thấy ~87% thời gian main thread ở “(program)”, JS chỉ ~10%). Đo bằng Chrome cài sẵn có GPU (`npm run perf -- --gpu`): G3 **60 fps ở CPU ×4, ×6 và ×8** (tablet ngang/dọc, điện thoại; main thread bận 30% ở ×4, 65% ở ×8) – tương đương G1/G5. `scripts/perf-fps.mjs` nay có `--gpu` / `--chrome=<đường dẫn>` / `CHROME_PATH` và cột “main thread bận %”.
+
+### Việc cần làm: TASK-10 đợt 2
+Chủ dự án thử trên máy thật rồi gửi góp ý/lỗi (mẫu trong `docs/03_TASKS.md` mục TASK-10). Với mỗi lỗi: tìm nguyên nhân → đề xuất → chờ duyệt → sửa + thêm test để không lặp lại; góp ý độ khó → sửa `docs/data/levels.json` (không sửa số trong code) và ghi lý do vào PROGRESS; xong tăng version patch + CHANGELOG trong PROGRESS + deploy (hỏi trước). Ứng viên đã biết (chưa ai yêu cầu): **Nhạc Cụ Gõ + Cú Mèo** (chủ dự án chưa quyết định); **bóng/khối G1 trong game vẫn phẳng** trong khi icon đã bóng bẩy (vẽ sprite một lần); **FPS thật G3/G5 trên Galaxy Tab** bằng `?debug=1`; nếu thử máy thật thấy bé hay phóng nhầm ở Home thì chuyển sang chặn phóng ở các màn của bé (`touch-action: pan-x pan-y`) và chỉ cho phóng ở khu phụ huynh (nhớ xử lý trạng thái “đang phóng mà đổi màn”).
 
 ## 6b. TASK-07 đã làm gì (khu phụ huynh – để biết khi đụng vào)
 
@@ -248,24 +260,34 @@ Chủ dự án thử trên máy thật rồi gửi góp ý/lỗi (mẫu trong `d
 - **Python trong Bash của môi trường này** làm hỏng `\n`/`\b` trong chuỗi thay thế khi chèn mã (ra xuống dòng thật/ký tự lùi) – dùng công cụ **Edit** cho chuỗi có `\n`, hoặc `chr(92)`. Sau khi sửa bằng Python luôn chạy `npx tsc --noEmit`.
 - Thư viện tải ngoài (axe-core…) cài vào **thư mục riêng ngoài dự án** (`npm install --ignore-scripts`), không thêm vào `package.json`.
 
+**(TASK-10) Điều mới học**
+- **Cử chỉ 2 ngón thật trong Playwright**: dùng CDP `Input.dispatchTouchEvent` (2 `touchPoints` có `id` khác nhau → vài `touchMove` → `touchEnd` với `touchPoints: []`), chạy được ở project `phone` (có `isMobile: true`; mẫu `pinch()` trong `zoom.spec.ts`). `Input.synthesizePinchGesture` **không** phóng được trong cấu hình này; `Emulation.setPageScaleFactor` chỉ là ghi đè giả lập (không chịu ràng buộc của viewport). Đọc mức phóng bằng `visualViewport.scale`. `touch-action: none` chặn pinch thật **kể cả phần tử con** (hiệu lực = giao các tổ tiên); `manipulation` vẫn cho pinch. Khi trang đang phóng, tọa độ chuột của Playwright bấm trượt → bấm bằng `el.evaluate((e) => e.click())`.
+- **Đổi `<meta viewport>` lúc chạy KHÔNG đưa trang đang phóng về 1×** (thử `maximum-scale=1` và `user-scalable=no` trên Chromium giả lập di động) → đừng dùng làm cách “reset zoom”; cách đã chọn: tạm dừng game + nhắc chụm lại.
+- **Chromium của Playwright (headless shell) không có GPU** → canvas 2D rasterize bằng phần mềm trên main thread (hồ sơ CPU: ~87% “(program)”, JS ~10%) nên FPS ở CPU ×4 của game canvas **bi quan** (G3 44–57 fps là giả). Dùng Chrome cài sẵn: `npm run perf -- --gpu` (G3 60 fps tới CPU ×8). `Performance.getMetrics` → `TaskDuration` cho biết main thread bận bao nhiêu % – bền hơn fps vì fps bị chặn ở 60.
+- **Khung bao chỉ dành cho một breakpoint**: bọc phần tử bằng `div` rồi đặt `display: contents` ở mặc định, chỉ cho thành grid/flex trong `@media` → các màn khác không đổi (đã đo `scrollHeight` điện thoại/tablet dọc giữ nguyên từng pixel). Preact nhận `style` dạng chuỗi (`style="--n:3"`) để đặt custom property mà không phải ép kiểu TS; chia cột theo số thẻ bằng `flex: var(--n, 1) 1 0%`.
+- Chip/thẻ hẹp (~150px): `white-space: nowrap` + `padding-inline` nhỏ + `min-height: 2.4em` cho tên để các biểu tượng thẳng hàng; kiểm bằng e2e “không tràn thẻ” ở 1200px (hẹp nhất còn xếp 3 cột).
+- **Máy ngủ giữa lượt chạy dài làm test “đỏ giả”**: lượt e2e đầy đủ đầu tiên của TASK-10 có đúng 3 test (đang chạy song song trên 3 luồng) cùng kéo dài ≈ 3380 giây rồi báo hết hạn 30 giây, trong khi 414 test còn lại bình thường → đồng hồ nhảy vì máy ngủ, không phải lỗi mã (chạy lại riêng 3 test pass, chạy lại toàn bộ pass). Cách nhận biết: phân tích `duration` từng test trong báo cáo JSON (`PLAYWRIGHT_JSON_OUTPUT_NAME`). Phòng ngừa: gọi công cụ **`request_keep_awake`** của Claude Desktop (công cụ hoãn tải: `ToolSearch select:mcp__ccd_host__request_keep_awake`) trước khi chạy bộ dài (e2e đầy đủ ≈ 12 phút, `npm run perf` ≈ 15–20 phút).
+- Trong PowerShell, `… | Select-String -Pattern "…"` làm đầu ra hiện **từng đợt** và **mất các dòng không khớp** (vd dòng `JSON:`) – khi cần chờ một dòng cụ thể thì đừng lọc nó đi, hoặc ghi ra file rồi đọc.
+
 ---
 
 ## 8. Việc cần chủ dự án tự làm / còn chờ (chưa có ai kiểm trên máy thật)
 
 Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
-- **TASK-07** (đã gộp + deploy 0.9.0): thử khu PH trên máy thật (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → xóa dữ liệu trang → khôi phục**); **duyệt chữ R13**; quyết định bỏ `user-scalable=no` hay không.
+- **TASK-07** (đã gộp + deploy 0.9.0): thử khu PH trên máy thật (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → xóa dữ liệu trang → khôi phục**); **duyệt chữ R13**.
 - **TASK-08**: cài thử PWA lên điện thoại/Galaxy Tab bằng Chrome + chế độ máy bay (TC-001, 002, 012), mở thử bằng Samsung Internet; **TC-029** (mở app đã cài → “Có bản mới – Cập nhật” → thấy “Phiên bản 0.9.0”, dữ liệu còn nguyên); **duyệt icon**.
 - **Duyệt nội dung G6/G7** bằng `docs/samples/`.
 - **Duyệt hình TASK-06**: 40 sticker, 2 trang phục, 2 hình nền (`?gallery=1`); quyết định **Nhạc Cụ Gõ + Cú Mèo** (làm ở TASK-10 hay bỏ).
 - Thử trên **điện thoại Android** và **tablet Samsung**: cảm giác chơi G1–G7, **FPS thật** của G1/G3/G5 bằng `?debug=1`, TC-007 (2 ngón vào nốt đôi G5), TC-032, TC-033 (vuốt Quay lại), TC-034 (chia đôi màn hình/cửa sổ nổi), TC-035 (tablet không rung → lắc hình + âm “bụp”), TC-028 (G1 đen trắng); **hộp quà + album + nhiệm vụ + nghỉ đúng giờ** (cách thử từng bước ở PROGRESS, TASK-06).
-- **(TASK-09)** Danh sách đầy đủ, đánh số, kèm lý do vì sao cần máy thật: `docs/QA_REPORT.md` mục 8. Nổi bật: **bấm “Cập nhật” ở app đã cài (TC-029, bản 0.9.1 là lần deploy thứ 3)**, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**, quyết định `user-scalable=no`.
+- **(TASK-09)** Danh sách đầy đủ, đánh số, kèm lý do vì sao cần máy thật: `docs/QA_REPORT.md` mục 8. Nổi bật: **bấm “Cập nhật” ở app đã cài (TC-029, bản 0.9.1 là lần deploy thứ 3)**, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**.
+- **(TASK-10 đợt 1, 0.9.2)** Thử trên máy thật: **Home xoay ngang trên Galaxy Tab** (3 nhóm game cạnh nhau, 7 thẻ một hàng, gần như không phải cuộn; xoay dọc về 3 cột như cũ), **icon thẻ G1/G2 mới**, **phóng to 2 ngón ở Home** (được) → vào một game khi đang phóng (game tạm dừng + nhắc thu nhỏ, nút “Chơi tiếp” mờ) → chụm lại (nút sáng) → chơi tiếp; **đang chơi chụm 2 ngón (không phóng)**, G5 bằng 2 ngón vẫn bình thường.
 
 ---
 
 ## 9. Nợ kỹ thuật / đề xuất đã ghi nhận
 
-- Home tablet ngang phải cuộn (4 cột nhưng mỗi nhóm chỉ 2–3 thẻ) → có thể xếp 3 nhóm cạnh nhau (TASK-10 nếu chủ dự án muốn).
-- Biểu tượng thẻ G1, G2 phẳng hơn G3–G7 → nâng cấp cùng phong cách (TASK-10).
+- ~~Home tablet ngang phải cuộn~~ → **đã làm ở TASK-10** (3 nhóm cạnh nhau từ 1200px, vừa một màn ở 1280×800). Ngang hẹp 900–1199px vẫn 4 cột và phải cuộn (cố ý).
+- ~~Biểu tượng thẻ G1, G2 phẳng hơn G3–G7~~ → **đã làm ở TASK-10**. Còn lại: **bóng/khối G1 trong game** (canvas) vẫn vẽ phẳng – có thể vẽ sprite một lần cho khớp icon (giữ 60 fps, quy tắc 17).
 - ~~G5: vẽ nền tĩnh (làn, vạch) vào lớp canvas riêng~~ → **đã làm ở TASK-09** (`.g5-underlay`).
 - **Kích thước JS** ≈ 99 KB gzip; đã đo khởi động offline FCP ≈ 100 ms (TASK-08) nên **không** tách gói tải sau; riêng Chart.js (TASK-07) nên tải sau.
 - Tên sticker trong Album 16px (nhỏ hơn mức 18px của SPEC) – đã có phóng to khi chạm.
@@ -277,8 +299,8 @@ Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
 - `AppState.installedVersion` chỉ ghi lúc tạo dữ liệu, chưa cập nhật khi app lên phiên bản mới (khu PH dùng `APP_VERSION` từ `version.ts`, không dùng trường này; nếu muốn biết “phiên bản đã từng cài”, thêm cập nhật khi mở app + test).
 - Chưa kiểm trên **Samsung Internet** thật (TASK-08 chỉ kiểm bằng Chromium/Playwright); `gh` CLI chưa đăng nhập (chưa cần).
 - Thư viện cài ngoài danh sách CLAUDE.md đã được chấp nhận: `@types/node`, `@eslint/js`, `typescript-eslint`, `globals`, `eslint-config-prettier`. Phiên bản mới nhất: Vite 8, Preact 11, TypeScript 6, ESLint 10, Vitest 5, vite-plugin-pwa 2 (chạy ổn).
-- **(TASK-09)** G3 ở tablet khi giả lập CPU ×4: 44–57 fps, dao động giữa các lần đo (G1 60, G5 59); chưa rõ điểm nghẽn (không phải chữ “z”). Canvas trên Android chạy bằng GPU nên số này bi quan – cần đo thật trước khi tối ưu.
-- **(TASK-09)** `user-scalable=no` trong viewport (axe `meta-viewport`): chờ quyết định của chủ dự án.
+- ~~**(TASK-09)** G3 ở tablet khi giả lập CPU ×4: 44–57 fps~~ → **đã điều tra ở TASK-10**: do Chromium thử nghiệm không có GPU; Chrome có GPU cho 60 fps tới CPU ×8, main thread bận 30% ở ×4 (xem mục 6 và `docs/QA_REPORT.md` mục 6). Vẫn cần xem FPS thật bằng `?debug=1` trên Galaxy Tab.
+- ~~**(TASK-09)** `user-scalable=no` trong viewport~~ → **đã bỏ ở TASK-10** (màn chơi vẫn chặn phóng, vào game khi đang phóng thì tạm dừng + nhắc). Cần thử máy thật; chưa chạy lại axe/Lighthouse sau thay đổi.
 - **(TASK-09)** `AppState.installedVersion` vẫn chưa cập nhật khi lên bản mới; khu PH chưa có xuất CSV; bộ đếm “sai 3 lần” nằm trong bộ nhớ.
 - **(TASK-09)** Chưa chạy lại Lighthouse sau TASK-09 (số cuối cùng vẫn là của TASK-08: Performance 83 · Accessibility 93 · Best Practices 81 · SEO 60); axe-core chỉ còn 1 mục (`user-scalable`).
 
@@ -290,13 +312,14 @@ Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
 npm install            # (worktree mới: npm ci)
 npm run dev            # http://localhost:5173 (+ địa chỉ Network cho điện thoại/tablet)
 npm run lint           # eslint + tsc --noEmit
-npm test               # Vitest (470 test)
+npm test               # Vitest (529 test)
 npm run build          # production
 npm run build:pages    # production với BASE_PATH=/nhanh-tay-tinh-mat/ (giống bản deploy)
 npm run icons          # vẽ lại icon PWA vào public/icons/ (cần `npx playwright install chromium`)
-npm run test:e2e       # Playwright 3 khung hình, 375 test (tự build dist-e2e + dist-e2e-base)
+npm run test:e2e       # Playwright 3 khung hình, 432 test (417 chạy + 15 bỏ qua có chủ ý; tự build dist-e2e + dist-e2e-base)
 npm run samples        # sinh docs/samples/G6.md, G7.md, G7.html
 npm run perf           # đo FPS G1/G3/G5 (build bản thật vào dist-perf); lọc: -- --games=G5 --viewports=tablet-portrait --cpu=4 --no-build
+npm run perf -- --gpu  # như trên nhưng bằng Chrome/Edge cài sẵn CÓ GPU (sát thiết bị thật; Chromium của Playwright không GPU nên fps ở CPU ×4 bi quan)
 node scripts/qa-table.mjs <kq.json>   # bảng TC từ báo cáo JSON của Playwright
 npx playwright test rewards --project=phone --reporter=line   # chạy 1 file / 1 khung hình
 git add -A && git commit -m "feat: …" && GIT_TERMINAL_PROMPT=0 timeout 90 git push

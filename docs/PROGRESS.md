@@ -15,14 +15,15 @@
 | TASK-06 Thưởng | Xong | 2026-10-10 | lint, 409 unit test, build, 267 e2e (89 × 3 khung hình) đều pass; **đã gộp vào `main`**; cần anh **duyệt 40 sticker + trang phục/hình nền** và thử hộp quà/album trên máy thật |
 | TASK-07 Khu phụ huynh | Xong, **đã gộp `main`, v0.9.0 đang live** | 2026-10-11 | lint, 470 unit test, build, 375 e2e (125 × 3 khung hình) đều pass; TC-010/023/025/026/027 tự kiểm Pass; **cần anh thử trên máy thật** + duyệt chữ R13 |
 | TASK-08 PWA + deploy | Xong, **đã gộp `main`, Pages đang chạy** | 2026-10-11 | Pages: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ ; còn chờ anh thử cài + máy bay trên máy thật (TC-001/002/012) và TC-029 sau bản 0.9.0 |
-| TASK-09 QA | **Xong** (nhánh `claude/handover-task-continuation-aaaede`, v0.9.1, chờ gộp `main` + deploy) | 2026-10-11 | lint, **523 unit test**, build, **408** e2e (3 khung hình) đều pass; test chập chờn đã ổn định; báo cáo `docs/QA_REPORT.md`; **cần anh thử trên máy thật** (QA_REPORT mục 8) |
-| TASK-10 Sửa lỗi | Chưa bắt đầu | | |
+| TASK-09 QA | **Xong, đã gộp `main`, v0.9.1 live** (anh đồng ý 2026-10-12) | 2026-10-11 | lint, **523 unit test**, build, **408** e2e (3 khung hình) đều pass; test chập chờn đã ổn định; báo cáo `docs/QA_REPORT.md`; **cần anh thử trên máy thật** (QA_REPORT mục 8) |
+| TASK-10 Sửa lỗi & tinh chỉnh | **Đợt 1 xong** (nhánh `claude/handover-task-handoff-6bd5eb`, v0.9.2, chờ gộp `main` + deploy) | 2026-10-12 | Mục tồn đọng đã biết: cho phóng to bằng 2 ngón (màn chơi vẫn chặn), Home tablet ngang xếp 3 nhóm cạnh nhau (vừa một màn), icon thẻ G1/G2 mới, điều tra G3; chi tiết ở nhật ký. **Chưa có danh sách lỗi từ máy thật** → đợt 2 khi anh gửi |
 
 ## Câu hỏi mở (chờ chủ dự án)
 
 - Không còn câu hỏi chặn. R23–R25 (mới v1.2) áp dụng theo đề xuất; chủ dự án có thể góp ý trong quá trình làm.
-- **Quyết định mới (TASK-09):** có bỏ `user-scalable=no` trong viewport (cho bé phóng to bằng 2 ngón) không? Đây là mục **duy nhất** axe-core còn báo; bỏ đi thì Lighthouse Accessibility tăng, nhưng bé có thể lỡ phóng to khi chạm nhanh. Mặc định em **giữ nguyên** cho tới khi anh quyết định.
-- **Việc anh cần làm cho TASK-09:** (1) cho phép gộp nhánh `claude/handover-task-continuation-aaaede` vào `main` (= deploy bản **0.9.1**); (2) thử máy thật theo **`docs/QA_REPORT.md` mục 8** (9 việc, mỗi việc ghi rõ vì sao cần máy thật) – quan trọng nhất: bấm “Cập nhật” trên app đã cài, G5 bằng 2 ngón thật, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**, sao lưu → khôi phục thật.
+- ~~**Quyết định (TASK-09):** có bỏ `user-scalable=no`?~~ → **Đã bỏ ở 0.9.2** (anh đồng ý kế hoạch TASK-10): viewport cho phóng to, màn chơi vẫn chặn; xem nhật ký TASK-10. Nếu thử máy thật thấy bé hay phóng nhầm ở Home thì báo, em đổi sang chặn phóng ở màn của bé và chỉ cho phóng ở khu phụ huynh.
+- **Việc anh cần làm cho TASK-10 đợt 1:** (1) cho phép gộp nhánh `claude/handover-task-handoff-6bd5eb` vào `main` (= deploy **0.9.2**); (2) thử máy thật theo “Cách thử thủ công” ở nhật ký TASK-10 (Home xoay ngang trên Galaxy Tab, icon mới, phóng to 2 ngón); (3) **gửi danh sách lỗi/góp ý** từ lần thử máy thật (mẫu: `docs/03_TASKS.md` mục TASK-10) để làm đợt 2; (4) quyết định **Nhạc Cụ Gõ + Cú Mèo** (làm hay bỏ).
+- **Việc anh cần làm cho TASK-09 (còn lại; 0.9.1 đã deploy):** thử máy thật theo **`docs/QA_REPORT.md` mục 8** (9 việc, mỗi việc ghi rõ vì sao cần máy thật) – quan trọng nhất: bấm “Cập nhật” trên app đã cài, G5 bằng 2 ngón thật, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**, sao lưu → khôi phục thật.
 - **Duyệt nội dung mẫu G6/G7** trong `docs/samples/` (câu nào quá khó/dễ với bé lớp 2?).
 - **Duyệt hình thưởng TASK-06**: 40 sticker (tên + độ hiếm), 2 trang phục, 2 hình nền – xem bằng `npm run dev` rồi mở `http://localhost:5173/?gallery=1` (thêm `&theme=animal|fruit|space|vehicle` để xem to) và `?gallery=1&view=rewards`. Hình nào chưa ưng thì báo số `stk-xx` để em vẽ lại.
 - **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
@@ -37,16 +38,54 @@
 - Chữ tên sticker dưới mỗi ô Album đang 16px (nhỏ hơn mức 18px của SPEC) để vừa 4 cột trên điện thoại 360px; nếu anh thấy khó đọc thì chuyển sang bấm vào ô để xem tên (đã có).
 - Tỷ lệ độ hiếm thật sau “bảo đảm Hiếm” là ≈ **66 / 28,3 / 5,7** (Thường / Hiếm / Siêu hiếm), không phải đúng 70/25/5 (xem nhật ký TASK-06). Muốn đúng 70/25/5 thì phải bỏ bảo đảm; muốn giữ bảo đảm mà gần 70/25/5 hơn thì hạ xác suất Hiếm ở lần tung gốc – chỉnh trong `rollRarity` (`rewards.ts`) nếu anh muốn.
 
-- Home tablet ngang: xếp 3 nhóm game cạnh nhau để đỡ phải cuộn (TASK-10 nếu anh thấy cần).
+- ~~Home tablet ngang: xếp 3 nhóm game cạnh nhau~~ → **đã làm ở TASK-10 (0.9.2)**.
+- **Bóng/khối của G1 trong game** (canvas) vẫn vẽ phẳng (màu + viền) trong khi icon thẻ G1 nay bóng bẩy; có thể vẽ sprite bóng một lần (như G3/G5) cho khớp – cần giữ 60 fps và quy tắc 17 (không tạo gradient mỗi khung hình).
 - Kích thước JS tăng từ ≈ 33 KB lên ≈ 64 KB (gzip) vì có thêm bộ sinh câu G6/G7: có thể tách mỗi game thành gói tải sau (dynamic import) nếu TASK-08 đo thấy lần mở đầu chậm (mặc định không tách).
 - G6: M11 (nhân/chia số 2–3 chữ số) ở dạng tìm số thiếu ra số khá lớn (vd `? : 5 = 57`); đây là chủ đề lớp 3, không bật mặc định – nếu anh thấy khó quá thì giới hạn dạng tìm số thiếu cho M11 ở TASK-10.
 - G7 cấp 5 (mẫu 2 thuộc tính): khi sai hiện tô sáng cả dãy 6 ô; có thể làm lời giải thích riêng “màu lặp 2 nhịp, hình lặp 3 nhịp” nếu anh muốn (TASK-10).
 - G6 hình minh họa khi sai hiện 1,5 giây đúng SPEC; nếu thấy bé chưa kịp nhìn thì tăng hằng số `SHOW_MS` (`games/g6-math/view.ts`).
 - ~~Hai test e2e chập chờn (G1 TC-004, G3 TC-013)~~ → **đã sửa ở TASK-09** (nguyên nhân là test, không phải game).
-- **G3 trên tablet khi giả lập CPU ×4: 44–57 fps** (G1, G5 ≈ 60): chưa rõ điểm nghẽn (không phải chữ “z” của Nhím). Cần đo thật bằng `?debug=1` trên Galaxy Tab trước khi tối ưu (TASK-10 nếu anh thấy giật).
+- ~~**G3 trên tablet khi giả lập CPU ×4: 44–57 fps**~~ → **đã điều tra ở TASK-10: không phải lỗi của G3** mà do Chromium của Playwright vẽ canvas bằng phần mềm (xem nhật ký TASK-10; đo lại bằng Chrome có GPU: 60 fps kể cả CPU ×8). Vẫn nên xem FPS thật bằng `?debug=1` trên Galaxy Tab.
 - Khu phụ huynh: xuất CSV, so sánh nhiều bé; nhắc sao lưu ngay ở Home (chưa làm).
 
+## Changelog (theo phiên bản; mỗi lần gộp `main` = một phiên bản)
+
+| Phiên bản | Ngày | Nội dung |
+|---|---|---|
+| **0.9.2** | 2026-10-12 | TASK-10 đợt 1: cho phóng to bằng 2 ngón (màn chơi vẫn chặn; vào game khi đang phóng thì tạm dừng + nhắc thu nhỏ); Home tablet ngang (≥ 1200px) xếp 3 nhóm game cạnh nhau, vừa một màn; icon thẻ G1/G2 mới; script `npm run perf` có `--gpu` + cột “main thread bận”; không sửa G3 (xem nhật ký) |
+| 0.9.1 | 2026-10-12 (deploy) | TASK-09 QA: ổn định 2 test chập chờn; sửa app mở xuyên đêm, dữ liệu hỏng/file sao lưu sửa tay, G5 nền làn vẽ một lần, accessibility (nút “Dễ” 48px, hoạt ảnh lặp khi giảm chuyển động, tên nút hộp quà) |
+| 0.9.0 | 2026-10-11 | TASK-07: khu phụ huynh (khóa, tiến bộ + biểu đồ, bài đo tuần, cài đặt, hồ sơ, thưởng, sao lưu/khôi phục), schema dữ liệu 2 |
+| 0.8.0 | 2026-10-11 | TASK-08: PWA (cài được, offline, nút Cập nhật), deploy GitHub Pages |
+
 ## Nhật ký
+
+### 2026-10-12 – TASK-10 đợt 1 (mục tồn đọng đã biết) – v0.9.2
+- Bối cảnh: anh đồng ý gộp TASK-09 vào `main` (0.9.1 đã deploy, CI + Deploy xanh) và chọn **“làm các mục tồn đọng đã biết”** vì chưa có danh sách lỗi từ máy thật; anh “Đồng ý” kế hoạch 4 mục. Việc còn lại của TASK-10 (đợt 2) chờ anh thử máy thật và gửi lỗi/góp ý.
+- Đã làm:
+  1. **Cho phóng to bằng 2 ngón** (mục duy nhất axe còn báo): bỏ `user-scalable=no` ở `index.html`. Màn chơi vẫn **không** phóng được: cả màn chơi (`.play`: thanh trên, lề, lớp phủ, không chỉ vùng chơi) có `touch-action: none`. Nếu bé phóng to ở màn khác rồi mới vào game thì game **tự tạm dừng, hiện “Màn hình đang bị phóng to. Con chụm 2 ngón tay lại để thu nhỏ rồi chơi tiếp nhé!”** và nút “Chơi tiếp” bị khóa cho tới khi thu nhỏ (nếu không, bé kẹt trong game bị phóng mà không chụm lại được). Mã: `app/zoom.ts`, `Play.tsx`, `PauseOverlay.tsx`, `app.css`. **Đã thử rồi loại bỏ:** đổi `<meta viewport>` lúc chạy để “reset” zoom (không có tác dụng). Kiểm bằng **cử chỉ 2 ngón thật** (CDP) ở `tests/e2e/zoom.spec.ts` + em đã thử bỏ quy tắc `touch-action` thì test đỏ đúng chỗ (không phải test xanh giả).
+  2. **Home tablet ngang (≥ 1200px)**: nửa trên chia 2 cột (lời chào + thời gian | nhiệm vụ + hộp quà), 7 thẻ game trên **một hàng** chia 3 nhóm; khung rộng tối đa 1240px. Chiều cao Home ở 1280×800: **1502 → 766px** (vừa một màn, kể cả khi banner “Thử thách tuần” đang hiện; không có banner ≈ 665px). Điện thoại (1931px) và tablet dọc (1502px) **không đổi một pixel**. Tablet ngang hẹp hơn 1200px giữ lưới 4 cột như cũ (thẻ sẽ quá hẹp: chip “Cấp 1 · ★☆☆” tràn thẻ ở ~1100px). Đã xem ảnh 3 trường hợp: mặc định, có hình nền + trang phục, hết giờ.
+  3. **Icon thẻ G1 và G2** vẽ lại cho khớp phong cách G3–G7 (chuyển sắc, vệt sáng, đổ bóng): G1 = bóng xanh mặt cười (mắt có ánh sáng, má hồng) + khối đỏ dấu ✕ trắng + ngôi sao lấp lánh; G2 = bảng 3×3 dùng **đúng 5 màu ô của game** (hồng, vàng, xanh lá, xanh trời, tím), số xáo trộn, ô “1” viền vàng. Màu vẫn kèm hình dạng/số (mù màu).
+  4. **G3 FPS (44–57 fps ở CPU ×4)**: điều tra bằng hồ sơ CPU (CDP) → **không phải lỗi của G3**: Chromium của Playwright không có GPU nên vẽ canvas bằng phần mềm trên main thread (~87% thời gian ở “(program)”, JS chỉ ~10%). Đo lại bằng **Chrome cài sẵn có GPU** (Intel Iris Xe): **G3 60 fps ở CPU ×4, ×6 và ×8**, ở cả 3 khung hình (main thread bận 30% ở ×4, 65% ở ×8) – giống G1/G5. **Không sửa mã game.** Em nâng `scripts/perf-fps.mjs`: `--gpu` (tự tìm Chrome/Edge) / `--chrome=<đường dẫn>` / `CHROME_PATH`, và thêm cột “main thread bận %” (bền hơn fps vì fps bị chặn ở 60).
+  - Tài liệu: `docs/01_SPEC.md` mục 12b (Home tablet ngang + phóng to bằng 2 ngón), `docs/QA_REPORT.md` (mục 5, 6, 8, 9), `docs/HANDOVER.md`, Changelog ở trên. Version **0.9.2**.
+- Test: `npm run lint` pass · **529 unit test** pass (+6: `zoom.test.ts` 3, `rules.test.ts` 3; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK · **e2e đủ bộ: 417 pass, 0 lỗi, 0 chập chờn, 15 bỏ qua có chủ ý** (11,6 phút, `--workers=3`). Test e2e mới: `zoom.spec.ts` (5 test, chỉ khung `phone` vì cử chỉ 2 ngón thật cần chế độ di động giả lập) và `home-layout.spec.ts` (3 test, mỗi test chỉ chạy ở khung phù hợp) → 432 test, 15 cái “bỏ qua” là các khung không áp dụng. 35 TC trong `docs/04_ACCEPTANCE.md` không đổi kết quả.
+  - **Lưu ý về lượt chạy đầu tiên:** có 3 test hỏng ở khung `tablet` (TC-015, TC-016 ×2) nhưng đó là do **máy ngủ giữa chừng** (3 test đang chạy song song cùng kéo dài ≈ 3380 giây rồi hết hạn 30 giây; 414 test còn lại chạy bình thường, chậm nhất 35 giây). Chạy lại riêng 3 test: pass (42 giây); chạy lại **toàn bộ** (có giữ máy thức): 417 pass. Không phải lỗi mã.
+- Số đo: gói chính 378,6 KB = **116,9 KB gzip** (Vite báo; dựng lại bản 0.9.1 bằng đúng cách đó cho 375,6 KB = 116,2 KB gzip → **tăng ≈ 0,7 KB gzip**; CSS 13,86 KB gzip, +0,17); Chart.js tách riêng 56,6 KB gzip; giới hạn 350 KB gzip. **FPS** (Chrome có GPU, bản build thật, cấp 10, 6 giây × 2 lượt): G1/G3/G5 **60 fps, 0% khung > 20 ms** ở cả 3 khung hình, CPU thường và CPU ×4 (main thread bận 4–7% / 21–37%); G3 còn 60 fps ở CPU ×6 và ×8 (tablet ngang/dọc). Bảng đầy đủ: `docs/QA_REPORT.md` mục 6.
+- Cách thử thủ công (sau khi anh cho phép gộp `main` và Pages deploy xong, ~2 phút; Galaxy Tab/điện thoại, mở app đã cài rồi bấm **“Cập nhật”** ở Home, vào Khu phụ huynh → Dữ liệu xem “Phiên bản 0.9.2”):
+  1. **Home xoay ngang (Galaxy Tab):** 3 nhóm “Phản xạ / Tập trung & Trí nhớ / Học mà chơi” đứng cạnh nhau, 7 thẻ trên một hàng, tên game 2 dòng, biểu tượng thẳng hàng; gần như không phải cuộn. Xoay dọc: về 3 cột như cũ. Điện thoại: không đổi.
+  2. **Icon mới:** nhìn thẻ “Bóng Xanh – Bóng Đỏ” và “Bảng Số Thần Kỳ” ở Home và ở ô Nhiệm vụ (Phản xạ / Tập trung). Anh thấy có ưng không? (Nếu muốn chỉnh màu/hình, báo em.)
+  3. **Phóng to ở Home:** dùng 2 ngón dang ra → phóng được (và chụm lại thì về như cũ). Khu phụ huynh cũng phóng được.
+  4. **Vào game khi đang phóng:** phóng to Home → bấm một game → Bắt đầu → game hiện **“Đã tạm dừng”** + dòng nhắc chụm 2 ngón, nút “Chơi tiếp” **mờ** → chụm lại → nút sáng lên, bấm chơi tiếp được.
+  5. **Đang chơi:** thử dang 2 ngón (ở thanh tiêu đề và giữa vùng chơi): **không** bị phóng. G5 (2 ngón vào 2 làn) vẫn chơi bình thường.
+  6. **FPS thật:** mở `http://192.168.1.14:5173/?debug=1` (bản dev trên máy anh, sau khi `main` có 0.9.2) trên Galaxy Tab, chơi G3 và G5 cấp cao, nhìn số fps ở góc HUD.
+- Quyết định khi làm (anh góp ý nếu không đồng ý):
+  - **Vẫn cho phóng ở Home/Giới thiệu/Kết quả…** (đúng kế hoạch đã duyệt). Nếu thử máy thật thấy bé hay phóng nhầm thì em chuyển sang **chặn phóng ở các màn của bé và chỉ cho phóng ở khu phụ huynh** (cách này cần xử lý thêm trường hợp “phóng ở khu phụ huynh rồi về Home”).
+  - Game đang bị phóng thì **không cho “Chơi tiếp”** (khóa nút) thay vì cho chơi trong màn hình bị phóng – tránh bé kẹt.
+  - Ngưỡng bố cục mới là **1200px** (không phải 1100px): ở ~1100px chip cấp độ tràn thẻ.
+  - Điện thoại ngang (~900px) **không** dùng bố cục mới (thẻ quá hẹp).
+  - **Không sửa G3** vì chưa có bằng chứng nghẽn; nếu máy thật vẫn giật, đo bằng `?debug=1` rồi hồ sơ hóa trên máy đó.
+  - **Nhạc Cụ Gõ + Cú Mèo**: chưa làm (anh chưa quyết định); bóng/khối G1 trong game vẫn phẳng (xem “Đề xuất”).
+- Còn lại / nợ kỹ thuật: danh sách thử máy thật (mục “Cách thử thủ công” + `QA_REPORT.md` mục 8); chưa chạy lại axe-core/Lighthouse sau khi bỏ `user-scalable=no` (quy tắc `meta-viewport` đã được test quét giữ đúng); Samsung Internet chưa kiểm cử chỉ phóng; TASK-10 đợt 2 chờ lỗi/góp ý của anh.
+- Commit: `feat: allow pinch zoom outside games; pause and prompt when a game starts zoomed` · `feat: tablet-landscape Home (>= 1200px) with the 3 game groups side by side` · `feat: glossy G1 and G2 card icons` · `perf: perf script can use a GPU Chrome (--gpu) and reports main-thread busy %; chore: 0.9.2` · `docs: …`.
 
 ### 2026-10-11 – TASK-09 (kiểm thử tự động & rà soát chất lượng)
 - Anh đã “Đồng ý” kế hoạch 8 bước + 4 quyết định mặc định (axe-core chạy một lần bằng gói riêng; sửa test chứ không đổi game; lỗi nhỏ sửa luôn, lỗi lớn ghi “Đề xuất”; version 0.9.1). Báo cáo đầy đủ: **`docs/QA_REPORT.md`**.
