@@ -20,6 +20,7 @@ import {
   restPending,
 } from '../../app/store';
 import type { GameId, RoundMode } from '../../app/types';
+import { pageZoomed } from '../../app/zoom';
 import { Countdown } from '../../games/common/Countdown';
 import { PauseOverlay } from '../../games/common/PauseOverlay';
 import type { GameInstance, RoundResult } from '../../games/common/types';
@@ -42,6 +43,8 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
   const [phase, setPhase] = useState<RoundPhase>('countdown');
   const [banner, setBanner] = useState<string | null>(null);
   const [remainingSec, setRemainingSec] = useState(0);
+  // Trang đang bị phóng to (2 ngón ở màn khác) – màn chơi chặn phóng nên phải thu nhỏ lại trước khi chơi
+  const [zoomed, setZoomed] = useState(false);
 
   const doPause = useCallback(() => {
     const clock = clockRef.current;
@@ -169,9 +172,18 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
       lastH = window.innerHeight;
       doPause();
     };
+    // Đang bị phóng to (vào game khi trang đã phóng, hoặc phóng lúc đang tạm dừng) → tạm dừng, cho thu nhỏ lại
+    const vv = window.visualViewport;
+    const onZoom = () => {
+      const z = pageZoomed();
+      setZoomed(z);
+      if (z) doPause();
+    };
+    vv?.addEventListener('resize', onZoom);
     document.addEventListener('visibilitychange', onVisibility);
     window.addEventListener('pagehide', doPause);
     window.addEventListener('resize', onResize);
+    onZoom();
 
     // Nút/cử chỉ Quay lại: đang chơi → tạm dừng (NF10)
     setBackInterceptor(() => {
@@ -182,6 +194,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
     return () => {
       window.clearInterval(timer);
       window.clearTimeout(bannerTimer);
+      vv?.removeEventListener('resize', onZoom);
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('pagehide', doPause);
       window.removeEventListener('resize', onResize);
@@ -207,6 +220,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
   }, []);
 
   const onResume = () => {
+    if (pageZoomed()) return; // chưa thu nhỏ lại thì chưa chơi tiếp
     clockRef.current?.startCountdown();
     setPhase('countdown');
   };
@@ -220,7 +234,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
   const ss = String(remainingSec % 60).padStart(2, '0');
 
   return (
-    <main class="play" data-phase={phase}>
+    <main class="play" data-phase={phase} data-zoomed={zoomed ? '1' : undefined}>
       <header class="play-bar">
         <h1 class="play-title">{vi.games[gameId].name}</h1>
         <span class="play-time" data-testid="play-time" aria-label={vi.home.timeLeftLabel}>
@@ -243,7 +257,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
       )}
       <div class="game-host" ref={hostRef} data-testid="game-host" />
       {phase === 'countdown' && <Countdown onDone={onCountdownDone} />}
-      {phase === 'paused' && <PauseOverlay onResume={onResume} onExit={onExit} />}
+      {phase === 'paused' && <PauseOverlay onResume={onResume} onExit={onExit} zoomed={zoomed} />}
     </main>
   );
 }

@@ -255,6 +255,7 @@ export const vi = {
     resume: 'Chơi tiếp',
     exit: 'Thoát',
     exitNote: 'Thoát thì lượt này sẽ không được tính nhé.',
+    zoomHint: 'Màn hình đang bị phóng to. Con chụm 2 ngón tay lại để thu nhỏ rồi chơi tiếp nhé!',
     warn2min: 'Còn 2 phút nữa thôi nhé!',
     timeUp: 'Hết giờ rồi! Mình chơi nốt lượt này nhé.',
     countdownLabel: 'Chuẩn bị',

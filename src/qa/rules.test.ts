@@ -147,6 +147,25 @@ describe('quy tắc 8 – CSS vùng chơi chống cuộn/chọn nhầm', () => {
   });
 });
 
+describe('accessibility – cho phóng to, riêng màn chơi chặn phóng', () => {
+  const html = readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8');
+  const viewport = /<meta[^>]*name="viewport"[^>]*content="([^"]*)"/.exec(html)?.[1] ?? '';
+  const css = ALL.filter((s) => s.file.endsWith('.css'))
+    .map((s) => s.code)
+    .join('\n');
+
+  it('meta viewport có width=device-width và không chặn phóng to', () => {
+    expect(viewport).toMatch(/width=device-width/);
+    expect(viewport).not.toMatch(/user-scalable\s*=\s*(no|0)|maximum-scale/);
+  });
+  it('cả màn chơi (.play) chặn phóng 2 ngón bằng touch-action: none', () => {
+    expect(css).toMatch(/\.play\s*\{[^}]*touch-action:\s*none/);
+  });
+  it('khi trang đã bị phóng từ trước, màn chơi cho chụm lại (touch-action: manipulation)', () => {
+    expect(css).toMatch(/\.play\[data-zoomed\]\s*\{[^}]*touch-action:\s*manipulation/);
+  });
+});
+
 describe('quy tắc 9b – sai/đúng không phụ thuộc rung', () => {
   const haptics = CODE.find((s) => s.file === 'app/haptics.ts')!.code;
   it('navigator.vibrate chỉ có trong haptics.ts', () => {

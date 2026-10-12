@@ -696,6 +696,17 @@
   flex-direction: column;
   padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
   background: var(--bg-gradient);
+  /* Viewport cho phóng to ở các màn khác (accessibility) nhưng cả màn chơi (thanh trên, lề, lớp phủ) chặn phóng 2 ngón */
+  touch-action: none;
+}
+/* Trang đã bị phóng từ trước khi vào game: game tạm dừng và cho chụm lại để thu nhỏ */
+.play[data-zoomed] {
+  touch-action: manipulation;
+}
+.zoom-hint {
+  max-width: 360px;
+  color: var(--ink);
+  font-weight: 800;
 }
 .play-bar {
   display: flex;
