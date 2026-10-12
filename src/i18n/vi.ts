@@ -18,6 +18,7 @@ export const vi = {
     title: 'Nhanh Tay Tinh Mắt',
     tagline: 'Chơi vui – Tập trung giỏi!',
     mascot: 'Sóc Bo',
+    mascotOwl: 'Cú Mèo Thông Thái',
   },
   common: {
     back: 'Quay lại',
@@ -401,8 +402,15 @@ export const vi = {
     using2: 'Đang dùng',
     openGifts: (n: number) => `Mở hộp quà (${n})`,
     giftsNone: 'Chưa có hộp quà',
-    soon: 'Dùng được ở bản sau',
     unlockedLabel: 'Đã mở khóa',
+    /** Tên các nhóm ở tab Đặc biệt. */
+    groups: { sounds: 'Âm thanh', mascots: 'Linh vật', extras: 'Quà đặc biệt' },
+    defaultSound: 'Âm thanh gốc',
+    defaultMascot: 'Linh vật Sóc Bo',
+    listen: 'Nghe thử',
+    /** Nhắc ở màn Kết quả / hộp quà khi mở khóa bộ âm thanh hoặc linh vật (không tự áp dụng). */
+    useHint: 'Vào Album → Đặc biệt để dùng nhé!',
+    outfitsForSquirrel: 'Trang phục dành cho Sóc Bo. Con đổi linh vật ở tab Đặc biệt nhé!',
     frameInUse: 'Đang hiện quanh hình đại diện',
     badgeInUse: 'Đang hiện ở màn hình chính',
     close: 'Đóng',

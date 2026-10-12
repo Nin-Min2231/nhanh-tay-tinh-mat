@@ -173,6 +173,12 @@ export function canEquip(p: Profile, kind: EquipKind, id: string | null): boolea
   return p.unlocked.includes(id) && unlockById(id)?.kind === kind;
 }
 
+/** Phần thưởng bé phải tự bấm “Dùng” ở Album → Đặc biệt (bộ âm thanh, linh vật): màn Kết quả/hộp quà nhắc bé. */
+export function needsPicking(id: string): boolean {
+  const kind = unlockById(id)?.kind;
+  return kind === 'soundSet' || kind === 'mascot';
+}
+
 export const MASCOT_OWL_ID = 'mascot-owl';
 export const SOUND_PERCUSSION_ID = 'sound-percussion';
 

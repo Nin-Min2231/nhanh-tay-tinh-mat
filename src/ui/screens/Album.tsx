@@ -3,6 +3,8 @@ import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import {
   STICKERS,
+  activeMascot,
+  activeSoundSet,
   nextUnlock,
   ownedStickerCount,
   stickerById,
@@ -11,7 +13,7 @@ import {
   type UnlockDef,
 } from '../../app/rewards';
 import { goBack, goHome } from '../../app/router';
-import { activeProfile, equipReward } from '../../app/store';
+import { activeProfile, audio, equipReward } from '../../app/store';
 import type { Profile } from '../../app/types';
 import { vi } from '../../i18n/vi';
 import { Sticker } from '../stickers/Sticker';
@@ -20,7 +22,7 @@ import { Button } from '../components/Button';
 import { GiftButton } from '../components/GiftButton';
 import { IconBack, IconLock } from '../components/Icons';
 import { Mascot } from '../components/Mascot';
-import { BadgeGold, XyloIcon } from '../components/RewardIcons';
+import { BadgeGold, SpeakerIcon, XyloIcon } from '../components/RewardIcons';
 import { Scene } from '../components/Scenes';
 
 type Tab = 'stickers' | 'outfits' | 'backgrounds' | 'special';
@@ -129,43 +131,50 @@ function RewardCard({
 
 function OutfitsTab({ p }: { p: Profile }) {
   return (
-    <div class="reward-grid" data-testid="outfit-grid">
-      <article class="reward-card" data-id="none" data-testid="reward-card">
-        <div class="reward-preview">
-          <Mascot mood="happy" size={110} />
-        </div>
-        <h3 class="reward-name">{vi.album.noOutfit}</h3>
-        <Button
-          variant={p.outfitId === null ? 'primary' : 'secondary'}
-          aria-pressed={p.outfitId === null}
-          onClick={() => equipReward('outfit', null)}
-          data-testid="outfit-none"
-        >
-          {p.outfitId === null ? vi.album.wearing : vi.album.takeOff}
-        </Button>
-      </article>
-      {unlocksOfKind('outfit').map((def) => {
-        const on = p.outfitId === def.id;
-        return (
-          <RewardCard
-            key={def.id}
-            def={def}
-            p={p}
-            preview={<Mascot mood="happy" size={110} outfit={def.id} />}
-            actions={
-              <Button
-                variant={on ? 'primary' : 'secondary'}
-                aria-pressed={on}
-                onClick={() => equipReward('outfit', def.id)}
-                data-testid={`equip-${def.id}`}
-              >
-                {on ? vi.album.wearing : vi.album.wear}
-              </Button>
-            }
-          />
-        );
-      })}
-    </div>
+    <>
+      {activeMascot(p) === 'owl' && (
+        <p class="album-summary" data-testid="outfit-owl-note">
+          {vi.album.outfitsForSquirrel}
+        </p>
+      )}
+      <div class="reward-grid" data-testid="outfit-grid">
+        <article class="reward-card" data-id="none" data-testid="reward-card">
+          <div class="reward-preview">
+            <Mascot kind="squirrel" mood="happy" size={110} />
+          </div>
+          <h3 class="reward-name">{vi.album.noOutfit}</h3>
+          <Button
+            variant={p.outfitId === null ? 'primary' : 'secondary'}
+            aria-pressed={p.outfitId === null}
+            onClick={() => equipReward('outfit', null)}
+            data-testid="outfit-none"
+          >
+            {p.outfitId === null ? vi.album.wearing : vi.album.takeOff}
+          </Button>
+        </article>
+        {unlocksOfKind('outfit').map((def) => {
+          const on = p.outfitId === def.id;
+          return (
+            <RewardCard
+              key={def.id}
+              def={def}
+              p={p}
+              preview={<Mascot kind="squirrel" mood="happy" size={110} outfit={def.id} />}
+              actions={
+                <Button
+                  variant={on ? 'primary' : 'secondary'}
+                  aria-pressed={on}
+                  onClick={() => equipReward('outfit', def.id)}
+                  data-testid={`equip-${def.id}`}
+                >
+                  {on ? vi.album.wearing : vi.album.wear}
+                </Button>
+              }
+            />
+          );
+        })}
+      </div>
+    </>
   );
 }
 
@@ -213,47 +222,138 @@ function BackgroundsTab({ p }: { p: Profile }) {
   );
 }
 
-function SpecialTab({ p }: { p: Profile }) {
-  const specials = [
-    ...unlocksOfKind('avatarFrame'),
-    ...unlocksOfKind('badge'),
-    ...unlocksOfKind('soundSet'),
-    ...unlocksOfKind('mascot'),
-  ];
-  const preview = (def: UnlockDef): ComponentChildren => {
-    switch (def.kind) {
-      case 'avatarFrame':
-        return <Avatar id={p.avatarId} size={92} frame />;
-      case 'badge':
-        return <BadgeGold size={92} />;
-      case 'soundSet':
-        return <XyloIcon size={92} />;
-      default:
-        return <Avatar id="owl" size={92} />;
-    }
-  };
-  const note = (def: UnlockDef): string => {
-    if (def.kind === 'avatarFrame') return vi.album.frameInUse;
-    if (def.kind === 'badge') return vi.album.badgeInUse;
-    return vi.album.soon;
-  };
+/** Nút “Dùng / Đang dùng” của một phần thưởng bé tự chọn. */
+function UseButton({ on, onClick, testid }: { on: boolean; onClick: () => void; testid: string }) {
   return (
-    <div class="reward-grid" data-testid="special-grid">
-      {specials.map((def) => (
-        <RewardCard
-          key={def.id}
-          def={def}
-          p={p}
-          preview={preview(def)}
-          actions={
-            <p class="reward-note">
-              <strong>{vi.album.unlockedLabel}</strong>
-              <br />
-              {note(def)}
-            </p>
-          }
-        />
-      ))}
+    <Button
+      variant={on ? 'primary' : 'secondary'}
+      aria-pressed={on}
+      onClick={onClick}
+      data-testid={testid}
+    >
+      {on ? vi.album.using : vi.album.use}
+    </Button>
+  );
+}
+
+function SpecialTab({ p }: { p: Profile }) {
+  const sound = activeSoundSet(p);
+  const mascot = activeMascot(p);
+  return (
+    <div class="reward-groups" data-testid="special-grid">
+      <section aria-labelledby="special-sounds">
+        <h2 id="special-sounds" class="section-title">
+          {vi.album.groups.sounds}
+        </h2>
+        <div class="reward-grid">
+          <article class="reward-card" data-id="sound-default" data-testid="reward-card">
+            <div class="reward-preview">
+              <SpeakerIcon size={92} />
+            </div>
+            <h3 class="reward-name">{vi.album.defaultSound}</h3>
+            <div class="reward-actions">
+              <UseButton
+                on={sound === 'default'}
+                onClick={() => equipReward('soundSet', null)}
+                testid="equip-sound-default"
+              />
+              <Button onClick={() => audio.preview('default')} data-testid="listen-sound-default">
+                {vi.album.listen}
+              </Button>
+            </div>
+          </article>
+          {unlocksOfKind('soundSet').map((def) => (
+            <RewardCard
+              key={def.id}
+              def={def}
+              p={p}
+              preview={<XyloIcon size={92} />}
+              actions={
+                <div class="reward-actions">
+                  <UseButton
+                    on={sound === 'percussion'}
+                    onClick={() => equipReward('soundSet', def.id)}
+                    testid={`equip-${def.id}`}
+                  />
+                  <Button
+                    onClick={() => audio.preview('percussion')}
+                    data-testid={`listen-${def.id}`}
+                  >
+                    {vi.album.listen}
+                  </Button>
+                </div>
+              }
+            />
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="special-mascots">
+        <h2 id="special-mascots" class="section-title">
+          {vi.album.groups.mascots}
+        </h2>
+        <div class="reward-grid">
+          <article class="reward-card" data-id="mascot-default" data-testid="reward-card">
+            <div class="reward-preview">
+              <Mascot kind="squirrel" mood="happy" size={110} />
+            </div>
+            <h3 class="reward-name">{vi.album.defaultMascot}</h3>
+            <div class="reward-actions">
+              <UseButton
+                on={mascot === 'squirrel'}
+                onClick={() => equipReward('mascot', null)}
+                testid="equip-mascot-default"
+              />
+            </div>
+          </article>
+          {unlocksOfKind('mascot').map((def) => (
+            <RewardCard
+              key={def.id}
+              def={def}
+              p={p}
+              preview={<Mascot kind="owl" mood="happy" size={110} />}
+              actions={
+                <div class="reward-actions">
+                  <UseButton
+                    on={mascot === 'owl'}
+                    onClick={() => equipReward('mascot', def.id)}
+                    testid={`equip-${def.id}`}
+                  />
+                </div>
+              }
+            />
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="special-extras">
+        <h2 id="special-extras" class="section-title">
+          {vi.album.groups.extras}
+        </h2>
+        <div class="reward-grid">
+          {[...unlocksOfKind('avatarFrame'), ...unlocksOfKind('badge')].map((def) => (
+            <RewardCard
+              key={def.id}
+              def={def}
+              p={p}
+              preview={
+                def.kind === 'avatarFrame' ? (
+                  <Avatar id={p.avatarId} size={92} frame />
+                ) : (
+                  <BadgeGold size={92} />
+                )
+              }
+              actions={
+                <p class="reward-note">
+                  <strong>{vi.album.unlockedLabel}</strong>
+                  <br />
+                  {def.kind === 'avatarFrame' ? vi.album.frameInUse : vi.album.badgeInUse}
+                </p>
+              }
+            />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

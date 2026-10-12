@@ -490,6 +490,26 @@ div.sticker-btn {
   width: 100%;
   min-height: 110px;
 }
+/* Tab Đặc biệt: nhóm Âm thanh / Linh vật / Quà đặc biệt, mỗi nhóm một lưới thẻ */
+.reward-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.reward-groups .section-title {
+  margin: 8px 0 8px;
+}
+.reward-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+/* Thẻ chỉ rộng ≈ 150px: chữ nút nhỏ lại một chút để “Đang dùng” không chạm mép thẻ */
+.reward-actions .btn {
+  padding: 8px 12px;
+  font-size: 19px;
+}
 .reward-card.is-locked .reward-preview {
   filter: grayscale(1) brightness(0.75);
   opacity: 0.45;

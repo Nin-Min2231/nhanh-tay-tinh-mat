@@ -1,5 +1,7 @@
+import { mascotKind, type MascotKind } from '../../app/mascotKind';
 import { vi } from '../../i18n/vi';
 import { OutfitBack, OutfitBody, OutfitDefs, OutfitHead } from './Outfits';
+import { Owl } from './Owl';
 
 // Linh vật “Sóc Bo” – SVG tự vẽ, 5 biểu cảm (SPEC mục 12).
 export type MascotMood = 'wave' | 'happy' | 'cheer' | 'surprised' | 'sleep';
@@ -108,13 +110,18 @@ export function Mascot({
   size = 160,
   label,
   outfit = null,
+  kind,
 }: {
   mood?: MascotMood;
   size?: number;
   label?: string;
-  /** Trang phục đã mở khóa đang mặc (id trong rewards.ts), null = không mặc. */
+  /** Trang phục đã mở khóa đang mặc (id trong rewards.ts), null = không mặc. Chỉ Sóc Bo mặc được. */
   outfit?: string | null;
+  /** Linh vật cụ thể (xem trước ở Album); bỏ trống = linh vật bé đang dùng (app/mascotKind.ts). */
+  kind?: MascotKind;
 }) {
+  const which = kind ?? mascotKind.value;
+  if (which === 'owl') return <Owl mood={mood} size={size} label={label} />;
   return (
     <svg
       class={`mascot mascot-${mood}`}

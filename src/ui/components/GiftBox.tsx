@@ -1,6 +1,7 @@
 // Hộp quà bí mật: hình SVG bóng bẩy + cửa sổ mở hộp (lắc → bung → sticker). Mở được cả khi đã hết giờ chơi.
+import { Fragment } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { stickerById, type BoxOpening } from '../../app/rewards';
+import { needsPicking, stickerById, type BoxOpening } from '../../app/rewards';
 import { setBackInterceptor } from '../../app/backButton';
 import { E2E } from '../../app/e2e';
 import { navigate } from '../../app/router';
@@ -274,9 +275,16 @@ function GiftDialog() {
             </p>
           )}
           {res.unlocked.map((id) => (
-            <p key={id} class="gift-badge gift-unlock" data-testid="gift-unlock">
-              {vi.gift.unlocked(vi.unlocks[id] ?? id)}
-            </p>
+            <Fragment key={id}>
+              <p class="gift-badge gift-unlock" data-testid="gift-unlock">
+                {vi.gift.unlocked(vi.unlocks[id] ?? id)}
+              </p>
+              {needsPicking(id) && (
+                <p class="gift-note" data-testid="gift-unlock-hint">
+                  {vi.album.useHint}
+                </p>
+              )}
+            </Fragment>
           ))}
           {res.boxesGained > 0 && <p class="gift-note">{vi.gift.boxAlso}</p>}
           {res.boxesBlocked > 0 && <p class="gift-note">{vi.gift.boxBlocked}</p>}

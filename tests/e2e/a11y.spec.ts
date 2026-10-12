@@ -359,6 +359,37 @@ test.describe('Accessibility – vùng chạm, giảm chuyển động, tương 
     report(issues);
   });
 
+  test('Cú Mèo + Nhạc Cụ Gõ đang dùng: Home và Album (4 tab, gồm Đặc biệt đã mở khóa)', async ({
+    page,
+  }) => {
+    const issues: Issues = { touch: [], motion: [], contrast: [] };
+    const p = makeProfile('An', {
+      totalStars: 240,
+      unlocked: [
+        'frame-rainbow',
+        'outfit-pilot',
+        'bg-candy',
+        'sound-percussion',
+        'outfit-hero',
+        'bg-sea',
+        'mascot-owl',
+      ],
+      mascotId: 'mascot-owl',
+      soundSetId: 'sound-percussion',
+      backgroundId: 'bg-sea',
+    });
+    await seedProfiles(page, [p]);
+    await page.goto(E2E_URL);
+    await expect(page.locator('.home-hello svg.mascot-owl')).toBeVisible();
+    await scan(page, 'Home (Cú Mèo)', issues);
+    await page.getByTestId('open-album').click();
+    for (const tab of await page.getByRole('tab').all()) {
+      await tab.click();
+      await scan(page, `Album (Cú Mèo) › ${(await tab.textContent())?.trim()}`, issues);
+    }
+    report(issues);
+  });
+
   test('đang chơi G1, G3, G4, G5, G6, G7', async ({ page }) => {
     test.setTimeout(240_000);
     const issues: Issues = { touch: [], motion: [], contrast: [] };

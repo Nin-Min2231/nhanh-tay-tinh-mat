@@ -103,3 +103,59 @@ export function XyloIcon({ size = 56 }: { size?: number }) {
     </svg>
   );
 }
+
+/** Âm thanh gốc: loa nhỏ có sóng âm nhiều màu. */
+export function SpeakerIcon({ size = 56 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      role="img"
+      aria-label={vi.album.defaultSound}
+    >
+      <defs>
+        <linearGradient id="spk-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#9BDCFF" />
+          <stop offset="1" stop-color="#2F8BE0" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M14 40 H32 L54 20 V80 L32 60 H14 Z"
+        fill="url(#spk-body)"
+        stroke={INK}
+        stroke-width="3"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M19 44 H32 L50 28"
+        fill="none"
+        stroke="#fff"
+        stroke-width="3"
+        stroke-linecap="round"
+        opacity="0.55"
+      />
+      <path
+        d="M63 38 Q71 50 63 62"
+        fill="none"
+        stroke="#FF5FA2"
+        stroke-width="5.5"
+        stroke-linecap="round"
+      />
+      <path
+        d="M72 28 Q88 50 72 72"
+        fill="none"
+        stroke="#FFC107"
+        stroke-width="5.5"
+        stroke-linecap="round"
+      />
+      <path
+        d="M81 18 Q104 50 81 82"
+        fill="none"
+        stroke="#3DDC6E"
+        stroke-width="5.5"
+        stroke-linecap="round"
+      />
+    </svg>
+  );
+}

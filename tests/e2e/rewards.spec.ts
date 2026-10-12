@@ -339,9 +339,26 @@ test.describe('mở khóa theo mốc sao', () => {
     await expect(page.getByTestId('result-unlock')).toHaveText(
       vi.result.unlocked(vi.unlocks['frame-rainbow']!),
     );
+    await expect(page.getByTestId('result-unlock-hint')).toHaveCount(0); // khung avatar tự áp dụng, không cần nhắc
     expect((await profileState(page)).unlocked).toContain('frame-rainbow');
     await page.getByTestId('to-home').click();
     await expect(page.locator('.home-player .avatar-framed')).toHaveCount(1);
+  });
+
+  test('qua 80 sao → báo mở khóa Nhạc Cụ Gõ kèm lời nhắc vào Album; không tự đổi âm', async ({
+    page,
+  }) => {
+    await seedProfiles(page, [makeProfile('An', { totalStars: 78 })]);
+    await page.goto(E2E_URL);
+    await startGame(page, 'G2');
+    await playG2(page);
+    await expect(page.getByTestId('result-unlock')).toHaveText(
+      vi.result.unlocked(vi.unlocks['sound-percussion']!),
+    );
+    await expect(page.getByTestId('result-unlock-hint')).toHaveText(vi.album.useHint);
+    const p = await profileState(page);
+    expect(p.unlocked).toContain('sound-percussion');
+    expect(p.soundSetId).toBeNull(); // bé tự bấm “Dùng” ở Album
   });
 
   test('hồ sơ có sẵn nhiều sao được mở khóa phần thưởng đã đủ sao khi mở app', async ({ page }) => {
@@ -446,7 +463,8 @@ test.describe('Album', () => {
     await expect(page.getByTestId('home-badge')).toHaveCount(0);
     await page.getByTestId('open-album').click();
     await page.getByTestId('tab-special').click();
-    await expect(page.getByTestId('reward-card')).toHaveCount(4);
+    // 6 thẻ: Âm thanh gốc + Nhạc Cụ Gõ, Sóc Bo + Cú Mèo, Khung Cầu Vồng + Huy hiệu Vàng
+    await expect(page.getByTestId('reward-card')).toHaveCount(6);
     await expect(page.locator('[data-id="frame-rainbow"]')).toHaveAttribute('data-unlocked', '1');
     await expect(page.locator('[data-id="badge-gold"]')).toHaveAttribute('data-unlocked', '0');
   });

@@ -1,5 +1,5 @@
 // State toàn cục (signals) + các hành động ghi dữ liệu.
-import { computed, signal } from '@preact/signals';
+import { computed, effect, signal } from '@preact/signals';
 import type { RoundResult } from '../games/common/types';
 import { applyRound, type KidChoice, type LevelChange } from './adaptive';
 import { benchmarkComplete, benchmarkQueue } from './benchmark';
@@ -8,9 +8,11 @@ import { createAudio } from './audio';
 import { generateId, getDeviceClass } from './device';
 import { E2E, TIME_SCALE } from './e2e';
 import { createHaptics } from './haptics';
+import { mascotKind } from './mascotKind';
 import { applyRoundToMath } from './mathFacts';
 import { MAX_PROFILES, createProfile, dateKey, emptyDay, type NewProfileInput } from './profile';
 import {
+  activeMascot,
   activeSoundSet,
   addStars,
   applyRoundRewards,
@@ -80,6 +82,11 @@ export const updateAvailable = signal(false);
 export const activeProfile = computed<Profile | null>(
   () => appState.value.profiles.find((p) => p.id === appState.value.activeProfileId) ?? null,
 );
+
+// Linh vật đang dùng của người chơi hiện tại → `mascotKind` (Mascot đọc signal này, không import store)
+effect(() => {
+  mascotKind.value = activeMascot(activeProfile.value);
+});
 
 export const deviceClass = getDeviceClass();
 export const audio = createAudio(

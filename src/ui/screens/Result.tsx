@@ -1,6 +1,8 @@
+import { Fragment } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
 import { BENCHMARK_ORDER } from '../../app/benchmark';
+import { needsPicking } from '../../app/rewards';
 import { replace } from '../../app/router';
 import { activeProfile, audio, lastResult, openGiftModal } from '../../app/store';
 import { Button } from '../components/Button';
@@ -76,9 +78,16 @@ export function Result() {
         </p>
       )}
       {rewards.unlocked.map((id) => (
-        <p key={id} class="levelup reward-unlock" data-testid="result-unlock">
-          {vi.result.unlocked(vi.unlocks[id] ?? id)}
-        </p>
+        <Fragment key={id}>
+          <p class="levelup reward-unlock" data-testid="result-unlock">
+            {vi.result.unlocked(vi.unlocks[id] ?? id)}
+          </p>
+          {needsPicking(id) && (
+            <p class="result-note" data-testid="result-unlock-hint">
+              {vi.album.useHint}
+            </p>
+          )}
+        </Fragment>
       ))}
       {hasGift && (
         <div class="gift-banner" data-testid="gift-earned">

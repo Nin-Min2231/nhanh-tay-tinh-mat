@@ -2,6 +2,7 @@
 import { STICKERS, STICKER_THEMES } from '../../app/rewards';
 import { vi } from '../../i18n/vi';
 import { Mascot, type MascotMood } from '../components/Mascot';
+import { Owl } from '../components/Owl';
 import { Scene } from '../components/Scenes';
 import { Sticker } from './Sticker';
 
@@ -21,10 +22,15 @@ function RewardsGallery() {
           data-outfit={String(o)}
         >
           {MOODS.map((m) => (
-            <Mascot key={m} mood={m} size={150} outfit={o} />
+            <Mascot key={m} kind="squirrel" mood={m} size={150} outfit={o} />
           ))}
         </div>
       ))}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end" data-mascot="owl">
+        {MOODS.map((m) => (
+          <Owl key={m} mood={m} size={150} />
+        ))}
+      </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         {['bg-candy', 'bg-sea'].map((b) => (
           <div

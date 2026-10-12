@@ -20,6 +20,7 @@ import {
   grantParentBoxes,
   missionGroupOf,
   missionsDone,
+  needsPicking,
   nextUnlock,
   openBox,
   ownedStickerCount,
@@ -461,6 +462,14 @@ describe('mốc mở khóa theo tổng sao', () => {
     expect(r.profile.unlocked).toEqual(expect.arrayContaining(['sound-percussion', 'mascot-owl']));
     expect(r.profile.soundSetId).toBeNull();
     expect(r.profile.mascotId).toBeNull();
+  });
+
+  it('needsPicking: chỉ bộ âm thanh và linh vật (bé phải tự bấm “Dùng”)', () => {
+    expect(needsPicking('sound-percussion')).toBe(true);
+    expect(needsPicking('mascot-owl')).toBe(true);
+    for (const id of ['frame-rainbow', 'outfit-pilot', 'bg-candy', 'badge-gold', 'khong-co']) {
+      expect(needsPicking(id), id).toBe(false);
+    }
   });
 
   it('activeMascot / activeSoundSet: chỉ dùng khi đúng id và đã mở khóa, còn lại về mặc định', () => {

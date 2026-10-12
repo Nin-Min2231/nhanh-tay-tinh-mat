@@ -1103,6 +1103,11 @@
   transform-origin: 152px 140px;
   animation: wave 1.2s ease-in-out infinite;
 }
+.owl-wave {
+  /* cánh phải của Cú Mèo giơ chào: xoay quanh vai */
+  transform-origin: 146px 108px;
+  animation: wave 1.2s ease-in-out infinite;
+}
 .mascot-zzz {
   animation: zzz 2s ease-in-out infinite;
 }
