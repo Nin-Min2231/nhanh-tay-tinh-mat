@@ -153,89 +153,96 @@ export function Home() {
         </section>
       )}
 
-      <section
-        class={`home-hello${p.backgroundId ? ' has-scene' : ''}`}
-        data-bg={p.backgroundId ?? ''}
-      >
-        {p.backgroundId && (
-          <div class="hello-scene" data-testid="home-scene">
-            <Scene id={p.backgroundId} />
-          </div>
-        )}
-        <Mascot mood="wave" size={132} outfit={p.outfitId} />
-        <h1 class="title" data-testid="greeting">
-          {vi.home.greeting(p.name)}
-        </h1>
-      </section>
+      {/* .home-panels / .home-intro / .home-groups chỉ để xếp cột trên tablet ngang rộng (app.css); ở nơi khác là display: contents */}
+      <div class="home-panels">
+        <div class="home-intro">
+          <section
+            class={`home-hello${p.backgroundId ? ' has-scene' : ''}`}
+            data-bg={p.backgroundId ?? ''}
+          >
+            {p.backgroundId && (
+              <div class="hello-scene" data-testid="home-scene">
+                <Scene id={p.backgroundId} />
+              </div>
+            )}
+            <Mascot mood="wave" size={132} outfit={p.outfitId} />
+            <h1 class="title" data-testid="greeting">
+              {vi.home.greeting(p.name)}
+            </h1>
+          </section>
 
-      <section class="home-time" aria-label={vi.home.timeLeftLabel}>
-        <ProgressBar
-          value={allowance > 0 ? remaining / allowance : 0}
-          label={vi.home.timeLeftLabel}
-          tone={out ? 'orange' : 'sky'}
-        />
-        <p class="home-time-text" data-testid="time-left">
-          {out ? vi.home.outOfTime : vi.home.timeLeft(Math.ceil(remaining / 60_000))}
-        </p>
-        {out && (
-          <Button variant="primary" onClick={() => navigate('/rest')}>
-            {vi.home.goRest}
-          </Button>
-        )}
-      </section>
-
-      <section aria-labelledby="missions-title">
-        <h2 id="missions-title" class="section-title">
-          {vi.home.missionsTitle}
-        </h2>
-        <ul class="mission-row">
-          {MISSION_GROUPS.map((m) => {
-            const done = day.missions[m];
-            return (
-              <li
-                key={m}
-                class={`mission mission-${m}${done ? ' is-done' : ''}`}
-                data-testid={`mission-${m}`}
-                data-done={done ? '1' : '0'}
-              >
-                <GameIcon id={MISSION_ICON[m]} size={40} />
-                <span>{vi.home.missions[m]}</span>
-                <span
-                  class="mission-check"
-                  role="img"
-                  aria-label={done ? vi.home.missionDone : vi.home.missionTodo}
-                >
-                  {done && <IconCheck />}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        <div class="gift-row" data-testid="gift-row">
-          <GiftButton />
-          <div class="gift-info">
+          <section class="home-time" aria-label={vi.home.timeLeftLabel}>
             <ProgressBar
-              value={(BOX_EVERY_STARS - toNext) / BOX_EVERY_STARS}
-              label={vi.home.nextBoxIn(toNext)}
-              tone="green"
+              value={allowance > 0 ? remaining / allowance : 0}
+              label={vi.home.timeLeftLabel}
+              tone={out ? 'orange' : 'sky'}
             />
-            <p class="gift-info-text" data-testid="gift-info">
-              {boxesFull ? vi.home.boxLimit : vi.home.nextBoxIn(toNext)}
+            <p class="home-time-text" data-testid="time-left">
+              {out ? vi.home.outOfTime : vi.home.timeLeft(Math.ceil(remaining / 60_000))}
             </p>
-          </div>
+            {out && (
+              <Button variant="primary" onClick={() => navigate('/rest')}>
+                {vi.home.goRest}
+              </Button>
+            )}
+          </section>
         </div>
-      </section>
 
-      {GAME_GROUPS.map(({ group, games }) => (
-        <section key={group} class={`group group-${group}`}>
-          <h2 class="group-title">{vi.home.groups[group]}</h2>
-          <div class="card-grid">
-            {games.map((id) => (
-              <GameCard key={id} id={id} locked={out} />
-            ))}
+        <section class="home-missions" aria-labelledby="missions-title">
+          <h2 id="missions-title" class="section-title">
+            {vi.home.missionsTitle}
+          </h2>
+          <ul class="mission-row">
+            {MISSION_GROUPS.map((m) => {
+              const done = day.missions[m];
+              return (
+                <li
+                  key={m}
+                  class={`mission mission-${m}${done ? ' is-done' : ''}`}
+                  data-testid={`mission-${m}`}
+                  data-done={done ? '1' : '0'}
+                >
+                  <GameIcon id={MISSION_ICON[m]} size={40} />
+                  <span>{vi.home.missions[m]}</span>
+                  <span
+                    class="mission-check"
+                    role="img"
+                    aria-label={done ? vi.home.missionDone : vi.home.missionTodo}
+                  >
+                    {done && <IconCheck />}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          <div class="gift-row" data-testid="gift-row">
+            <GiftButton />
+            <div class="gift-info">
+              <ProgressBar
+                value={(BOX_EVERY_STARS - toNext) / BOX_EVERY_STARS}
+                label={vi.home.nextBoxIn(toNext)}
+                tone="green"
+              />
+              <p class="gift-info-text" data-testid="gift-info">
+                {boxesFull ? vi.home.boxLimit : vi.home.nextBoxIn(toNext)}
+              </p>
+            </div>
           </div>
         </section>
-      ))}
+      </div>
+
+      <div class="home-groups">
+        {GAME_GROUPS.map(({ group, games }) => (
+          <section key={group} class={`group group-${group}`} style={`--n:${games.length}`}>
+            <h2 class="group-title">{vi.home.groups[group]}</h2>
+            <div class="card-grid">
+              {games.map((id) => (
+                <GameCard key={id} id={id} locked={out} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
 
       <DebugRewards />
     </main>

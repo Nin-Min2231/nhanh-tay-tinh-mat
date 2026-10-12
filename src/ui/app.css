@@ -439,6 +439,62 @@
   }
 }
 
+/* Home: các khung bao chỉ để xếp cột trên tablet ngang rộng; nơi khác là display: contents nên bố cục xếp dọc như cũ */
+.home-panels,
+.home-intro,
+.home-groups {
+  display: contents;
+}
+/* Galaxy Tab ngang (≈ 1280×800): nửa trên chia 2 cột, 3 nhóm game đứng cạnh nhau (--n = số thẻ của nhóm) → bớt phải cuộn */
+@media (min-width: 1200px) and (orientation: landscape) {
+  .home {
+    max-width: 1240px;
+  }
+  .home-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    align-items: stretch;
+  }
+  .home-intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+  .home-intro .home-hello {
+    margin-bottom: 0;
+  }
+  .home-missions .section-title {
+    margin-top: 0;
+  }
+  .home-groups {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .home-groups .group {
+    flex: var(--n, 1) 1 0%;
+    min-width: 0;
+  }
+  .home-groups .card-grid {
+    flex: 1;
+    grid-template-columns: repeat(var(--n, 2), 1fr);
+    gap: 12px;
+  }
+  /* Thẻ hẹp (≈ 155px): tên luôn chiếm 2 dòng để biểu tượng các thẻ thẳng hàng; chip “Cấp n · ★☆☆” gọn lại cho vừa thẻ */
+  .home-groups .game-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.4em;
+  }
+  .home-groups .game-meta {
+    padding-inline: 8px;
+    white-space: nowrap;
+  }
+}
+
 /* Thẻ game: mỗi game một tông màu riêng */
 .game-card {
   --a: #ffffff;
