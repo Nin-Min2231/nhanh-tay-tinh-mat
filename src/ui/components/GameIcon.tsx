@@ -16,36 +16,102 @@ function spriteUrl(key: string, make: () => HTMLCanvasElement): string {
   return url;
 }
 
+/** G2: bảng 3×3 – 5 màu ô giống game (g2-c0…c4: hồng, vàng, lá, xanh trời, tím), số xáo trộn, ô “1” có viền vàng. */
+const G2_TONES: readonly (readonly [string, string])[] = [
+  ['#ffd3e1', '#ff8fb1'],
+  ['#fff3a8', '#ffc933'],
+  ['#c3f7d0', '#4fd878'],
+  ['#c9eeff', '#4cb8f2'],
+  ['#e6dcff', '#a888f5'],
+];
+const G2_NUMS = [5, 2, 7, 3, 1, 9, 8, 6, 4];
+const G2_TILE = 16.4;
+const G2_STEP = 18.8;
+
 function Art({ id }: { id: GameId }) {
   switch (id) {
     case 'G1':
       return (
         <>
-          <circle cx="22" cy="34" r="15" fill="#66BB6A" stroke={LINE} stroke-width="2.5" />
-          <circle cx="17" cy="30" r="2" fill={LINE} />
-          <circle cx="27" cy="30" r="2" fill={LINE} />
+          <defs>
+            <radialGradient id="gi1g" cx="34%" cy="28%" r="85%">
+              <stop offset="0" stop-color="#dcffe6" />
+              <stop offset="0.45" stop-color="#48e07c" />
+              <stop offset="1" stop-color="#1b9a46" />
+            </radialGradient>
+            <linearGradient id="gi1r" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffa3ad" />
+              <stop offset="0.55" stop-color="#ff4d5e" />
+              <stop offset="1" stop-color="#c0243a" />
+            </linearGradient>
+          </defs>
+          <ellipse cx="22" cy="55" rx="14" ry="3" fill={LINE} fill-opacity="0.2" />
+          <ellipse cx="48" cy="46.5" rx="10.5" ry="2.4" fill={LINE} fill-opacity="0.18" />
+          <circle cx="22" cy="37" r="16.5" fill="url(#gi1g)" stroke="#16793a" stroke-width="2.4" />
+          <ellipse
+            cx="14.5"
+            cy="28.5"
+            rx="6"
+            ry="3.3"
+            transform="rotate(-38 14.5 28.5)"
+            fill="#fff"
+            fill-opacity="0.62"
+          />
+          <ellipse cx="12.4" cy="40.6" rx="2.9" ry="2.2" fill="#ff7d9b" fill-opacity="0.9" />
+          <ellipse cx="31.6" cy="40.6" rx="2.9" ry="2.2" fill="#ff7d9b" fill-opacity="0.9" />
+          <circle cx="16.8" cy="35" r="2.4" fill={LINE} />
+          <circle cx="27.2" cy="35" r="2.4" fill={LINE} />
+          <circle cx="17.6" cy="34.2" r="0.85" fill="#fff" />
+          <circle cx="28" cy="34.2" r="0.85" fill="#fff" />
           <path
-            d="M16 38 Q22 44 28 38"
+            d="M16 41.5 Q22 47.5 28 41.5"
             fill="none"
             stroke={LINE}
-            stroke-width="2.5"
+            stroke-width="2.4"
             stroke-linecap="round"
           />
-          <rect
-            x="36"
-            y="22"
-            width="24"
-            height="24"
-            rx="4"
-            fill="#EF5350"
-            stroke={LINE}
-            stroke-width="2.5"
-          />
+          <g transform="rotate(8 48 29)">
+            <rect
+              x="37"
+              y="18"
+              width="22"
+              height="22"
+              rx="6"
+              fill="url(#gi1r)"
+              stroke="#a3192d"
+              stroke-width="2.4"
+            />
+            <path
+              d="M40.5 25 Q40.5 21.5 44.5 21"
+              fill="none"
+              stroke="#fff"
+              stroke-opacity="0.65"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M43.5 25.5 L52.5 34.5 M52.5 25.5 L43.5 34.5"
+              fill="none"
+              stroke="#8a1424"
+              stroke-opacity="0.35"
+              stroke-width="5"
+              stroke-linecap="round"
+              transform="translate(0 1)"
+            />
+            <path
+              d="M43.5 25.5 L52.5 34.5 M52.5 25.5 L43.5 34.5"
+              fill="none"
+              stroke="#fff"
+              stroke-width="3.6"
+              stroke-linecap="round"
+            />
+          </g>
           <path
-            d="M42 28 L54 40 M54 28 L42 40"
-            stroke={LINE}
-            stroke-width="3"
-            stroke-linecap="round"
+            d="M12 4.5 L13.6 8.9 L18 10.5 L13.6 12.1 L12 16.5 L10.4 12.1 L6 10.5 L10.4 8.9 Z"
+            fill="#ffe066"
+            stroke="#d4a017"
+            stroke-width="1"
+            stroke-linejoin="round"
           />
         </>
       );
@@ -54,29 +120,70 @@ function Art({ id }: { id: GameId }) {
         <g
           font-family="Nunito, sans-serif"
           font-weight="800"
-          font-size="14"
+          font-size="11.5"
           text-anchor="middle"
           fill={LINE}
         >
-          {[0, 1, 2].flatMap((r) =>
-            [0, 1, 2].map((c) => (
-              <g key={`${r}${c}`}>
+          <defs>
+            {G2_TONES.map(([top, bottom], i) => (
+              <linearGradient key={i} id={`gi2${i}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color={top} />
+                <stop offset="1" stop-color={bottom} />
+              </linearGradient>
+            ))}
+          </defs>
+          {G2_NUMS.map((n, i) => {
+            const x = 5 + (i % 3) * G2_STEP;
+            const y = 4.5 + Math.floor(i / 3) * G2_STEP;
+            return (
+              <g key={n}>
                 <rect
-                  x={8 + c * 17}
-                  y={8 + r * 17}
-                  width="15"
-                  height="15"
-                  rx="3"
-                  fill={(r + c) % 2 ? '#FFD54F' : '#4FC3F7'}
+                  x={x}
+                  y={y + 1.6}
+                  width={G2_TILE}
+                  height={G2_TILE}
+                  rx="4.2"
+                  fill={LINE}
+                  fill-opacity="0.3"
+                />
+                <rect
+                  x={x}
+                  y={y}
+                  width={G2_TILE}
+                  height={G2_TILE}
+                  rx="4.2"
+                  fill={`url(#gi2${i % G2_TONES.length})`}
                   stroke={LINE}
                   stroke-width="1.8"
                 />
-                <text x={15.5 + c * 17} y={20 + r * 17}>
-                  {r * 3 + c + 1}
+                <rect
+                  x={x + 2.2}
+                  y={y + 2}
+                  width={G2_TILE - 4.4}
+                  height="4.2"
+                  rx="2.1"
+                  fill="#fff"
+                  fill-opacity="0.45"
+                  stroke="none"
+                />
+                <text x={x + G2_TILE / 2} y={y + 12.6} stroke="none">
+                  {n}
                 </text>
+                {n === 1 && (
+                  <rect
+                    x={x - 0.6}
+                    y={y - 0.6}
+                    width={G2_TILE + 1.2}
+                    height={G2_TILE + 1.2}
+                    rx="4.8"
+                    fill="none"
+                    stroke="#ff9f1c"
+                    stroke-width="1.6"
+                  />
+                )}
               </g>
-            )),
-          )}
+            );
+          })}
         </g>
       );
     case 'G3':
