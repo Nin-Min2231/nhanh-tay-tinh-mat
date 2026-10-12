@@ -186,9 +186,37 @@ describe('migrateState', () => {
     if (!r.ok) return;
     expect(r.state.schemaVersion).toBe(CURRENT_SCHEMA);
     const [a, b] = r.state.profiles as unknown as Record<string, unknown>[];
-    expect(a).toEqual({ id: 'p1', name: 'An', totalStars: 12, rewardLog: [] });
+    // (chuỗi migration đi tiếp 2 → 3 nên còn có mascotId/soundSetId = null)
+    expect(a).toEqual({
+      id: 'p1',
+      name: 'An',
+      totalStars: 12,
+      rewardLog: [],
+      mascotId: null,
+      soundSetId: null,
+    });
     expect(b!.rewardLog).toEqual([{ at: 'x' }]); // đã có thì không xóa
     expect(r.state.activeProfileId).toBe('p1');
+  });
+
+  it('migration thật 2 → 3 (TASK-10): thêm mascotId/soundSetId = null, giữ nguyên giá trị đã có và phần còn lại', () => {
+    const legacy = {
+      schemaVersion: 2,
+      deviceId: 'd',
+      activeProfileId: 'p1',
+      profiles: [
+        { id: 'p1', name: 'An', totalStars: 12, rewardLog: [] },
+        { id: 'p2', name: 'Bình', mascotId: 'mascot-owl', soundSetId: 7 },
+      ],
+    };
+    const r = migrateState(legacy);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(CURRENT_SCHEMA).toBeGreaterThanOrEqual(3);
+    expect(r.state.schemaVersion).toBe(CURRENT_SCHEMA);
+    const [a, b] = r.state.profiles as unknown as Record<string, unknown>[];
+    expect(a).toMatchObject({ id: 'p1', totalStars: 12, mascotId: null, soundSetId: null });
+    expect(b).toMatchObject({ id: 'p2', mascotId: 'mascot-owl', soundSetId: null }); // 7 không phải chuỗi → null
   });
 
   it('đọc dữ liệu schema 1 từ localStorage → được nâng lên schema hiện tại', () => {

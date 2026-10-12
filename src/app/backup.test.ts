@@ -9,7 +9,7 @@ import {
 } from './backup';
 import { syncDaily } from './daily';
 import { createProfile } from './profile';
-import { createStorage, defaultState, type KeyValueBackend } from './storage';
+import { CURRENT_SCHEMA, createStorage, defaultState, type KeyValueBackend } from './storage';
 import type { AppState, RoundRecord } from './types';
 
 function memoryBackend(): KeyValueBackend & { data: Map<string, string> } {
@@ -157,8 +157,46 @@ describe('sao lưu → khôi phục khứ hồi (TC-025)', () => {
     const parsed = parseBackup(JSON.stringify(legacy));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
-    expect(parsed.backup.state.schemaVersion).toBe(2);
+    expect(parsed.backup.state.schemaVersion).toBe(CURRENT_SCHEMA);
     expect(parsed.backup.state.profiles.every((p) => Array.isArray(p.rewardLog))).toBe(true);
+  });
+
+  it('file sao lưu schema 2 (chưa có linh vật/bộ âm) → khôi phục với mặc định; schema 3 giữ lựa chọn khứ hồi', () => {
+    const { st, state } = populated();
+    const chosen: AppState = {
+      ...state,
+      profiles: state.profiles.map((p, i) =>
+        i === 0
+          ? {
+              ...p,
+              unlocked: ['sound-percussion', 'mascot-owl'],
+              mascotId: 'mascot-owl',
+              soundSetId: 'sound-percussion',
+            }
+          : p,
+      ),
+    };
+    const file = createBackup(st.snapshot(chosen), new Date('2026-10-13T09:00:00'), '0.9.3');
+    // khứ hồi: lựa chọn của bé được giữ
+    const roundTrip = parseBackup(JSON.stringify(file));
+    if (!roundTrip.ok) throw new Error('phải đọc được');
+    expect(roundTrip.backup.state.profiles[0]).toMatchObject({
+      mascotId: 'mascot-owl',
+      soundSetId: 'sound-percussion',
+    });
+    // file cũ (schema 2): không có hai trường → về mặc định, không lỗi
+    const legacy = JSON.parse(JSON.stringify(file));
+    legacy.state.schemaVersion = 2;
+    for (const p of legacy.state.profiles) {
+      delete p.mascotId;
+      delete p.soundSetId;
+    }
+    const parsed = parseBackup(JSON.stringify(legacy));
+    if (!parsed.ok) throw new Error('phải đọc được');
+    expect(parsed.backup.state.schemaVersion).toBe(CURRENT_SCHEMA);
+    expect(
+      parsed.backup.state.profiles.every((p) => p.mascotId === null && p.soundSetId === null),
+    ).toBe(true);
   });
 });
 

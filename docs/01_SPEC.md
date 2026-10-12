@@ -147,7 +147,7 @@ Khóa lưu trữ: `ntm.state` (AppState), `ntm.rounds.<profileId>` (RoundRecord[
 
 ```ts
 interface AppState {
-  schemaVersion: 2;                    // 1 → 2 (TASK-07): thêm Profile.rewardLog
+  schemaVersion: 3;                    // 1 → 2 (TASK-07): thêm Profile.rewardLog · 2 → 3 (TASK-10): thêm Profile.mascotId, soundSetId
   deviceId: string;                    // uuid tạo lần đầu
   activeProfileId: string | null;
   profiles: Profile[];                 // tối đa 5
@@ -167,6 +167,8 @@ interface Profile {
   totalStars: number;                  // không bao giờ giảm
   unlocked: string[];                  // id phần thưởng theo mốc sao
   outfitId: string | null; backgroundId: string | null;
+  mascotId: string | null;             // null = Sóc Bo; 'mascot-owl' = Cú Mèo (chỉ khi đã mở khóa, bé tự chọn ở Album → Đặc biệt)
+  soundSetId: string | null;           // null = âm gốc; 'sound-percussion' = Nhạc Cụ Gõ (chỉ khi đã mở khóa)
   stickers: Record<string, number>;    // stickerId -> số lượng
   boxes: { pending: number; openedTotal: number; sinceLastRare: number };
   games: Record<GameId, GameProgress>;

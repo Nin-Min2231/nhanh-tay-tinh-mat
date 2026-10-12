@@ -10,6 +10,8 @@ import {
   REST_ON_TIME_STARS,
   STICKERS,
   UNLOCKS,
+  activeMascot,
+  activeSoundSet,
   addStars,
   applyRoundRewards,
   boxRoomToday,
@@ -441,6 +443,43 @@ describe('mốc mở khóa theo tổng sao', () => {
     expect(canEquip(p, 'outfit', null)).toBe(true);
     expect(canEquip(p, 'outfit', 'khong-co')).toBe(false);
     expect(unlockById('badge-gold')?.stars).toBe(300);
+  });
+
+  it('canEquip cho bộ âm thanh và linh vật (TASK-10): đúng loại + đã mở khóa', () => {
+    const at80 = syncUnlocks(profile({ totalStars: 80 })).profile; // có Nhạc Cụ Gõ, chưa có Cú Mèo
+    expect(canEquip(at80, 'soundSet', 'sound-percussion')).toBe(true);
+    expect(canEquip(at80, 'soundSet', 'outfit-pilot')).toBe(false); // sai loại
+    expect(canEquip(at80, 'mascot', 'mascot-owl')).toBe(false); // chưa đủ 230 sao
+    expect(canEquip(at80, 'mascot', null)).toBe(true); // về Sóc Bo luôn được
+    const at230 = syncUnlocks(profile({ totalStars: 230 })).profile;
+    expect(canEquip(at230, 'mascot', 'mascot-owl')).toBe(true);
+    expect(canEquip(at230, 'soundSet', 'mascot-owl')).toBe(false);
+  });
+
+  it('mở khóa bộ âm / linh vật KHÔNG tự áp dụng (khác trang phục, hình nền)', () => {
+    const r = syncUnlocks(profile({ totalStars: 230 }));
+    expect(r.profile.unlocked).toEqual(expect.arrayContaining(['sound-percussion', 'mascot-owl']));
+    expect(r.profile.soundSetId).toBeNull();
+    expect(r.profile.mascotId).toBeNull();
+  });
+
+  it('activeMascot / activeSoundSet: chỉ dùng khi đúng id và đã mở khóa, còn lại về mặc định', () => {
+    const base = profile({ totalStars: 230 });
+    const open = syncUnlocks(base).profile;
+    expect(activeMascot(null)).toBe('squirrel');
+    expect(activeMascot(open)).toBe('squirrel');
+    expect(activeMascot({ ...open, mascotId: 'mascot-owl' })).toBe('owl');
+    expect(activeMascot({ ...open, mascotId: 'khong-co' })).toBe('squirrel');
+    // chưa mở khóa (dữ liệu sửa tay) → vẫn Sóc Bo
+    expect(activeMascot({ ...base, unlocked: [], mascotId: 'mascot-owl' })).toBe('squirrel');
+
+    expect(activeSoundSet(undefined)).toBe('default');
+    expect(activeSoundSet(open)).toBe('default');
+    expect(activeSoundSet({ ...open, soundSetId: 'sound-percussion' })).toBe('percussion');
+    expect(activeSoundSet({ ...open, soundSetId: 'mascot-owl' })).toBe('default');
+    expect(activeSoundSet({ ...base, unlocked: [], soundSetId: 'sound-percussion' })).toBe(
+      'default',
+    );
   });
 
   it('sao từ lượt chơi cũng mở khóa và báo ra màn Kết quả', () => {

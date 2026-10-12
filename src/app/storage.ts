@@ -5,7 +5,7 @@ import type { AppState, DailyAggregate, RoundRecord } from './types';
 import { repairState, sanitizeDaily, sanitizeRounds } from './validate';
 import { APP_VERSION } from './version';
 
-export const CURRENT_SCHEMA = 2;
+export const CURRENT_SCHEMA = 3;
 export const STATE_KEY = 'ntm.state';
 export const roundsKey = (profileId: string) => `ntm.rounds.${profileId}`;
 export const dailyKey = (profileId: string) => `ntm.daily.${profileId}`;
@@ -29,6 +29,20 @@ export const MIGRATIONS: Record<number, MigrationFn> = {
       profiles: profiles.map((p) => ({
         ...p,
         rewardLog: Array.isArray(p.rewardLog) ? p.rewardLog : [],
+      })),
+    };
+  },
+  // 2 → 3 (TASK-10): thêm linh vật đang dùng `mascotId` và bộ âm thanh đang dùng `soundSetId` (null = mặc định).
+  2: (state) => {
+    const profiles = Array.isArray(state.profiles)
+      ? (state.profiles as Record<string, unknown>[])
+      : [];
+    return {
+      ...state,
+      profiles: profiles.map((p) => ({
+        ...p,
+        mascotId: typeof p.mascotId === 'string' ? p.mascotId : null,
+        soundSetId: typeof p.soundSetId === 'string' ? p.soundSetId : null,
       })),
     };
   },

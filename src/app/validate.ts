@@ -238,6 +238,8 @@ export function repairProfile(raw: unknown, now: Date = new Date()): Profile | n
     unlocked: strArray(raw.unlocked) ?? [],
     outfitId: strOrNull(raw.outfitId),
     backgroundId: strOrNull(raw.backgroundId),
+    mascotId: strOrNull(raw.mascotId),
+    soundSetId: strOrNull(raw.soundSetId),
     stickers: numRecord(raw.stickers),
     boxes: {
       pending: num(boxes.pending, 0, 0),

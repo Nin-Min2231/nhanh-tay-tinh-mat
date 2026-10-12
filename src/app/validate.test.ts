@@ -32,9 +32,11 @@ function memoryBackend(): KeyValueBackend & { data: Map<string, string> } {
 function richProfile(id = 'pa'): Profile {
   const p = createProfile({ name: 'An', avatarId: 'cat', grade: 3 }, id, new Date('2026-09-01'));
   p.totalStars = 123;
-  p.unlocked = ['frame-rainbow', 'outfit-pilot'];
+  p.unlocked = ['frame-rainbow', 'outfit-pilot', 'sound-percussion', 'mascot-owl'];
   p.outfitId = 'outfit-pilot';
   p.backgroundId = 'bg-candy';
+  p.mascotId = 'mascot-owl';
+  p.soundSetId = 'sound-percussion';
   p.stickers = { 'stk-01': 2, 'stk-30': 1 };
   p.boxes = { pending: 2, openedTotal: 9, sinceLastRare: 3 };
   p.limits = { dailyMinutes: 25, maxBoxesPerDay: 2 };
@@ -131,7 +133,28 @@ describe('repairProfile – trường thiếu hoặc sai kiểu', () => {
     expect(fixed.stickers).toEqual({});
     // phần còn lại giữ nguyên
     expect(fixed.totalStars).toBe(123);
-    expect(fixed.unlocked).toEqual(['frame-rainbow', 'outfit-pilot']);
+    expect(fixed.unlocked).toEqual([
+      'frame-rainbow',
+      'outfit-pilot',
+      'sound-percussion',
+      'mascot-owl',
+    ]);
+    expect(fixed.mascotId).toBe('mascot-owl');
+    expect(fixed.soundSetId).toBe('sound-percussion');
+  });
+
+  it('linh vật / bộ âm thanh đang dùng thiếu hoặc sai kiểu (hồ sơ schema cũ, file sửa tay) → null = mặc định', () => {
+    const base = richProfile() as unknown as Record<string, unknown>;
+    const noFields = { ...base };
+    delete noFields.mascotId;
+    delete noFields.soundSetId;
+    expect(repairProfile(noFields, NOW)).toMatchObject({ mascotId: null, soundSetId: null });
+    expect(repairProfile({ ...base, mascotId: 7, soundSetId: { x: 1 } }, NOW)).toMatchObject({
+      mascotId: null,
+      soundSetId: null,
+    });
+    // id lạ vẫn là chuỗi nên giữ lại (nơi dùng sẽ coi như mặc định: activeMascot / activeSoundSet)
+    expect(repairProfile({ ...base, mascotId: 'khong-co' }, NOW)?.mascotId).toBe('khong-co');
   });
 
   it('một game thiếu → chỉ game đó về mặc định', () => {

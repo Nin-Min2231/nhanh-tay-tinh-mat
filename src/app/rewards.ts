@@ -145,7 +145,9 @@ export function nextUnlock(p: Profile): UnlockDef | undefined {
 
 /**
  * Mở các phần thưởng đã đủ sao mà hồ sơ chưa có (idempotent). Ô trang phục / hình nền đang trống
- * thì tự mặc phần thưởng mới để bé thấy ngay. Trả về hồ sơ mới + id vừa mở.
+ * thì tự mặc phần thưởng mới để bé thấy ngay. **Bộ âm thanh và linh vật thứ 2 KHÔNG tự áp dụng** (đổi cả
+ * giọng nói âm thanh / nhân vật chính là thay đổi lớn: bé tự bấm “Dùng” ở Album → Đặc biệt).
+ * Trả về hồ sơ mới + id vừa mở.
  */
 export function syncUnlocks(p: Profile): { profile: Profile; unlocked: string[] } {
   const fresh = UNLOCKS.filter((u) => u.stars <= p.totalStars && !p.unlocked.includes(u.id));
@@ -162,10 +164,28 @@ export function syncUnlocks(p: Profile): { profile: Profile; unlocked: string[] 
   };
 }
 
-/** Chỉ cho mặc/đặt phần thưởng đúng loại và đã mở khóa. `null` = bỏ mặc. */
-export function canEquip(p: Profile, kind: 'outfit' | 'background', id: string | null): boolean {
+/** Loại phần thưởng bé chọn dùng được (khung avatar và huy hiệu tự áp dụng nên không nằm ở đây). */
+export type EquipKind = 'outfit' | 'background' | 'soundSet' | 'mascot';
+
+/** Chỉ cho mặc/đặt/dùng phần thưởng đúng loại và đã mở khóa. `null` = bỏ (về mặc định). */
+export function canEquip(p: Profile, kind: EquipKind, id: string | null): boolean {
   if (id === null) return true;
   return p.unlocked.includes(id) && unlockById(id)?.kind === kind;
+}
+
+export const MASCOT_OWL_ID = 'mascot-owl';
+export const SOUND_PERCUSSION_ID = 'sound-percussion';
+
+/** Linh vật đang dùng. Id lạ hoặc chưa mở khóa (dữ liệu sửa tay) → Sóc Bo. */
+export function activeMascot(p: Profile | null | undefined): 'squirrel' | 'owl' {
+  return p?.mascotId === MASCOT_OWL_ID && p.unlocked.includes(MASCOT_OWL_ID) ? 'owl' : 'squirrel';
+}
+
+/** Bộ âm thanh đang dùng. Id lạ hoặc chưa mở khóa → âm gốc. */
+export function activeSoundSet(p: Profile | null | undefined): 'default' | 'percussion' {
+  return p?.soundSetId === SOUND_PERCUSSION_ID && p.unlocked.includes(SOUND_PERCUSSION_ID)
+    ? 'percussion'
+    : 'default';
 }
 
 // ---------------------------------------------------------------- sao + hộp quà

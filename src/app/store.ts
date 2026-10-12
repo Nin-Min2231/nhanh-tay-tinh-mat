@@ -20,6 +20,7 @@ import {
   openBox,
   syncUnlocks,
   type BoxOpening,
+  type EquipKind,
   type RoundRewards,
   type StarGrant,
 } from './rewards';
@@ -297,13 +298,22 @@ export function openGift(): BoxOpening | null {
   return res;
 }
 
-/** Chọn trang phục / hình nền (chỉ món đã mở khóa, đúng loại). `null` = bỏ mặc. */
-export function equipReward(kind: 'outfit' | 'background', id: string | null): void {
+/** Chọn trang phục / hình nền / bộ âm thanh / linh vật (chỉ món đã mở khóa, đúng loại). `null` = về mặc định. */
+export function equipReward(kind: EquipKind, id: string | null): void {
   const p = activeProfile.value;
   if (!p || !canEquip(p, kind, id)) return;
-  updateProfile(p.id, (q) =>
-    kind === 'outfit' ? { ...q, outfitId: id } : { ...q, backgroundId: id },
-  );
+  updateProfile(p.id, (q) => {
+    switch (kind) {
+      case 'outfit':
+        return { ...q, outfitId: id };
+      case 'background':
+        return { ...q, backgroundId: id };
+      case 'soundSet':
+        return { ...q, soundSetId: id };
+      case 'mascot':
+        return { ...q, mascotId: id };
+    }
+  });
 }
 
 /** Cửa sổ 30 giây của “Con nghỉ đây” (F20): chỉ mở khi vừa hết giờ và bé vào màn Nghỉ. */

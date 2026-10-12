@@ -63,6 +63,8 @@ export function createProfile(input: NewProfileInput, id: string, now: Date): Pr
     unlocked: [],
     outfitId: null,
     backgroundId: null,
+    mascotId: null,
+    soundSetId: null,
     stickers: {},
     boxes: { pending: 0, openedTotal: 0, sinceLastRare: 0 },
     games,

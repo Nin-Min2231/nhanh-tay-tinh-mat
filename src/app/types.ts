@@ -61,6 +61,10 @@ export interface Profile {
   unlocked: string[];
   outfitId: string | null;
   backgroundId: string | null;
+  /** Linh vật đang dùng (id trong rewards.ts, vd 'mascot-owl'); null = Sóc Bo. Thêm ở schema 3. */
+  mascotId: string | null;
+  /** Bộ âm thanh đang dùng (id trong rewards.ts, vd 'sound-percussion'); null = âm gốc. Thêm ở schema 3. */
+  soundSetId: string | null;
   stickers: Record<string, number>;
   boxes: { pending: number; openedTotal: number; sinceLastRare: number };
   games: Record<GameId, GameProgress>;
