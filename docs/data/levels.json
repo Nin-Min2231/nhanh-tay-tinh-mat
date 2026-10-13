@@ -652,12 +652,12 @@
     {
       "code": "M08",
       "grade": 2,
-      "name": "Bảng chia 2 và 5",
-      "example": "35 : 5 = ?"
+      "name": "Bảng chia 2",
+      "example": "14 : 2 = ?"
     },
     {
       "code": "M09",
-      "grade": 2,
+      "grade": 3,
       "name": "Cộng, trừ trong phạm vi 1000 (nhớ tối đa 1 lần)",
       "example": "352 + 129 = ?"
     },

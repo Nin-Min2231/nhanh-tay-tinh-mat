@@ -227,9 +227,8 @@ function genM07(rng: Rng, easy: boolean): Core {
 }
 
 function genM08(rng: Rng, easy: boolean): Core {
-  const f = pick(rng, [2, 5]);
   const n = randInt(rng, 1, easy ? 5 : 10);
-  return mk('div', f * n, f);
+  return mk('div', 2 * n, 2); // chỉ bảng chia 2 (chia cho 5 đã bỏ khỏi chương trình Lớp 2)
 }
 
 function genM09(rng: Rng, easy: boolean): Core {
@@ -333,7 +332,7 @@ const RANGE: Record<string, (c: Core) => boolean> = {
   M07: (c) =>
     c.op === 'mul' &&
     (([2, 5].includes(c.a) && inRng(c.b, 1, 10)) || ([2, 5].includes(c.b) && inRng(c.a, 1, 10))),
-  M08: (c) => c.op === 'div' && [2, 5].includes(c.b) && inRng(c.r, 1, 10),
+  M08: (c) => c.op === 'div' && c.b === 2 && inRng(c.r, 1, 10),
   M09: (c) =>
     isOp(c, 'add', 'sub') &&
     inRng(c.a, 100, 999) &&

@@ -221,13 +221,15 @@
 | M05 | 2 | Cộng, trừ qua 10 trong phạm vi 20 (có nhớ) | 8 + 7 = ?; 15 − 9 = ? | ✓ |
 | M06 | 2 | Cộng, trừ có nhớ trong phạm vi 100 | 38 + 27 = ?; 72 − 45 = ? | ✓ |
 | M07 | 2 | Bảng nhân 2 và 5 | 5 × 7 = ? | ✓ |
-| M08 | 2 | Bảng chia 2 và 5 | 35 : 5 = ? | ✓ |
-| M09 | 2 | Cộng, trừ trong phạm vi 1000 (nhớ tối đa 1 lần) | 352 + 129 = ? |  |
+| M08 | 2 | Bảng chia 2 | 14 : 2 = ? | ✓ |
+| M09 | 3 | Cộng, trừ trong phạm vi 1000 (nhớ tối đa 1 lần) | 352 + 129 = ? |  |
 | M10 | 3 | Bảng nhân, chia 3 → 9 | 7 × 8 = ?; 54 : 6 = ? |  |
 | M11 | 3 | Nhân, chia số 2–3 chữ số với số 1 chữ số | 23 × 4 = ?; 84 : 4 = ? |  |
 | M12 | 3 | Cộng, trừ trong phạm vi 10 000 | 2 450 + 1 300 = ? |  |
 | M13 | 3 | Tìm thành phần chưa biết | ? × 6 = 42 |  |
 | M14 | 3 | Gấp / giảm một số lần | Gấp 4 lên 3 lần = ? |  |
+
+**Chỉnh nội dung Lớp 2 (2026-10-13, theo yêu cầu chủ dự án):** (1) **bỏ phép chia cho 5**: M08 chỉ còn bảng chia 2 (`2 : 2` … `20 : 2`; cấp 1–3 chỉ đến `10 : 2`); bảng nhân 2 và 5 (M07) giữ nguyên; (2) **M09 (cộng, trừ trong phạm vi 1000) chuyển từ Lớp 2 sang Lớp 3** – vẫn là chủ đề mặc định của Lớp 3, phụ huynh vẫn bật được cho bé Lớp 2 ở khu phụ huynh. Mã chủ đề giữ nguyên (không đánh số lại). Sổ lỗi cũ có `35:5` tự bị bỏ qua (không thuộc chủ đề nào của Lớp 2).
 
 **Độ lớn số**: cấp 1–3 dùng “nửa dễ” của chủ đề (số hạng nhỏ hơn, vd M06 chỉ cộng có nhớ với số hạng ≤ 50); cấp 4+ dùng toàn bộ phạm vi.
 **Tìm số thiếu**: từ cấp 8, một phần câu đổi dạng `? + 8 = 15`, `4 × ? = 28`. **M11 giới hạn (TASK-10):** chỉ ra dạng tìm số thiếu khi số cần tìm ≤ 99; nếu lớn hơn (vd `? : 5 = 57` → 285) thì hỏi dạng thường `285 : 5 = ?`.

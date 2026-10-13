@@ -27,6 +27,7 @@ import {
   coreFromKey,
   factKey,
   isConsistent,
+  topicOfCore,
   type Core,
 } from './topics';
 
@@ -120,13 +121,35 @@ describe('G6 bộ sinh câu theo chủ đề', () => {
     expect(reversal).toBeGreaterThan(50);
   });
 
-  it('M07 chỉ nhân với 2 hoặc 5; M08 chỉ chia cho 2 hoặc 5', () => {
+  it('M07 chỉ nhân với 2 hoặc 5; M08 chỉ chia cho 2 (không còn chia cho 5)', () => {
+    const divisors = new Set<number>();
+    const quotients = new Set<number>();
     for (let seed = 1; seed <= 400; seed++) {
       const m07 = TOPICS.M07!.gen(mulberry32(seed), false);
       expect([m07.a, m07.b].some((n) => n === 2 || n === 5)).toBe(true);
       const m08 = TOPICS.M08!.gen(mulberry32(seed), false);
-      expect([2, 5]).toContain(m08.b);
+      expect(m08.op).toBe('div');
+      expect(m08.b).toBe(2);
+      divisors.add(m08.b);
+      quotients.add(m08.r);
     }
+    expect([...divisors]).toEqual([2]);
+    // đủ cả bảng chia 2: 2 : 2 … 20 : 2
+    expect([...quotients].sort((x, y) => x - y)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  });
+
+  it('phép chia cho 5 (vd 35 : 5) không còn thuộc chủ đề nào của Lớp 2', () => {
+    const c = coreFromKey('35:5')!;
+    expect(isConsistent(c)).toBe(true);
+    expect(TOPICS.M08!.inRange(c)).toBe(false);
+    expect(topicOfCore(c, levelsConfig.mathDefaultByGrade['2'])).toBeNull();
+  });
+
+  it('M09 (cộng, trừ trong phạm vi 1000) thuộc Lớp 3, không còn trong chủ đề Lớp 2', () => {
+    const m09 = levelsConfig.mathTopics.find((t) => t.code === 'M09')!;
+    expect(m09.grade).toBe(3);
+    expect(levelsConfig.mathDefaultByGrade['2']).not.toContain('M09');
+    expect(levelsConfig.mathDefaultByGrade['3']).toContain('M09');
   });
 
   it('M14 viết dạng lời (word) và không có dạng tìm số thiếu; M13 luôn là tìm số thiếu', () => {
@@ -557,6 +580,19 @@ describe('G6 luật lượt chơi', () => {
         .every((q) => !q.retry),
     ).toBe(true);
     expect(g.questions().some((q) => q.key === '7x8')).toBe(false);
+  });
+
+  it('sổ lỗi cũ có phép chia cho 5 (35:5): không hỏi lại ở chủ đề Lớp 2, chia cho 2 (14:2) vẫn hỏi lại', () => {
+    const facts: Record<string, MathFact> = {
+      '35:5': { seen: 2, correct: 0, streak: 0, lastSeenRound: 1, mastered: false },
+      '14:2': { seen: 1, correct: 0, streak: 0, lastSeenRound: 2, mastered: false },
+    };
+    for (let seed = 1; seed <= 50; seed++) {
+      const qs = make(seed, 5, ['M07', 'M08'], facts).questions();
+      expect(qs.some((q) => q.key === '35:5')).toBe(false);
+      expect(qs[0]!.key).toBe('14:2');
+      expect(qs[0]!.retry).toBe(true);
+    }
   });
 
   it('factResults theo đúng thứ tự trả lời; metrics có accuracy, avgTimeMs, timeouts, masteredCount', () => {

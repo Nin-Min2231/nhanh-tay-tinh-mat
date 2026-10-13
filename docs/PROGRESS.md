@@ -37,6 +37,8 @@
 
 ## Đề xuất (ngoài phạm vi, để sau)
 
+- **G6 M08 (bảng chia 2): không ẩn số chia ở dạng tìm số thiếu** – sau khi bỏ chia cho 5, câu như `20 : ? = 10` luôn có đáp án 2 (bé sẽ đoán ra quy luật). Cách sửa nhỏ: thêm thuộc tính cho `TopicDef` để M08 chỉ ẩn số bị chia hoặc kết quả; thêm unit test. Chờ anh quyết.
+
 - ~~**Bộ âm thanh Nhạc Cụ Gõ + Linh vật Cú Mèo** (mốc 80 và 230 sao)~~ → **đã làm ở TASK-10 đợt 2** (0.9.3, đã gộp `main` + deploy).
 - **Kích thước JS** tăng lên ≈ 98 KB gzip (từ ≈ 64 KB): 40 sticker + 2 hình nền + trang phục ≈ +33 KB. Vẫn thấp hơn nhiều giới hạn 350 KB. **Đã đo ở TASK-08: khởi động offline ≈ 100 ms → không tách gói tải sau** (toàn bộ đã nằm trong cache offline); chỉ Chart.js (TASK-07) nên tải sau.
 - Chữ tên sticker dưới mỗi ô Album đang 16px (nhỏ hơn mức 18px của SPEC) để vừa 4 cột trên điện thoại 360px; nếu anh thấy khó đọc thì chuyển sang bấm vào ô để xem tên (đã có).
@@ -64,6 +66,14 @@
 | 0.8.0 | 2026-10-11 | TASK-08: PWA (cài được, offline, nút Cập nhật), deploy GitHub Pages |
 
 ## Nhật ký
+
+### 2026-10-13 – G6: chỉnh nội dung Lớp 2 (bỏ chia cho 5, M09 sang Lớp 3) – **chưa gộp `main`, chưa tăng số phiên bản**
+- Yêu cầu của anh (làm trực tiếp ở Claude Code, nhánh `claude/hai-tao-tinh-nham-edit-3817b8`): “Hái Táo Tính Nhẩm chương trình lớp 2: bỏ nội dung chia hết cho 5 và Cộng, trừ trong phạm vi 1000”. Em hỏi lại 2 điểm mơ hồ, anh chọn: **(1) chỉ bỏ phép chia cho 5** (M08 còn bảng chia 2; bảng nhân 2 và 5 ở M07 giữ nguyên); **(2) M09 chuyển sang Lớp 3** (không xóa).
+- Đã làm: `docs/data/levels.json` (M08 đổi tên “Bảng chia 2”, ví dụ `14 : 2 = ?`; M09 `grade` 2 → 3) · `src/games/g6-math/topics.ts` (`genM08` chỉ ra `2n : 2`, `RANGE.M08` chỉ nhận chia cho 2) · mã chủ đề không đánh số lại, `mathDefaultByGrade` không đổi (Lớp 2 vẫn M02, M05, M06, M07, M08; Lớp 3 vẫn có M09) · `docs/02_GAMES.md` + `docs/samples/G6.md` (sinh lại bằng `npm run samples`).
+- **Dữ liệu cũ của bé:** không cần migration. Sổ lỗi có `35:5` tự bị bỏ qua (không còn thuộc chủ đề nào của Lớp 2; có unit test); hồ sơ đã tick M09 thì vẫn giữ.
+- Hệ quả cần biết: bảng chia 2 chỉ có 10 phép (`2:2` … `20:2`), cấp 1–3 chỉ 5 phép → nếu phụ huynh bật **riêng** M08 thì một lượt 10 câu sẽ lặp phép tính; ở mặc định Lớp 2 (trộn 5 chủ đề) không ảnh hưởng.
+- Tác động phụ đã biết (để anh quyết, chưa sửa vì ngoài phạm vi): ở **cấp 8–10** (có dạng tìm số thiếu) câu M08 có thể hỏi số **chia** bị ẩn, vd `20 : ? = 10` → đáp án luôn là **2** (trước đây còn 2 hoặc 5). Muốn tránh thì cho M08 không bao giờ ẩn số chia (≈ 6 dòng ở `question.ts` + 1 thuộc tính ở `topics.ts`) – xem mục “Đề xuất”.
+- Test: `npm run lint` sạch · **572 unit test pass** (569 → 572: M08 chỉ chia 2 và đủ kết quả 1…10; `35:5` không còn thuộc chủ đề Lớp 2 và sổ lỗi cũ có `35:5` bị bỏ qua; M09 thuộc Lớp 3) · `npm run build` OK · e2e `games3.spec.ts` + `parent.spec.ts` (G6 + khu phụ huynh) **168 pass** ở 3 khung hình · chạy chính mã game trong trang xem thử: 1.200 lượt Lớp 2 (cấp 1, 4, 8, 10) = 12.000 câu → **0 câu chia cho 5**, 2.200 câu chia cho 2; danh sách chủ đề ở khu phụ huynh hiện “M08 · Bảng chia 2 (Lớp 2) – 14 : 2 = ?” và “M09 · … (Lớp 3)”. **Chưa chạy đủ bộ e2e 489 test** (chỉ phần G6 + khu phụ huynh; các game khác không bị chạm).
 
 ### 2026-10-13 – Đóng Phase 1 + bàn giao cho Cowork (Phase 2)
 - Anh hỏi “đã xong hết các task chưa” → em đối chiếu `docs/03_TASKS.md`, bảng trạng thái, `QA_REPORT.md`, SPEC (20 F + 11 NF + 4 UI) và mã ở `main` (`7e8442b`): **TASK-00 → TASK-09 xong, TASK-10 là mẫu lặp lại (đợt 1 + 2 xong)**; lint sạch, 569 unit test, e2e 489 (474 chạy + 15 bỏ qua có chủ ý) xanh; 35/35 TC có test tự động (12 TC cần thêm máy thật: 001, 002, 007, 012, 025, 028, 029, 031, 032, 033, 034, 035); không thấy yêu cầu nào bị bỏ sót (kiểm lại trong mã F05, F09, F14, NF09). Một điểm lệch chữ: TASK-08 ghi “Lighthouse PWA ≥ 90” nhưng Lighthouse 13 không còn nhóm điểm PWA → đã kiểm bằng e2e (manifest, service worker, offline).
