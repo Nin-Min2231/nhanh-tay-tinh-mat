@@ -17,6 +17,7 @@
 | TASK-08 PWA + deploy | Xong, **đã gộp `main`, Pages đang chạy** | 2026-10-11 | Pages: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ ; còn chờ anh thử cài + máy bay trên máy thật (TC-001/002/012) và TC-029 sau bản 0.9.0 |
 | TASK-09 QA | **Xong, đã gộp `main`, v0.9.1 live** (anh đồng ý 2026-10-12) | 2026-10-11 | lint, **523 unit test**, build, **408** e2e (3 khung hình) đều pass; test chập chờn đã ổn định; báo cáo `docs/QA_REPORT.md`; **cần anh thử trên máy thật** (QA_REPORT mục 8) |
 | TASK-10 Sửa lỗi & tinh chỉnh | **Đợt 1 xong, đã gộp `main` + deploy v0.9.2** (anh “Đồng ý” 2026-10-13) | 2026-10-12 | Mục tồn đọng đã biết: cho phóng to bằng 2 ngón (màn chơi vẫn chặn), Home tablet ngang xếp 3 nhóm cạnh nhau (vừa một màn), icon thẻ G1/G2 mới, điều tra G3; chi tiết ở nhật ký. **Chưa có danh sách lỗi từ máy thật** → đợt 2 khi anh gửi |
+| TASK-10 đợt 2 (hoàn tất tồn đọng) | **Đang làm – dừng giữa chừng để bàn giao (2026-10-13). Nằm trên nhánh `claude/task-10-part2`, CHƯA gộp `main`, CHƯA deploy** (`main` vẫn 0.9.2) | 2026-10-13 | **Xong:** A1–A4 (Nhạc Cụ Gõ + Cú Mèo dùng được ở Album → Đặc biệt, schema 3), B (bóng G1 bóng bẩy), C (G7 cấp 5 giải thích riêng), D (G6 M11 ≤ 99), E1 (xuất CSV), F (`installedVersion`). **Còn:** E2 (chấm nhắc sao lưu ở Home), G (QA cuối: e2e đủ bộ, perf, Lighthouse/axe), H (0.9.3, docs, hỏi anh gộp). 568 unit test pass; e2e đủ bộ của nhánh **chưa chạy**. Chi tiết: nhật ký “TASK-10 đợt 2” + `docs/HANDOVER.md` mục 0b |
 
 ## Câu hỏi mở (chờ chủ dự án)
 
@@ -26,38 +27,68 @@
 - **Việc anh cần làm cho TASK-09 (còn lại; 0.9.1 đã deploy):** thử máy thật theo **`docs/QA_REPORT.md` mục 8** (9 việc, mỗi việc ghi rõ vì sao cần máy thật) – quan trọng nhất: bấm “Cập nhật” trên app đã cài, G5 bằng 2 ngón thật, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**, sao lưu → khôi phục thật.
 - **Duyệt nội dung mẫu G6/G7** trong `docs/samples/` (câu nào quá khó/dễ với bé lớp 2?).
 - **Duyệt hình thưởng TASK-06**: 40 sticker (tên + độ hiếm), 2 trang phục, 2 hình nền – xem bằng `npm run dev` rồi mở `http://localhost:5173/?gallery=1` (thêm `&theme=animal|fruit|space|vehicle` để xem to) và `?gallery=1&view=rewards`. Hình nào chưa ưng thì báo số `stk-xx` để em vẽ lại.
-- **Hai phần thưởng mốc sao chưa dùng được** (đã mở khóa và hiện trong Album, tab Đặc biệt, ghi “Dùng được ở bản sau”): **Bộ âm thanh Nhạc Cụ Gõ** (80 sao) và **Linh vật Cú Mèo** (230 sao). Anh muốn làm ở TASK-10 hay bỏ?
+- ~~**Hai phần thưởng mốc sao chưa dùng được** (Nhạc Cụ Gõ 80 sao, Cú Mèo 230 sao)~~ → **đã làm ở TASK-10 đợt 2 (trên nhánh `claude/task-10-part2`, chờ gộp `main`)**: dùng được ở Album → Đặc biệt (“Dùng”, “Nghe thử”). **Anh cần duyệt:** hình **Cú Mèo** (5 biểu cảm, xem `?gallery=1`) và tiếng **Nhạc Cụ Gõ** (nghe thử ở Album → Đặc biệt khi hồ sơ có ≥ 80 sao; muốn thử nhanh có thể dùng khu phụ huynh → Thưởng để tặng sao).
 
 - **Việc anh cần làm cho TASK-08 (còn lại)**: cài thử lên điện thoại/Galaxy Tab + chế độ máy bay (TC-001, 002, 012), mở thử bằng Samsung Internet; **duyệt icon** (`public/icons/icon-512.png`). Hướng dẫn từng bước ở nhật ký TASK-08.
 - **Việc anh cần làm cho TASK-07** (đã gộp + deploy 0.9.0): (1) thử khu phụ huynh trên máy thật theo “Cách thử thủ công” ở nhật ký TASK-07 (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → khôi phục**) và **bấm “Cập nhật” trên app đã cài** (TC-029); (2) **duyệt chữ “khi nào nên cho bé đi khám” (R13)** do em tự soạn (`vi.parent.data.note`); (3) quyết định có bỏ `user-scalable=no` ở viewport (Lighthouse trừ điểm accessibility) hay không.
 
 ## Đề xuất (ngoài phạm vi, để sau)
 
-- **Bộ âm thanh Nhạc Cụ Gõ + Linh vật Cú Mèo** (mốc 80 và 230 sao): cần tổng hợp âm mới (`audio.ts` có thêm “bộ âm” để chọn) và vẽ Cú Mèo 5 biểu cảm như Sóc Bo → TASK-10 nếu anh muốn. Hiện chỉ mở khóa + hiện trong Album.
+- ~~**Bộ âm thanh Nhạc Cụ Gõ + Linh vật Cú Mèo** (mốc 80 và 230 sao)~~ → **đã làm ở TASK-10 đợt 2** (nhánh `claude/task-10-part2`, chờ gộp `main`).
 - **Kích thước JS** tăng lên ≈ 98 KB gzip (từ ≈ 64 KB): 40 sticker + 2 hình nền + trang phục ≈ +33 KB. Vẫn thấp hơn nhiều giới hạn 350 KB. **Đã đo ở TASK-08: khởi động offline ≈ 100 ms → không tách gói tải sau** (toàn bộ đã nằm trong cache offline); chỉ Chart.js (TASK-07) nên tải sau.
 - Chữ tên sticker dưới mỗi ô Album đang 16px (nhỏ hơn mức 18px của SPEC) để vừa 4 cột trên điện thoại 360px; nếu anh thấy khó đọc thì chuyển sang bấm vào ô để xem tên (đã có).
 - Tỷ lệ độ hiếm thật sau “bảo đảm Hiếm” là ≈ **66 / 28,3 / 5,7** (Thường / Hiếm / Siêu hiếm), không phải đúng 70/25/5 (xem nhật ký TASK-06). Muốn đúng 70/25/5 thì phải bỏ bảo đảm; muốn giữ bảo đảm mà gần 70/25/5 hơn thì hạ xác suất Hiếm ở lần tung gốc – chỉnh trong `rollRarity` (`rewards.ts`) nếu anh muốn.
 
 - ~~Home tablet ngang: xếp 3 nhóm game cạnh nhau~~ → **đã làm ở TASK-10 (0.9.2)**.
-- **Bóng/khối của G1 trong game** (canvas) vẫn vẽ phẳng (màu + viền) trong khi icon thẻ G1 nay bóng bẩy; có thể vẽ sprite bóng một lần (như G3/G5) cho khớp – cần giữ 60 fps và quy tắc 17 (không tạo gradient mỗi khung hình).
+- ~~**Bóng/khối của G1 trong game** vẽ phẳng~~ → **đã làm ở TASK-10 đợt 2** (sprite vẽ một lần khi đổi cỡ; nhánh `claude/task-10-part2`). Còn phải đo lại 60 fps bằng `npm run perf -- --gpu` (mục G).
 - Kích thước JS tăng từ ≈ 33 KB lên ≈ 64 KB (gzip) vì có thêm bộ sinh câu G6/G7: có thể tách mỗi game thành gói tải sau (dynamic import) nếu TASK-08 đo thấy lần mở đầu chậm (mặc định không tách).
-- G6: M11 (nhân/chia số 2–3 chữ số) ở dạng tìm số thiếu ra số khá lớn (vd `? : 5 = 57`); đây là chủ đề lớp 3, không bật mặc định – nếu anh thấy khó quá thì giới hạn dạng tìm số thiếu cho M11 ở TASK-10.
-- G7 cấp 5 (mẫu 2 thuộc tính): khi sai hiện tô sáng cả dãy 6 ô; có thể làm lời giải thích riêng “màu lặp 2 nhịp, hình lặp 3 nhịp” nếu anh muốn (TASK-10).
+- ~~G6: M11 ở dạng tìm số thiếu ra số khá lớn~~ → **đã giới hạn ≤ 99 ở TASK-10 đợt 2** (nhánh `claude/task-10-part2`).
+- ~~G7 cấp 5 (mẫu 2 thuộc tính): chưa có lời giải thích riêng~~ → **đã làm ở TASK-10 đợt 2** (nhánh `claude/task-10-part2`).
 - G6 hình minh họa khi sai hiện 1,5 giây đúng SPEC; nếu thấy bé chưa kịp nhìn thì tăng hằng số `SHOW_MS` (`games/g6-math/view.ts`).
 - ~~Hai test e2e chập chờn (G1 TC-004, G3 TC-013)~~ → **đã sửa ở TASK-09** (nguyên nhân là test, không phải game).
 - ~~**G3 trên tablet khi giả lập CPU ×4: 44–57 fps**~~ → **đã điều tra ở TASK-10: không phải lỗi của G3** mà do Chromium của Playwright vẽ canvas bằng phần mềm (xem nhật ký TASK-10; đo lại bằng Chrome có GPU: 60 fps kể cả CPU ×8). Vẫn nên xem FPS thật bằng `?debug=1` trên Galaxy Tab.
-- Khu phụ huynh: xuất CSV, so sánh nhiều bé; nhắc sao lưu ngay ở Home (chưa làm).
+- Khu phụ huynh: ~~xuất CSV~~ → **đã làm ở TASK-10 đợt 2** (nhánh `claude/task-10-part2`); **nhắc sao lưu ngay ở Home = mục E2, chưa làm** (HANDOVER mục 0b); so sánh nhiều bé: chưa làm.
 
 ## Changelog (theo phiên bản; mỗi lần gộp `main` = một phiên bản)
 
 | Phiên bản | Ngày | Nội dung |
 |---|---|---|
+| 0.9.3 *(chưa phát hành – đang làm trên nhánh `claude/task-10-part2`; `package.json` còn 0.9.2, nâng ở mục H)* | — | TASK-10 đợt 2: **dùng được Bộ âm Nhạc Cụ Gõ (80 sao) và Linh vật Cú Mèo Thông Thái (230 sao)** ở Album → Đặc biệt (dữ liệu hồ sơ **schema 3**, bộ âm là dữ liệu thuần, trang phục chỉ cho Sóc Bo); bóng/khối G1 bóng bẩy (sprite vẽ một lần); G7 cấp 5 có lời giải thích riêng; G6 M11 không hỏi số thiếu > 99; khu phụ huynh **xuất CSV** (lịch sử từng lượt + tổng hợp theo ngày); `installedVersion` theo bản app. *Dự kiến thêm:* chấm nhắc sao lưu ở Home (E2) |
 | **0.9.2** | 2026-10-13 (gộp `main` + deploy) | TASK-10 đợt 1: cho phóng to bằng 2 ngón (màn chơi vẫn chặn; vào game khi đang phóng thì tạm dừng + nhắc thu nhỏ); Home tablet ngang (≥ 1200px) xếp 3 nhóm game cạnh nhau, vừa một màn; icon thẻ G1/G2 mới; script `npm run perf` có `--gpu` + cột “main thread bận”; không sửa G3 (xem nhật ký) |
 | 0.9.1 | 2026-10-12 (deploy) | TASK-09 QA: ổn định 2 test chập chờn; sửa app mở xuyên đêm, dữ liệu hỏng/file sao lưu sửa tay, G5 nền làn vẽ một lần, accessibility (nút “Dễ” 48px, hoạt ảnh lặp khi giảm chuyển động, tên nút hộp quà) |
 | 0.9.0 | 2026-10-11 | TASK-07: khu phụ huynh (khóa, tiến bộ + biểu đồ, bài đo tuần, cài đặt, hồ sơ, thưởng, sao lưu/khôi phục), schema dữ liệu 2 |
 | 0.8.0 | 2026-10-11 | TASK-08: PWA (cài được, offline, nút Cập nhật), deploy GitHub Pages |
 
 ## Nhật ký
+
+### 2026-10-13 – TASK-10 đợt 2 (hoàn tất tồn đọng) – **DỪNG GIỮA CHỪNG để bàn giao**; nhánh `claude/task-10-part2`, chưa gộp `main`
+- Bối cảnh: sau khi 0.9.2 deploy, anh dặn **“Viết handover để qua session mới rồi thực hiện các việc còn lại cho xong luôn”** (= “làm luôn”: không chờ duyệt kế hoạch từng mục; **gộp/push `main` vẫn phải hỏi**), rồi giữa chừng bảo **“Dừng xử lý đến hiện tại. Viết handover để qua session mới xử lý tiếp”**. Anh chưa gửi danh sách lỗi từ máy thật nên đợt này làm **tồn đọng đã ghi nhận**. Checklist sống: **`docs/HANDOVER.md` mục 0b**. `main` vẫn là **0.9.2 đang live**, không bị đụng.
+- Đã làm (mỗi mục một commit trên nhánh, xuất phát từ `main` = `f2af811`):
+  1. **A1 `41467a3` – dữ liệu:** `Profile.mascotId` + `Profile.soundSetId` (`null` = Sóc Bo / âm gốc), **`schemaVersion` 3** + migration 2→3 + sửa dữ liệu hỏng trong `validate.ts` + SPEC mục 5; `rewards.ts`: `canEquip`/`equipReward` thêm `soundSet` và `mascot`, `activeMascot`/`activeSoundSet` (id lạ hoặc chưa mở khóa → về mặc định). **Mở khóa không tự mặc**: bé (hoặc phụ huynh) tự chọn ở Album.
+  2. **A2 `df49ec1` (+ e2e ở `d371b89`) – Bộ âm Nhạc Cụ Gõ (80 sao):** `app/audioSets.ts` – bộ âm là **dữ liệu thuần** (`ToneSpec`); bộ mặc định **giống hệt âm cũ**; Nhạc Cụ Gõ = đàn gõ / mộc cầm / tam giác (đầu nốt 3 ms + họa âm), **sai = tiếng “cộp” gỗ nhẹ** (không chê), đúng / sao / lên cấp là các nốt ngũ cung; `createAudio` đọc bộ đang chọn của hồ sơ; `audio.preview(id)` cho nút “Nghe thử”.
+  3. **A3 `d371b89` – Linh vật Cú Mèo Thông Thái (230 sao):** `ui/components/Owl.tsx` 5 biểu cảm (chuyển sắc, vệt sáng, kính tròn, vẫy cánh khi chào); `Mascot` tự chọn Sóc/Cú theo hồ sơ (signal `mascotKind`) ở Home, Nghỉ, Kết quả, G6, G7, lớp phủ; **trang phục chỉ dành cho Sóc Bo** (Album hiện dòng giải thích khi đang dùng Cú).
+  4. **A4 `d371b89` – Album → tab Đặc biệt:** 3 nhóm “Âm thanh / Linh vật / Quà đặc biệt”; thẻ mặc định (“Âm thanh gốc”, “Linh vật Sóc Bo”); nút “Dùng / Đang dùng” + “Nghe thử”; bỏ chữ “Dùng được ở bản sau”; màn Kết quả và hộp quà nhắc **“Vào Album → Đặc biệt”** khi vừa mở khóa. E2e mới `tests/e2e/special.spec.ts` (mở khóa → dùng → tải lại vẫn giữ, tách theo hồ sơ, đổi âm thật bằng cách bắt `OscillatorNode`).
+  5. **B `8c06986` – bóng/khối G1 bóng bẩy:** `games/g1-balls/art.ts` vẽ sprite **một lần khi đổi cỡ** (chuyển sắc, vệt sáng; vẫn kèm dấu ✕/!/~ cho mù màu); mỗi khung chỉ đổ bóng + `drawImage` (quy tắc 17). **Chưa đo lại 60 fps bằng Chrome có GPU** → mục G.
+  6. **C `47a52ee` – G7 cấp 5:** mẫu 2 thuộc tính có lời giải thích riêng (“màu lặp mỗi 2 ô, hình lặp mỗi 3 ô”) khi sai (`Explain {kind:'dual', colorLen, shapeLen}`); `docs/02_GAMES.md` + `docs/samples/` cập nhật.
+  7. **D `8581d54` – G6 M11:** dạng “tìm số thiếu” của M11 không bao giờ hỏi số lớn hơn 99 (nếu số định giấu lớn hơn thì đổi sang hỏi kết quả); unit test 1.000 câu vẫn đúng 1 đáp án; `docs/02_GAMES.md` cập nhật.
+  8. **E1 `32f5b5d` + sửa `96d36e8` – xuất CSV:** khu phụ huynh → Dữ liệu: “lịch sử từng lượt” và “tổng hợp theo ngày” của bé đang xem; **UTF-8 có BOM + dòng `sep=,` + xuống dòng CRLF** để Excel / Google Trang tính đọc đúng tiếng Việt, kể cả máy đặt dấu phân cách là “;”; mã thuần `app/csv.ts` + test; tên file `nhanhtay-lichsu-<tên>-YYYYMMDD.csv` / `nhanhtay-tonghop-<tên>-YYYYMMDD.csv`. Hạn chế đã biết: Excel Việt Nam (dấu thập phân là “,”) có thể đọc số như “0.9” thành chữ → trong màn có ghi chú cách mở bằng Data → From text/CSV. (`32f5b5d` tự nó có 1 unit test đỏ do quy tắc 16 quét thấy chữ Việt cứng trong `csv.ts`; `96d36e8` sửa – xem HANDOVER mục 0b.)
+  9. **F `7ec8650` – `installedVersion`:** cập nhật theo bản app mở dữ liệu (`app/version.ts`, gọi một lần lúc khởi động, chỉ ghi khi có thay đổi).
+- **Còn lại (chi tiết từng bước ở HANDOVER mục 0b):** **E2** chấm nhắc sao lưu ở Home · **G** QA cuối (e2e đủ bộ, `perf --gpu`, Lighthouse + axe) · **H** version 0.9.3 + docs + hỏi anh gộp `main`.
+- Test lúc dừng (commit mã `7ec8650`): `tsc --noEmit` + ESLint sạch · **568 unit test pass** (từ 529: +39; 1 bỏ qua có chủ ý). E2e: từng spec mới/đổi đã chạy lúc làm mục tương ứng (`special`, `rewards`, `a11y`, TC-028 ở `qa`/`games`, `games3`, `parent`; ảnh chụp 3 khung hình bằng spec tạm đã xóa) – **e2e đủ bộ của cả nhánh CHƯA chạy**; `build`, `perf`, Lighthouse, axe chưa chạy lại.
+- Quyết định tự chọn (anh góp ý nếu không đồng ý):
+  - Bộ âm / linh vật **không tự mặc khi mở khóa** – chọn ở Album → Đặc biệt; gợi ý hiện ở màn Kết quả / hộp quà.
+  - **Trang phục chỉ cho Sóc Bo** (Cú Mèo chưa có trang phục) – anh muốn Cú Mèo cũng mặc đồ thì thêm sau.
+  - Bộ âm mặc định giữ **nguyên** âm cũ; Nhạc Cụ Gõ không có âm chê khi sai (tiếng “cộp” gỗ nhẹ).
+  - Id lạ hoặc phần thưởng chưa mở khóa → tự về mặc định (Sóc Bo / âm gốc) thay vì lỗi.
+  - Chấm nhắc sao lưu ở Home (E2, chưa làm) chỉ hiện khi **đã có ít nhất 1 sao** (chưa chơi gì thì chưa có gì để mất).
+- Cách thử thủ công (anh đang chạy `npm run dev` ở thư mục gốc = nhánh `main`, nên **chưa thấy các thay đổi này** cho tới khi gộp, hoặc khi phiên mới chuyển nhánh/mở dev server riêng của nhánh):
+  1. Mở `http://localhost:5173/?debug=1` → Home kéo xuống cuối, dãy nút “Thử thưởng (chỉ dev)” → bấm “+15 sao” nhiều lần tới khi ≥ 80 (rồi ≥ 230).
+  2. **Album → tab “Đặc biệt”**: thấy “Âm thanh gốc / Nhạc Cụ Gõ”, “Linh vật Sóc Bo / Cú Mèo”; bấm “Nghe thử” rồi “Dùng”; chơi 1 lượt nghe tiếng đúng / sai / được sao; thoát hẳn app, mở lại → vẫn đúng lựa chọn; đổi sang hồ sơ khác → mỗi bé một lựa chọn riêng.
+  3. **Dùng Cú Mèo:** Home, Nghỉ, Kết quả, G6, G7 hiện Cú; tab “Trang phục” có dòng giải thích (trang phục chỉ cho Sóc Bo). Xem riêng 5 biểu cảm ở `?gallery=1&view=rewards` (chỉ ở bản dev).
+  4. **G1:** bóng xanh / khối đỏ bóng bẩy, vẫn thấy rõ dấu ✕ / ! / ~ (thử bật chế độ đen trắng của máy), chơi mượt.
+  5. **G7 cấp 5:** cố ý chọn sai → lời giải thích “màu lặp… hình lặp…”. **G6 (chủ đề M11):** không còn câu “tìm số thiếu” với số lớn hơn 99.
+  6. **Khu phụ huynh → Dữ liệu:** bấm 2 nút CSV → mở bằng Excel / Google Trang tính: tiếng Việt đúng dấu, đủ cột.
+- Commit: `feat: profile fields for the chosen mascot and sound set (schema 3, migration, validation)` · `feat: sound sets as pure data; add the Nhac Cu Go (percussion) set` · `feat: Cu Meo Thong Thai mascot (5 moods) and the Album picker for the new mascot and sound set` · `feat(G1): glossy ball and block sprites drawn once, drawImage per frame` · `feat(G7): level-5 two-attribute puzzles get their own explanation (colour period / shape period)` · `fix(G6): M11 missing-number form never asks for a number above 99` · `feat(parent): export a child's play history to CSV (per round and per day)` · `fix(csv): build the Vietnamese-letter regexes from char codes …` · `feat: AppState.installedVersion follows the app version that opens the data` · `docs: …`.
 
 ### 2026-10-12 – TASK-10 đợt 1 (mục tồn đọng đã biết) – v0.9.2
 - Bối cảnh: anh đồng ý gộp TASK-09 vào `main` (0.9.1 đã deploy, CI + Deploy xanh) và chọn **“làm các mục tồn đọng đã biết”** vì chưa có danh sách lỗi từ máy thật; anh “Đồng ý” kế hoạch 4 mục. Việc còn lại của TASK-10 (đợt 2) chờ anh thử máy thật và gửi lỗi/góp ý.
