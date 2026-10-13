@@ -819,10 +819,26 @@ test.describe('Tab Dữ liệu – xuất CSV (TASK-10)', () => {
   }) => {
     const p = makeProfile('Bé Na');
     await seedProfiles(page, [p]);
+    // Giờ bắt đầu ghi RÕ RÀNG: giờ mặc định của mkRound tính từ bộ đếm dùng chung của cả luồng test nên hai lượt cùng
+    // ngày có thể đảo thứ tự khi bộ đếm quay vòng (đã gây một lần đỏ giả ở khung tablet dọc).
     await seedRounds(page, p.id, [
-      mkRound(p.id, 'G1', 2, { score: 0.9, metrics: { rtMeanMs: 640, accuracy: 0.95 } }),
-      mkRound(p.id, 'G2', 1, { metrics: { timeSec: 30 }, benchmark: true, deviceClass: 'tablet' }),
-      mkRound(p.id, 'G1', 1, { score: 0.5, stars: 1, metrics: { rtMeanMs: 800 } }),
+      mkRound(p.id, 'G1', 2, {
+        startedAt: isoDaysAgo(2, 9),
+        score: 0.9,
+        metrics: { rtMeanMs: 640, accuracy: 0.95 },
+      }),
+      mkRound(p.id, 'G2', 1, {
+        startedAt: isoDaysAgo(1, 9),
+        metrics: { timeSec: 30 },
+        benchmark: true,
+        deviceClass: 'tablet',
+      }),
+      mkRound(p.id, 'G1', 1, {
+        startedAt: isoDaysAgo(1, 15),
+        score: 0.5,
+        stars: 1,
+        metrics: { rtMeanMs: 800 },
+      }),
     ]);
     await page.goto(E2E_URL);
     await openParent(page, 'data');
