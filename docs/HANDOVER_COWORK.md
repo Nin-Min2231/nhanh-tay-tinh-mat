@@ -1,6 +1,6 @@
 # HANDOVER_COWORK – Bàn giao cho phiên Cowork làm Phase 2
 
-> Viết ngày 2026-10-13 (bản **0.9.3** đang live). **Đọc file này đầu tiên.** Dành cho Claude chạy trong **Cowork** và cho anh (chủ dự án).
+> Viết ngày 2026-10-13 (bản **1.0.0** đang live). **Đọc file này đầu tiên.** Dành cho Claude chạy trong **Cowork** và cho anh (chủ dự án).
 > Bản kỹ thuật chi tiết cho Claude Code: `docs/HANDOVER.md` – chỉ tra khi cần, **đừng đọc hết**. Luật dự án đầy đủ: `CLAUDE.md`.
 
 ---
@@ -8,7 +8,7 @@
 ## 0. Tóm tắt 1 phút
 
 - **Dự án:** “Nhanh Tay Tinh Mắt” – web app dạng PWA gồm **7 mini-game** giúp bé lớp 2 (8 tuổi) tăng tập trung, phản xạ ngón tay, tính nhẩm, tư duy logic. Chạy trên Chrome Android (điện thoại, tablet Samsung Galaxy Tab); **không** hỗ trợ iPhone/iPad.
-- **Hiện trạng:** **Phase 1 (TASK-00 → TASK-10) đã đóng ngày 2026-10-13.** Bản 0.9.3 chạy thật tại https://nin-min2231.github.io/nhanh-tay-tinh-mat/ . Repo công khai: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (chỉ còn nhánh `main`; **mỗi lần push `main` = một lần deploy công khai**).
+- **Hiện trạng:** **Phase 1 (TASK-00 → TASK-10) đã đóng ngày 2026-10-13.** Bản **1.0.0** chạy thật tại https://nin-min2231.github.io/nhanh-tay-tinh-mat/ (phát hành 2026-10-13 vì anh thử máy thật OK; chức năng giống hệt 0.9.3). Repo công khai: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (chỉ còn nhánh `main`; **mỗi lần push `main` = một lần deploy công khai**).
 - **Phase 2:** chưa có tài liệu. Anh sẽ **nêu yêu cầu bằng lời**; Cowork cùng anh làm rõ, soạn tài liệu Phase 2 (mục 2), rồi thực hiện (mục 1 và 7).
 - **Chủ dự án:** PM, **không phải lập trình viên**. Trao đổi **tiếng Việt**: gọi “anh”, xưng “em”. Giải thích ngắn gọn; việc anh phải tự làm thì hướng dẫn **từng bước đánh số**, không giả định kiến thức lập trình.
 - **Ba quy tắc vàng**
@@ -48,7 +48,7 @@ Phase 1 làm hoàn toàn bằng **Claude Code** (tab Code của Claude Desktop) 
 | **A – Soạn tài liệu Phase 2** | Làm rõ yêu cầu, viết `docs/phase2/*` | Thư mục gốc `D:\01_NguyenNC\10_Claude\07_Tap_trung_G`, **chỉ tạo/sửa file trong `docs/phase2/`** (+ ghi chú vào `docs/PROGRESS.md`) | Không đụng mã → gần như không có |
 | **B – Triển khai** (sửa mã, dữ liệu, nội dung game) | Sửa `src/`, `tests/`, `docs/data/levels.json`… | **Thư mục làm việc riêng cho Cowork** (mục 7-A), **không** làm ở thư mục gốc | Tách khỏi `main` và khỏi `npm run dev` của anh |
 
-Giai đoạn B ở thư mục riêng vì thư mục gốc là nhánh `main` đang chạy `npm run dev` của anh; sửa mã dở tay ở đó làm hỏng bản xem thử và vướng các lần gộp khác.
+Giai đoạn B ở thư mục riêng vì thư mục gốc là nhánh `main` đang chạy `npm run dev` của anh; sửa mã dở tay ở đó làm hỏng bản xem thử và vướng các lần gộp khác. **Anh đã đồng ý (2026-10-13)**; Claude Code tạo thư mục này khi anh bắt đầu sửa mã (prompt 7-A).
 
 ### 1.4 Hai đường kiểm tra (Cowork chọn sau 1.1, nói rõ với anh)
 
@@ -90,7 +90,7 @@ Giai đoạn B ở thư mục riêng vì thư mục gốc là nhánh `main` đan
 
 ---
 
-## 3. Hiện trạng sản phẩm (2026-10-13, bản 0.9.3)
+## 3. Hiện trạng sản phẩm (2026-10-13, bản 1.0.0)
 
 | Game | Tên | Nhóm | Vẽ bằng |
 |---|---|---|---|
@@ -112,7 +112,7 @@ Giai đoạn B ở thư mục riêng vì thư mục gốc là nhánh `main` đan
 
 **Công nghệ (đã chốt, không tự đổi):** Vite + TypeScript strict · Preact + `@preact/signals` · Canvas 2D (G1/G3/G5) · `vite-plugin-pwa` · Chart.js (tải sau) · font Nunito · Web Audio tự tổng hợp · `localStorage` (khóa `ntm.state`, `ntm.rounds.<id>`, `ntm.daily.<id>`, **schema 3** có migration) · Vitest · Playwright Chromium · ESLint + Prettier · GitHub Actions → GitHub Pages. **Không có máy chủ, không tài khoản:** mọi dữ liệu nằm trong trình duyệt của máy bé.
 
-**Chất lượng lúc bàn giao:** 569 unit test · 489 e2e (474 chạy + 15 bỏ qua có chủ ý) ở 3 khung hình (điện thoại 360×740, tablet ngang 1280×800, tablet dọc 800×1280) · lint + `tsc` sạch · 60 fps G1/G3/G5 (đo bằng Chrome có GPU) · gói chính ≈ 122 KB gzip (giới hạn 350) · Lighthouse Accessibility 100 · axe-core 0 vi phạm · 35 test case nghiệm thu đều có test tự động (12 cái cần thêm máy thật – mục 8).
+**Chất lượng lúc bàn giao** (đo ở 0.9.3; 1.0.0 chỉ đổi số phiên bản – đã chạy lại lint, unit, build và 165 e2e PWA/khu phụ huynh/khung app, đều xanh): 569 unit test · 489 e2e (474 chạy + 15 bỏ qua có chủ ý) ở 3 khung hình (điện thoại 360×740, tablet ngang 1280×800, tablet dọc 800×1280) · lint + `tsc` sạch · 60 fps G1/G3/G5 (đo bằng Chrome có GPU) · gói chính ≈ 122 KB gzip (giới hạn 350) · Lighthouse Accessibility 100 · axe-core 0 vi phạm · 35 test case nghiệm thu đều có test tự động (12 cái cần thêm máy thật – mục 8).
 
 ---
 
@@ -169,7 +169,7 @@ Mã: `src/app/` (logic thuần: độ khó, điểm, thưởng, lưu trữ…) �
 
 ## 6. Phiên bản & phát hành
 
-- Hiện **0.9.3** (Phase 1 phát hành dưới 1.0 để chờ anh thử máy thật). **Câu hỏi cho anh:** khi nào gọi là **1.0.0**? *Đề xuất:* sau khi anh thử máy thật xong và không còn lỗi chặn → 1.0.0; mỗi đợt tính năng Phase 2 → 1.1.0, 1.2.0…; sửa lỗi nhỏ → tăng số cuối.
+- Hiện **1.0.0** (phát hành 2026-10-13: anh thử máy thật OK nên đổi từ 0.9.3; chức năng giống hệt 0.9.3). Quy ước từ đây: mỗi đợt tính năng Phase 2 → **1.1.0, 1.2.0…**; sửa lỗi nhỏ → tăng số cuối (1.0.1…); thay đổi lớn không tương thích → 2.0.0 (hỏi anh).
 - Mỗi lần gộp vào `main` = một phiên bản: tăng `package.json` (+ `package-lock.json` dòng 3 và 9) và ghi một dòng **Changelog** trong `docs/PROGRESS.md`.
 - Quy trình gộp/deploy (**Claude Code** làm, **chỉ khi anh đồng ý**): chạy lint + unit + build + e2e đầy đủ (≈ 13 phút, giữ máy thức) → `git merge --ff-only` ở thư mục gốc → `git push origin main` → GitHub Actions (CI + Deploy ≈ 2 phút) → kiểm trang thật → ghi “đã gộp” vào tài liệu. Chi tiết: `docs/HANDOVER.md` mục 0.
 - Commit theo Conventional Commits, **tiếng Anh** (`feat:`, `fix:`, `docs:`, `test:`, `chore:`); tài liệu và giao diện: tiếng Việt.
@@ -217,7 +217,7 @@ Tôi đồng ý gộp nhánh phase2/work vào main và deploy. Làm theo docs/HA
 
 ## 8. Việc đang chờ anh (không chặn Phase 2)
 
-1. **Thử máy thật** (danh sách đầy đủ: `docs/QA_REPORT.md` mục 8 và 10): cài app + chế độ máy bay (TC-001, 002, 012) · G5 bằng 2 ngón thật (TC-007, 032) · vuốt Quay lại, chia đôi màn hình, tablet không rung (TC-033, 034, 035) · G1 ở chế độ đen trắng (TC-028) · bấm “Cập nhật” (TC-029) · sao lưu → khôi phục trên Android (TC-025) · Samsung Internet · FPS thật bằng `?debug=1` · Album → Đặc biệt (Nhạc Cụ Gõ, Cú Mèo) · chấm đỏ nhắc sao lưu · mở file CSV bằng Excel/Google Trang tính.
+1. **Thử máy thật – anh đã báo OK (2026-10-13)**; danh sách giữ làm tham chiếu cho các bản sau (đầy đủ: `docs/QA_REPORT.md` mục 8 và 10): cài app + chế độ máy bay (TC-001, 002, 012) · G5 bằng 2 ngón thật (TC-007, 032) · vuốt Quay lại, chia đôi màn hình, tablet không rung (TC-033, 034, 035) · G1 ở chế độ đen trắng (TC-028) · bấm “Cập nhật” (TC-029) · sao lưu → khôi phục trên Android (TC-025) · Samsung Internet · FPS thật bằng `?debug=1` · Album → Đặc biệt (Nhạc Cụ Gõ, Cú Mèo) · chấm đỏ nhắc sao lưu · mở file CSV bằng Excel/Google Trang tính.
 2. **Duyệt nội dung/hình:** mẫu G6/G7 (`docs/samples/`) · 40 sticker, trang phục, hình nền · icon · Cú Mèo · tiếng Nhạc Cụ Gõ · đoạn chữ “khi nào nên cho bé đi khám” (`vi.parent.data.note`).
 3. **Ghi kết quả vào Excel sheet 5**; lỗi nào gặp thì chuyển thành yêu cầu sửa lỗi (Claude Code, TASK-10 đợt 3).
 

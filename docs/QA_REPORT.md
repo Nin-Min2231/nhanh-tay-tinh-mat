@@ -19,6 +19,8 @@
 
 **Cập nhật sau TASK-10 đợt 2 (v0.9.3, 2026-10-13):** unit **569** pass, 1 bỏ qua (+40 so với 0.9.2) · e2e **474 pass + 15 bỏ qua có chủ ý = 489 test** (từ 432: +57, gồm `special.spec.ts` mới), **0 lỗi, 0 chập chờn** (12,6 phút, `--workers=3`; lượt đủ bộ đầu tiên trên mã cuối có **1 test đỏ giả** – test xuất CSV ở khung tablet dọc: giờ gieo dữ liệu lấy từ một bộ đếm dùng chung nên hai lượt cùng ngày đảo thứ tự khi bộ đếm quay vòng (lỗi của test, không phải của app); đã sửa test (`aa0d1d3`; chạy lặp 10 lần × 3 khung hình: 30/30 pass) rồi chạy lại đủ bộ: xanh hết) · 35 TC không đổi kết quả (TC-028 vẫn pass sau khi bóng G1 chuyển sang sprite) · gói chính **121,9 KB gzip** (0.9.2: 116,9) · FPS G1 vẫn 60 (mục 6) · Lighthouse + axe đã chạy lại (mục 5) · chi tiết ở `docs/PROGRESS.md` (nhật ký TASK-10 đợt 2).
 
+**v1.0.0 (2026-10-13):** chỉ đổi số phiên bản so với 0.9.3 (anh thử máy thật OK nên phát hành chính thức). Em chạy lại lint, 569 unit test, build và 165 e2e (PWA, khu phụ huynh, khung app) – đều xanh; các số liệu ở đoạn trên (e2e 489, FPS, Lighthouse, axe) đo ở 0.9.3 vẫn áp dụng.
+
 **Có thể cho bé dùng bản 0.9.1 không?** Về mặt kiểm thử tự động: có – không còn test đỏ, không có lỗi chặn. Trước khi giao cho bé dùng lâu dài nên làm hết mục 8 (đặc biệt: sao lưu → khôi phục thật, cài PWA, thử G5/G3 trên Galaxy Tab).
 
 ## 2. Bảng 35 test case
