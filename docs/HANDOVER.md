@@ -2,6 +2,7 @@
 
 > Viết ngày 2026-10-11, cập nhật 2026-10-13 (sau khi **gộp `main` + deploy TASK-10 đợt 2, v0.9.3**). `main` = **v0.9.3 đang live** (TASK-00 → TASK-10 đợt 2). Việc tiếp theo: **TASK-10 đợt 3** khi anh gửi danh sách lỗi/góp ý từ máy thật (xem **mục 0b** và mục 1). Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
 > Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) biết chính xác đang ở đâu mà không phải đoán lại ngữ cảnh. Phiên mới tạo nhánh/worktree mới **từ `main`** (đã chứa đủ 0.9.3 và file này; nếu `main` cục bộ chưa thấy thì `git fetch origin` trước). Báo cáo QA đầy đủ: **`docs/QA_REPORT.md`**.
+> **Phase 2 làm bằng Cowork** (không phải Claude Code) → đọc **`docs/HANDOVER_COWORK.md`** trước. File này là bản kỹ thuật cho Claude Code; mục 7 của `HANDOVER_COWORK.md` có các prompt “cầu nối” để Claude Code kiểm tra, commit và deploy phần Cowork làm.
 
 ---
 

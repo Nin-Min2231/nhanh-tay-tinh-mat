@@ -4,6 +4,7 @@
 > Ngôn ngữ trao đổi với chủ dự án: **tiếng Việt**. Code, tên biến, commit message: tiếng Anh.
 > Môi trường: chủ dự án dùng **Claude Code Desktop (tab Code) trên Windows**, phiên Local. Chủ dự án là PM, không phải lập trình viên:
 > giải thích ngắn gọn, hướng dẫn từng bước khi cần thao tác (GitHub, điện thoại).
+> **Phase 2 làm bằng Cowork:** nếu bạn là phiên **Cowork** (không phải Claude Code), đọc `docs/HANDOVER_COWORK.md` **trước** – nó nói rõ việc nào làm ở đâu và các điều cấm (không `npm install`/`ci`, không lệnh git ghi từ sandbox).
 
 ## 1. Dự án là gì
 

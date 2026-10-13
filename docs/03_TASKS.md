@@ -1,5 +1,7 @@
 # 03_TASKS – Kế hoạch triển khai bằng Claude Code Desktop
 
+> **Phase 1 đã xong (2026-10-13).** File này giữ nguyên làm **khuôn mẫu và lịch sử Phase 1**. Phase 2: anh nêu yêu cầu và làm bằng **Cowork** → xem `docs/HANDOVER_COWORK.md`; task Phase 2 sẽ nằm ở `docs/phase2/P2_TASKS.md` (khuôn giống file này, đánh số tiếp từ TASK-11).
+
 > Cách dùng (tab **Code** trong app Claude Desktop, Environment = Local, Project folder = thư mục `nhanh-tay-tinh-mat`):
 > 1. Mỗi TASK = 1 phiên mới (**Ctrl+N**). Chọn chế độ **Plan** → dán nguyên khối **Prompt** → gửi.
 > 2. Claude đưa kế hoạch → anh góp ý hoặc đồng ý → đổi chế độ sang **Accept edits** → nhắn “Đồng ý, làm theo kế hoạch”.
