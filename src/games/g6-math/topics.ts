@@ -30,6 +30,11 @@ export interface TopicDef {
   maxMissing?: number;
   /** Luôn là dạng tìm số thiếu (M13). */
   forceMissing?: boolean;
+  /**
+   * Phép chia luôn có cùng một số chia (M08: chỉ chia cho 2) → không ẩn số chia: `20 : ? = 10` luôn có đáp án 2,
+   * bé đoán ra quy luật. Dạng tìm số thiếu chỉ ẩn số bị chia (`? : 2 = 6`).
+   */
+  fixedDivisor?: boolean;
 }
 
 // ---------- tiện ích ----------
@@ -392,6 +397,7 @@ export const TOPICS: Record<string, TopicDef> = Object.fromEntries(
       inRange: (c: Core) => isConsistent(c) && (RANGE[code] as (c: Core) => boolean)(c),
       canMiss: !NO_MISS.has(code),
       forceMissing: code === 'M13',
+      fixedDivisor: code === 'M08',
       maxMissing: MAX_MISSING[code],
     } satisfies TopicDef,
   ]),

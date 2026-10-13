@@ -229,10 +229,10 @@
 | M13 | 3 | Tìm thành phần chưa biết | ? × 6 = 42 |  |
 | M14 | 3 | Gấp / giảm một số lần | Gấp 4 lên 3 lần = ? |  |
 
-**Chỉnh nội dung Lớp 2 (2026-10-13, theo yêu cầu chủ dự án):** (1) **bỏ phép chia cho 5**: M08 chỉ còn bảng chia 2 (`2 : 2` … `20 : 2`; cấp 1–3 chỉ đến `10 : 2`); bảng nhân 2 và 5 (M07) giữ nguyên; (2) **M09 (cộng, trừ trong phạm vi 1000) chuyển từ Lớp 2 sang Lớp 3** – vẫn là chủ đề mặc định của Lớp 3, phụ huynh vẫn bật được cho bé Lớp 2 ở khu phụ huynh. Mã chủ đề giữ nguyên (không đánh số lại). Sổ lỗi cũ có `35:5` tự bị bỏ qua (không thuộc chủ đề nào của Lớp 2).
+**Chỉnh nội dung Lớp 2 (2026-10-13, theo yêu cầu chủ dự án):** (1) **bỏ phép chia cho 5**: M08 chỉ còn bảng chia 2 (`2 : 2` … `20 : 2`; cấp 1–3 chỉ đến `10 : 2`) và dạng tìm số thiếu của M08 chỉ ẩn số bị chia (`? : 2 = 6`), không ẩn số chia (`20 : ? = 10` luôn có đáp án 2); bảng nhân 2 và 5 (M07) giữ nguyên; (2) **M09 (cộng, trừ trong phạm vi 1000) chuyển từ Lớp 2 sang Lớp 3** – vẫn là chủ đề mặc định của Lớp 3, phụ huynh vẫn bật được cho bé Lớp 2 ở khu phụ huynh. Mã chủ đề giữ nguyên (không đánh số lại). Sổ lỗi cũ có `35:5` tự bị bỏ qua (không thuộc chủ đề nào của Lớp 2).
 
 **Độ lớn số**: cấp 1–3 dùng “nửa dễ” của chủ đề (số hạng nhỏ hơn, vd M06 chỉ cộng có nhớ với số hạng ≤ 50); cấp 4+ dùng toàn bộ phạm vi.
-**Tìm số thiếu**: từ cấp 8, một phần câu đổi dạng `? + 8 = 15`, `4 × ? = 28`. **M11 giới hạn (TASK-10):** chỉ ra dạng tìm số thiếu khi số cần tìm ≤ 99; nếu lớn hơn (vd `? : 5 = 57` → 285) thì hỏi dạng thường `285 : 5 = ?`.
+**Tìm số thiếu**: từ cấp 8, một phần câu đổi dạng `? + 8 = 15`, `4 × ? = 28`. **M11 giới hạn (TASK-10):** chỉ ra dạng tìm số thiếu khi số cần tìm ≤ 99; nếu lớn hơn (vd `? : 5 = 57` → 285) thì hỏi dạng thường `285 : 5 = ?`. **M08 (chỉ chia cho 2):** không bao giờ ẩn số chia – số chia bị ẩn được đổi sang ẩn số bị chia nên tỷ lệ dạng tìm số thiếu vẫn đúng bảng cấp độ (thuộc tính `fixedDivisor` ở `topics.ts`).
 **M03 So sánh**: đáp án luôn là 3 quả `>`, `<`, `=`.
 
 **Đáp án nhiễu** (bắt buộc hợp lý, không đoán mò được): ứng viên = đáp án ±1, ±2, ±10 (lỗi nhớ), đảo chữ số, kết quả của phép tính ngược (cộng ↔ trừ), với phép nhân: a × (b ± 1). Lọc: ≥ 0, khác nhau, khác đáp án; thiếu thì bổ sung số gần. Vị trí đáp án đúng ngẫu nhiên.

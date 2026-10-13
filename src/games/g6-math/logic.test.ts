@@ -212,6 +212,37 @@ describe('G6 đáp án và đáp án nhiễu', () => {
     for (const k of ['mul-a', 'mul-b', 'div-b']) expect(kinds.has(k), k).toBe(true);
   });
 
+  it('M08 (chỉ chia cho 2): tìm số thiếu không bao giờ ẩn số chia, luôn là `? : 2 = r`; tỷ lệ vẫn ~40%', () => {
+    expect(TOPICS.M08!.fixedDivisor).toBe(true);
+    const total = 3000;
+    let missing = 0;
+    for (let seed = 1; seed <= total; seed++) {
+      const rng = mulberry32(seed * 6151);
+      const core = TOPICS.M08!.gen(rng, seed % 3 === 0);
+      const q = buildQuestion(rng, 'M08', core, { optionCount: 4, missingRatio: 0.4 });
+      expect(q.hidden, `seed ${seed}`).not.toBe('b'); // không bao giờ `20 : ? = 10` (đáp án luôn 2)
+      if (q.hidden === 'r') continue;
+      missing++;
+      expect(q.hidden).toBe('a');
+      expect(q.answer).toBe(core.a);
+      expect(q.options.filter((o) => satisfies(q, o))).toHaveLength(1); // vẫn đúng 1 đáp án
+    }
+    // số chia bị ẩn được đổi sang ẩn số bị chia (không rơi về dạng thường) → tỷ lệ vẫn đúng ~40%
+    expect(Math.abs(missing / total - 0.4)).toBeLessThan(0.03);
+  });
+
+  it('chủ đề khác vẫn có thể ẩn số chia (vd M10 `54 : ? = 6`)', () => {
+    expect(TOPICS.M10!.fixedDivisor).toBeFalsy();
+    let divisorHidden = 0;
+    for (let seed = 1; seed <= 2000; seed++) {
+      const rng = mulberry32(seed * 6151);
+      const core = TOPICS.M10!.gen(rng, false);
+      const q = buildQuestion(rng, 'M10', core, { optionCount: 4, missingRatio: 0.4 });
+      if (core.op === 'div' && q.hidden === 'b') divisorHidden++;
+    }
+    expect(divisorHidden).toBeGreaterThan(100);
+  });
+
   it('chủ đề khác M11 không bị giới hạn số thiếu (vd M09 vẫn ra số thiếu 3 chữ số)', () => {
     expect(TOPICS.M09!.maxMissing).toBeUndefined();
     let big = 0;

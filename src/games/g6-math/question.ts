@@ -111,6 +111,8 @@ export function buildQuestion(
   if (core.op !== 'cmp' && def) {
     if (def.forceMissing || (def.canMiss && !core.word && rng() < params.missingRatio)) {
       hidden = rng() < 0.5 ? 'a' : 'b';
+      // số chia cố định (M08 chỉ chia cho 2): ẩn số bị chia thay cho số chia, để không có câu luôn đáp án 2
+      if (def.fixedDivisor && core.op === 'div' && hidden === 'b') hidden = 'a';
       // số thiếu quá lớn (vd M11 `? : 5 = 57` → 285) thì hỏi dạng thường `a op b = ?` (không đổi sang số còn lại
       // để tỷ lệ các dạng khác – vd tìm số chia – không bị lệch)
       const limit = def.maxMissing;
