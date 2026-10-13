@@ -289,6 +289,16 @@ export function createG7(host: HTMLElement, ctx: GameContext): GameInstance {
         note.textContent = vi.g7.explainUnit;
         break;
       }
+      case 'dual': {
+        // hai thanh: dưới = nhóm lặp của màu, trên = nhóm lặp của hình (nhóm kề nhau đổi nét liền/nét sọc)
+        const cells = stage.querySelectorAll<HTMLElement>('.g7-cell');
+        cells.forEach((c, i) => {
+          c.classList.add(Math.floor(i / ex.colorLen) % 2 === 0 ? 'dc-a' : 'dc-b');
+          c.classList.add(Math.floor(i / ex.shapeLen) % 2 === 0 ? 'ds-a' : 'ds-b');
+        });
+        note.textContent = vi.g7.explainDual(ex.colorLen, ex.shapeLen);
+        break;
+      }
       case 'steps': {
         const cells = stage.querySelectorAll<HTMLElement>('.g7-cell');
         ex.labels.forEach((label, i) => {

@@ -211,6 +211,8 @@ export const vi = {
     timeUp: 'Hết giờ rồi! Mình xem đáp án nhé!',
     timerLabel: 'Thời gian còn lại cho câu này',
     explainUnit: 'Nhóm này cứ lặp lại nhé!',
+    explainDual: (colorLen: number, shapeLen: number) =>
+      `Thanh dưới: màu lặp mỗi ${colorLen} ô. Thanh trên: hình lặp mỗi ${shapeLen} ô.`,
     explainSteps: 'Mỗi bước thay đổi như thế này nhé!',
     explainAnalogy: 'Hình bên trái đổi thành hình bên phải. Hàng dưới cũng làm như vậy nhé!',
     explainRow: 'Mỗi hàng đều theo cùng một quy luật nhé!',

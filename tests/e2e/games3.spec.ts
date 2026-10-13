@@ -306,6 +306,42 @@ test.describe('G6 Hái Táo Tính Nhẩm', () => {
 });
 
 test.describe('G7 Tìm Quy Luật', () => {
+  test('cấp 5 (mẫu 2 thuộc tính): sai → hai thanh nhóm lặp (màu ở dưới, hình ở trên) + lời giải thích riêng', async ({
+    page,
+  }) => {
+    test.setTimeout(90_000);
+    await launch(page, 'G7', 5, {});
+    const q0 = await waitForAsk(page, 0);
+    expect(q0.type).toBe('two-attr');
+    const wrongIdx = q0.correct === 0 ? 1 : 0;
+    await tapSelector(page, `.g7-opt[data-i="${wrongIdx}"]`);
+    await expect.poll(async () => (await questionState(page)).q.wrong).toEqual([wrongIdx]);
+
+    // lời giải thích riêng: “Thanh dưới: màu lặp mỗi N ô. Thanh trên: hình lặp mỗi M ô.” (N, M là 2 và 3)
+    const text = (await page.getByTestId('g7-note').textContent()) ?? '';
+    const m = /màu lặp mỗi (\d+) ô.*hình lặp mỗi (\d+) ô/.exec(text);
+    expect(m, text).not.toBeNull();
+    const colorLen = Number(m![1]);
+    const shapeLen = Number(m![2]);
+    expect([colorLen, shapeLen].sort()).toEqual([2, 3]);
+    expect(text).toBe(vi.g7.explainDual(colorLen, shapeLen));
+    expect(await page.locator('.g7-cell.u-a').count()).toBe(0); // không còn dùng kiểu “nhóm 6 ô”
+
+    // mỗi ô thuộc đúng nhóm màu/nhóm hình theo chu kỳ, nhóm kề nhau đổi nét liền ↔ nét sọc
+    const classes = await page.$$eval('.g7-seq .g7-cell', (cells) => cells.map((c) => c.className));
+    expect(classes.length).toBeGreaterThanOrEqual(6);
+    classes.forEach((cls, i) => {
+      expect(cls.includes('dc-a'), `ô ${i} thanh màu`).toBe(Math.floor(i / colorLen) % 2 === 0);
+      expect(cls.includes('dc-b'), `ô ${i} thanh màu`).toBe(Math.floor(i / colorLen) % 2 === 1);
+      expect(cls.includes('ds-a'), `ô ${i} thanh hình`).toBe(Math.floor(i / shapeLen) % 2 === 0);
+      expect(cls.includes('ds-b'), `ô ${i} thanh hình`).toBe(Math.floor(i / shapeLen) % 2 === 1);
+    });
+
+    // chọn lại đúng: câu đó được ½ điểm (cấp 1–5 cho thử lại)
+    await tapSelector(page, `.g7-opt[data-i="${q0.correct}"]`);
+    await expect.poll(async () => (await questionState(page)).stats.points).toBe(0.5);
+  });
+
   test('TC-020: cấp 1–5 sai → tô sáng quy luật rồi thử lại; đúng lần 2 được ½ điểm câu đó', async ({
     page,
   }) => {

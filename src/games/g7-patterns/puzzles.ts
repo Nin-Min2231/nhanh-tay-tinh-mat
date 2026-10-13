@@ -50,6 +50,8 @@ export type TypeId =
 export type Explain =
   /** Tô sáng đơn vị lặp lại (len = số ô của một đơn vị). */
   | { kind: 'unit'; len: number }
+  /** Mẫu 2 thuộc tính (cấp 5): màu lặp mỗi `colorLen` ô, hình lặp mỗi `shapeLen` ô – hai thanh tô nhóm riêng. */
+  | { kind: 'dual'; colorLen: number; shapeLen: number }
   /** Mũi tên giữa các ô liên tiếp kèm nhãn (+2, ×2, ↻90°…); labels.length = cells.length − 1. */
   | { kind: 'steps'; labels: string[] }
   /** Ma trận 2×2: hình bên trái đổi thành hình bên phải, làm giống ở hàng dưới. */
@@ -209,7 +211,7 @@ function genTwoAttr(rng: Rng): Draft {
     truth: full[hole] as Item,
     main: ['shape', 'color'],
     extra: [],
-    explain: { kind: 'unit', len: 6 },
+    explain: { kind: 'dual', colorLen: colorPeriod, shapeLen: shapePeriod },
   };
 }
 

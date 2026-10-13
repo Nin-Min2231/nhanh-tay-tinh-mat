@@ -281,6 +281,12 @@ describe('G7 từng dạng đúng như bảng cấp độ', () => {
       const colorPeriod = new Set(full.map((c) => c.color)).size;
       const shapePeriod = new Set(full.map((c) => c.shape)).size;
       expect([colorPeriod, shapePeriod].sort()).toEqual([2, 3]);
+      // lời giải thích riêng: màu lặp mỗi colorPeriod ô, hình lặp mỗi shapePeriod ô (đúng với dãy thật)
+      expect(p.explain).toEqual({ kind: 'dual', colorLen: colorPeriod, shapeLen: shapePeriod });
+      full.forEach((c, i) => {
+        expect(c.color, `màu ô ${i}`).toBe(full[i % colorPeriod]!.color);
+        expect(c.shape, `hình ô ${i}`).toBe(full[i % shapePeriod]!.shape);
+      });
     }
   });
 
