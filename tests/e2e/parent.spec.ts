@@ -990,6 +990,37 @@ test.describe('Tab Dữ liệu (F10, TC-025)', () => {
     await expect(page.getByTestId('backup-reminder')).toHaveCount(0); // vừa sao lưu xong
   });
 
+  test('Home: chấm nhắc sao lưu trên nút Phụ huynh khi đã có sao; sao lưu xong thì hết chấm', async ({
+    page,
+  }) => {
+    await seedProfiles(page, [makeProfile('An', { totalStars: 12 })]);
+    await page.goto(E2E_URL);
+    const open = page.getByTestId('open-parent');
+    await expect(page.getByTestId('backup-dot')).toBeVisible();
+    await expect(page.getByTestId('backup-dot')).toHaveText(''); // chỉ là chấm, không chữ cho bé
+    await expect(open).toHaveAccessibleName(vi.home.parentBackup);
+    expect(vi.home.parentBackup.startsWith(vi.home.parent)).toBe(true); // tìm theo tên “Phụ huynh” vẫn thấy
+    const box = (await open.boundingBox())!; // vùng chạm không bị chấm làm nhỏ đi
+    expect(box.width).toBeGreaterThanOrEqual(48);
+    expect(box.height).toBeGreaterThanOrEqual(48);
+
+    await openParent(page, 'data'); // bấm nút có chấm vẫn vào khóa PH như thường
+    await page.getByTestId('backup-button').click();
+    await expect(page.getByTestId('backup-reminder')).toHaveCount(0);
+    await page.getByTestId('parent-exit').click();
+    await expect(page.getByTestId('greeting')).toBeVisible();
+    await expect(page.getByTestId('backup-dot')).toHaveCount(0);
+    await expect(open).toHaveAccessibleName(vi.home.parent);
+  });
+
+  test('Home: hồ sơ chưa có sao thì chưa nhắc sao lưu (không chấm)', async ({ page }) => {
+    await seedProfiles(page, [makeProfile('An')]);
+    await page.goto(E2E_URL);
+    await expect(page.getByTestId('greeting')).toBeVisible();
+    await expect(page.getByTestId('backup-dot')).toHaveCount(0);
+    await expect(page.getByTestId('open-parent')).toHaveAccessibleName(vi.home.parent);
+  });
+
   test('nút Quay lại của Android ở khu phụ huynh về Home và khóa lại', async ({ page }) => {
     await seedProfiles(page, [makeProfile('An')]);
     await page.goto(E2E_URL);

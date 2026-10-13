@@ -3,6 +3,7 @@ import {
   BACKUP_FORMAT,
   backupFileName,
   backupOverdue,
+  backupReminderDue,
   createBackup,
   parseBackup,
   stateForRestore,
@@ -258,6 +259,24 @@ describe('tên file + nhắc sao lưu', () => {
     expect(backupOverdue('2026-10-06T00:00:00.000Z', now)).toBe(false); // đúng 14 ngày
     expect(backupOverdue('2026-10-05T23:59:59.000Z', now)).toBe(true);
     expect(backupOverdue('hỏng', now)).toBe(true);
+  });
+
+  it('chấm nhắc ở Home: chỉ khi quá hạn VÀ đã có hồ sơ có sao', () => {
+    const now = Date.parse('2026-10-20T00:00:00.000Z');
+    const empty = createProfile({ name: 'An', avatarId: 'cat', grade: 2 }, 'pa', new Date(now));
+    const played = { ...empty, id: 'pb', totalStars: 3 };
+    const stale = '2026-10-05T23:59:59.000Z';
+    const fresh = '2026-10-06T00:00:00.000Z';
+    // chưa có sao → không có gì đáng mất
+    expect(backupReminderDue({ profiles: [empty], lastBackupAt: null }, now)).toBe(false);
+    expect(backupReminderDue({ profiles: [], lastBackupAt: null }, now)).toBe(false);
+    // có sao + chưa từng sao lưu / quá 14 ngày → nhắc
+    expect(backupReminderDue({ profiles: [played], lastBackupAt: null }, now)).toBe(true);
+    expect(backupReminderDue({ profiles: [played], lastBackupAt: stale }, now)).toBe(true);
+    // vừa sao lưu → hết nhắc
+    expect(backupReminderDue({ profiles: [played], lastBackupAt: fresh }, now)).toBe(false);
+    // chỉ cần MỘT hồ sơ có sao
+    expect(backupReminderDue({ profiles: [empty, played], lastBackupAt: stale }, now)).toBe(true);
   });
 
   it('createBackup ghi lastBackupAt = lúc sao lưu', () => {

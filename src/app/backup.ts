@@ -154,3 +154,14 @@ export function backupOverdue(lastBackupAt: string | null, nowMs: number): boole
   if (Number.isNaN(t)) return true;
   return nowMs - t > BACKUP_REMIND_DAYS * 86_400_000;
 }
+
+/**
+ * Chấm nhắc sao lưu trên nút Phụ huynh ở Home: quá hạn VÀ đã có ít nhất một hồ sơ có sao
+ * (chưa có sao = chưa có gì đáng mất, đừng làm phiền ngay lần đầu mở app).
+ */
+export function backupReminderDue(
+  state: Pick<AppState, 'profiles' | 'lastBackupAt'>,
+  nowMs: number,
+): boolean {
+  return state.profiles.some((p) => p.totalStars > 0) && backupOverdue(state.lastBackupAt, nowMs);
+}

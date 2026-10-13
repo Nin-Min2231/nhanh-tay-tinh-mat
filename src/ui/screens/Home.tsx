@@ -1,5 +1,6 @@
 import { vi } from '../../i18n/vi';
 import { useEffect, useMemo } from 'preact/hooks';
+import { backupReminderDue } from '../../app/backup';
 import { navigate } from '../../app/router';
 import { BENCHMARK_ORDER, benchmarkDue, doneRecently } from '../../app/benchmark';
 import { benchmarkMode, startBenchmark } from '../../app/parentStore';
@@ -8,7 +9,7 @@ import { applyUpdate } from '../../app/pwa';
 import { MISSION_GROUPS, boxRoomToday, starsToNextBox, BOX_EVERY_STARS } from '../../app/rewards';
 import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
 import { storage } from '../../app/storage';
-import { activeProfile, updateAvailable } from '../../app/store';
+import { activeProfile, appState, updateAvailable } from '../../app/store';
 import { today } from '../../app/today';
 import type { GameId } from '../../app/types';
 import { GAME_GROUPS, isGameAvailable } from '../../games/registry';
@@ -80,6 +81,8 @@ export function Home() {
   const day = getDay(p, key);
   const boxesFull = boxRoomToday(p, key) === 0;
   const toNext = starsToNextBox(p);
+  // Chấm nhỏ trên nút Phụ huynh (không có chữ cho bé): nhắc người lớn sao lưu (F10)
+  const backupDue = backupReminderDue(appState.value, Date.now());
 
   return (
     <main class="screen home">
@@ -115,11 +118,13 @@ export function Home() {
           </Button>
           <Button
             variant="icon"
-            class="tone-orange"
-            aria-label={vi.home.parent}
+            class={`tone-orange${backupDue ? ' has-dot' : ''}`}
+            aria-label={backupDue ? vi.home.parentBackup : vi.home.parent}
             onClick={() => navigate('/parent-gate')}
+            data-testid="open-parent"
           >
             <IconLock />
+            {backupDue && <span class="backup-dot" data-testid="backup-dot" aria-hidden="true" />}
           </Button>
         </nav>
       </header>

@@ -87,6 +87,8 @@ export const vi = {
     switchPlayer: 'Đổi người chơi',
     album: 'Album',
     parent: 'Phụ huynh',
+    /** Nhãn truy cập khi có chấm nhắc sao lưu – PHẢI bắt đầu bằng `parent` (test và trình đọc màn hình tìm theo tên nút). */
+    parentBackup: 'Phụ huynh – nên sao lưu dữ liệu của bé',
     outOfTime: 'Hôm nay con đã chơi đủ rồi!',
     goRest: 'Đến góc nghỉ',
     bestStars: (n: number) => `Sao tốt nhất: ${n}`,

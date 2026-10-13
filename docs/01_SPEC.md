@@ -69,7 +69,7 @@ flowchart TD
 | F07 | Chức năng | Giới hạn thời gian chơi/ngày/hồ sơ (mặc định 15 phút, chỉnh 5–60). Còn 2 phút: nhắc nhẹ. Hết giờ: kết thúc lượt đang chơi → màn hình nghỉ, khóa thẻ game đến hôm sau. | Cao | R10 |
 | F08 | Chức năng | Khu phụ huynh khóa bằng phép nhân 2 chữ số × 1 chữ số (vd 34 × 7); sai 3 lần khóa 30 giây. | Trung bình | R19 |
 | F09 | Chức năng | Âm thanh, nhạc, rung phản hồi (rung thật trên điện thoại; tablet không có mô-tơ rung → lắc hình nhẹ); bật/tắt riêng. Tự tạm dừng khi thoát app, xoay máy, có cuộc gọi; lượt dở dang bị hủy không tính. | Trung bình | R06, R25 |
-| F10 | Chức năng | Lưu tiến độ trên máy; sao lưu ra file / khôi phục từ file; nhắc sao lưu nếu > 14 ngày chưa sao lưu; cảnh báo việc xóa dữ liệu trình duyệt/ẩn danh. | Trung bình | R07 |
+| F10 | Chức năng | Lưu tiến độ trên máy; sao lưu ra file / khôi phục từ file; nhắc sao lưu nếu > 14 ngày chưa sao lưu (trong khu PH có băng nhắc; ở Home chỉ một **chấm đỏ nhỏ trên nút Phụ huynh**, không chữ cho bé, và chỉ khi đã có hồ sơ có sao – v0.9.3); cảnh báo việc xóa dữ liệu trình duyệt/ẩn danh. | Trung bình | R07 |
 | F11 | Chức năng | Cài đặt độ khó từng game (phụ huynh): chế độ Tự động (thích ứng, giới hạn cấp min–max) hoặc Cố định (chọn cấp 1–10) + tùy chọn riêng của game (vd G1 số màu bóng 2/3/4). Xem sheet 7. | Cao | R01, R11 |
 | F12 | Chức năng | Bé chọn nhanh Dễ / Vừa / Tự động / Khó ở màn giới thiệu game (Dễ = cấp hiện tại −2, Khó = +2; lượt không ở chế độ Tự động không làm đổi cấp). Phụ huynh có thể tắt quyền này. | Trung bình | R11 |
 | F13 | Chức năng | Nhiệm vụ hôm nay: hoàn thành 1 lượt ở mỗi nhóm (Phản xạ, Tập trung & Trí nhớ, Học mà chơi) → nhận 1 Hộp quà bí mật. | Cao | R09, R10 |
