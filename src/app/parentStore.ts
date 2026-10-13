@@ -3,6 +3,7 @@ import { signal } from '@preact/signals';
 import type { GameId } from '../games/levels';
 import { BENCHMARK_ORDER, benchmarkQueue } from './benchmark';
 import { backupFileName, createBackup, stateForRestore, type BackupFile } from './backup';
+import { csvFileName, dailyCsv, roundsCsv } from './csv';
 import { dateKey, type NewProfileInput } from './profile';
 import {
   giveBonusTime,
@@ -132,6 +133,19 @@ export function parentCreateBackup(): { name: string; text: string } {
   const file = createBackup(storage.snapshot(appState.value), now, APP_VERSION);
   commit({ ...appState.value, lastBackupAt: file.exportedAt });
   return { name: backupFileName(now), text: JSON.stringify(file) };
+}
+
+/** Nội dung + tên file CSV lịch sử chơi của một bé (E1): `rounds` = từng lượt, `daily` = tổng hợp theo ngày. */
+export function parentCreateCsv(
+  profile: Profile,
+  kind: 'rounds' | 'daily',
+  now: Date = new Date(),
+): { name: string; text: string } {
+  const text =
+    kind === 'rounds'
+      ? roundsCsv(storage.loadRounds(profile.id))
+      : dailyCsv(storage.loadDaily(profile.id));
+  return { name: csvFileName(kind, profile.name, now), text };
 }
 
 /** Khôi phục: ghi đè toàn bộ dữ liệu bằng file sao lưu đã được kiểm tra (parseBackup). */

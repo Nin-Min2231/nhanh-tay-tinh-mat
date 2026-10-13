@@ -654,6 +654,30 @@ export const vi = {
       logBox: (n: number) => `${n} hộp quà`,
     },
     data: {
+      /** Xuất lịch sử chơi ra CSV (mở bằng Excel / Google Trang tính). */
+      csvTitle: 'Xuất lịch sử chơi (CSV)',
+      csvText: (name: string) =>
+        `Tạo file bảng tính cho ${name}, mở được bằng Excel hoặc Google Trang tính. File được lưu vào thư mục Tải xuống. Nếu Excel dồn mọi cột vào một ô, hãy dùng Dữ liệu → Từ văn bản/CSV.`,
+      csvRoundsButton: 'Lịch sử từng lượt',
+      csvDailyButton: 'Tổng hợp theo ngày',
+      csvDone: (name: string) => `Đã tạo file ${name}.`,
+      csv: {
+        date: 'Ngày',
+        time: 'Giờ',
+        game: 'Game',
+        level: 'Cấp độ',
+        mode: 'Chế độ',
+        benchmark: 'Bài đo tuần',
+        scorePct: 'Điểm (%)',
+        stars: 'Số sao',
+        durationSec: 'Thời lượng (giây)',
+        device: 'Thiết bị',
+        rounds: 'Số lượt',
+        avgScorePct: 'Điểm trung bình (%)',
+        avgLevel: 'Cấp độ trung bình',
+        yes: 'Có',
+        no: 'Không',
+      },
       backupTitle: 'Sao lưu',
       backupText:
         'Tạo một file chứa toàn bộ hồ sơ, sao, sticker, cài đặt và lịch sử chơi. File được lưu vào thư mục Tải xuống của máy.',

@@ -802,6 +802,89 @@ test.describe('Tab Thưởng (F15, TC-023)', () => {
 
 // ---------------------------------------------------------------- dữ liệu
 
+test.describe('Tab Dữ liệu – xuất CSV (TASK-10)', () => {
+  /** Đọc file CSV đơn giản (không có ô chứa dấu phẩy/xuống dòng trong dữ liệu thử): [dòng đầu “sep=,”, tiêu đề, …]. */
+  function readCsv(path: string): { bom: boolean; sep: string; lines: string[][] } {
+    const text = readFileSync(path, 'utf-8');
+    const bom = text.charCodeAt(0) === 0xfeff;
+    const all = text
+      .slice(bom ? 1 : 0)
+      .split('\r\n')
+      .filter((l) => l !== '');
+    return { bom, sep: all[0] ?? '', lines: all.slice(1).map((l) => l.split(',')) };
+  }
+
+  test('xuất lịch sử từng lượt và tổng hợp theo ngày của bé đang xem ra file .csv (UTF-8 có BOM, Excel đọc được)', async ({
+    page,
+  }) => {
+    const p = makeProfile('Bé Na');
+    await seedProfiles(page, [p]);
+    await seedRounds(page, p.id, [
+      mkRound(p.id, 'G1', 2, { score: 0.9, metrics: { rtMeanMs: 640, accuracy: 0.95 } }),
+      mkRound(p.id, 'G2', 1, { metrics: { timeSec: 30 }, benchmark: true, deviceClass: 'tablet' }),
+      mkRound(p.id, 'G1', 1, { score: 0.5, stars: 1, metrics: { rtMeanMs: 800 } }),
+    ]);
+    await page.goto(E2E_URL);
+    await openParent(page, 'data');
+    await expect(page.getByTestId('csv-section')).toContainText(p.name);
+
+    // lịch sử từng lượt
+    const [d1] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByTestId('csv-rounds').click(),
+    ]);
+    expect(d1.suggestedFilename()).toMatch(/^nhanhtay-lichsu-be-na-\d{8}\.csv$/);
+    const rounds = readCsv(await d1.path());
+    expect(rounds.bom).toBe(true);
+    expect(rounds.sep).toBe('sep=,'); // Excel (kể cả máy đặt dấu phân cách “;”) tách cột đúng
+    const [header, ...rows] = rounds.lines;
+    expect(header!.slice(0, 3)).toEqual([
+      vi.parent.data.csv.date,
+      vi.parent.data.csv.time,
+      vi.parent.data.csv.game,
+    ]);
+    expect(header).toContain(vi.parent.metrics.rtMeanMs);
+    expect(header).toContain(vi.parent.metrics.timeSec);
+    expect(rows).toHaveLength(3);
+    expect(rows.map((r) => r[2])).toEqual([
+      vi.games.G1!.name,
+      vi.games.G2!.name,
+      vi.games.G1!.name,
+    ]);
+    expect(rows[0]![6]).toBe('90'); // điểm %
+    expect(rows[1]![5]).toBe(vi.parent.data.csv.yes); // lượt bài đo
+    expect(rows[1]![9]).toBe(vi.parent.progress.devices.tablet);
+    await expect(page.getByTestId('data-message')).toContainText(d1.suggestedFilename());
+
+    // tổng hợp theo ngày
+    const [d2] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByTestId('csv-daily').click(),
+    ]);
+    expect(d2.suggestedFilename()).toMatch(/^nhanhtay-tonghop-be-na-\d{8}\.csv$/);
+    const daily = readCsv(await d2.path());
+    expect(daily.bom).toBe(true);
+    const [dHeader, ...dRows] = daily.lines;
+    expect(dHeader![0]).toBe(vi.parent.data.csv.date);
+    expect(dRows.length).toBeGreaterThanOrEqual(2); // ≥ 2 ngày/game có số liệu (lượt bài đo không tính vào tổng hợp)
+  });
+
+  test('chưa có lượt chơi nào: file chỉ có dòng tiêu đề, không lỗi; không có hồ sơ thì không hiện phần xuất', async ({
+    page,
+  }) => {
+    await seedProfiles(page, [makeProfile('An')]);
+    await page.goto(E2E_URL);
+    await openParent(page, 'data');
+    const [d] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByTestId('csv-rounds').click(),
+    ]);
+    const csv = readCsv(await d.path());
+    expect(csv.sep).toBe('sep=,');
+    expect(csv.lines).toHaveLength(1); // chỉ có dòng tiêu đề
+  });
+});
+
 test.describe('Tab Dữ liệu (F10, TC-025)', () => {
   test('sao lưu ra file → xóa dữ liệu trình duyệt → mở app → khôi phục từ file: mọi thứ quay lại (TC-025)', async ({
     page,

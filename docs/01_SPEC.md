@@ -284,7 +284,7 @@ Sticker: 40 hình SVG tự vẽ, chủ đề động vật – trái cây – v�
 | Cài đặt (F07, F11, F12, F17) | Thời gian/ngày, hộp quà tối đa/ngày, âm thanh/nhạc/rung, cho bé chọn độ khó; từng game: Tự động (min–max) / Cố định (cấp) + tùy chọn riêng; G6: lớp, chủ đề M01–M14 |
 | Hồ sơ (F02) | Thêm/sửa/xóa (xác nhận 2 bước, gõ tên để xóa) |
 | Thưởng (F15) | Tặng +5/+10/+15 phút hôm nay; tặng hộp quà (lý do: Học tốt / Ngoan / Giúp việc nhà / Khác) |
-| Dữ liệu (F10, NF07) | Sao lưu → file `nhanhtay-backup-YYYYMMDD.json` (Blob + `a[download]`, lưu vào thư mục Tải xuống của máy); Khôi phục (chọn file → xem trước số hồ sơ/lượt → xác nhận ghi đè); cảnh báo xóa dữ liệu trình duyệt/ẩn danh; nhắc nếu > 14 ngày chưa sao lưu; phiên bản app; ghi chú R13 (khi nào nên đi khám) |
+| Dữ liệu (F10, NF07) | **Xuất CSV (TASK-10)** của hồ sơ đang xem: `nhanhtay-lichsu-<tên>-YYYYMMDD.csv` (từng lượt, mỗi chỉ số một cột) và `nhanhtay-tonghop-<tên>-YYYYMMDD.csv` (tổng hợp theo ngày); UTF-8 có BOM + dòng `sep=,` để Excel/Google Trang tính đọc đúng tiếng Việt và tách cột. Sao lưu → file `nhanhtay-backup-YYYYMMDD.json` (Blob + `a[download]`, lưu vào thư mục Tải xuống của máy); Khôi phục (chọn file → xem trước số hồ sơ/lượt → xác nhận ghi đè); cảnh báo xóa dữ liệu trình duyệt/ẩn danh; nhắc nếu > 14 ngày chưa sao lưu; phiên bản app; ghi chú R13 (khi nào nên đi khám) |
 
 Khóa PH (F08): phép nhân `a × b` với a ∈ [12, 49], b ∈ [3, 9]; bàn phím số trên màn hình; sai 3 lần → khóa 30s.
 

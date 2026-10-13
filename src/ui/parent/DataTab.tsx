@@ -2,19 +2,19 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { vi } from '../../i18n/vi';
 import { backupOverdue, parseBackup, type BackupFile, type BackupPreview } from '../../app/backup';
-import { parentCreateBackup, parentRestore } from '../../app/parentStore';
+import { parentCreateBackup, parentCreateCsv, parentRestore } from '../../app/parentStore';
 import { applyUpdate } from '../../app/pwa';
 import { goHome } from '../../app/router';
 import { appState, deviceClass, showToast, updateAvailable } from '../../app/store';
 import { APP_VERSION } from '../../app/version';
 import { Button } from '../components/Button';
-import { fmtDate, fmtDayKey, parentProfileId } from './state';
+import { fmtDate, fmtDayKey, parentProfileId, selectedParentProfile } from './state';
 
 type Message = { kind: 'ok' | 'error'; text: string };
 
 /** Tải một file văn bản về máy (Blob + a[download]) – trên Android Chrome vào thư mục Tải xuống. */
-function downloadText(name: string, text: string): void {
-  const blob = new Blob([text], { type: 'application/json' });
+function downloadText(name: string, text: string, type = 'application/json'): void {
+  const blob = new Blob([text], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -50,6 +50,14 @@ export function DataTab() {
     const { name, text } = parentCreateBackup();
     downloadText(name, text);
     setMessage({ kind: 'ok', text: vi.parent.data.backupDone(name) });
+  };
+
+  const csvProfile = selectedParentProfile.value;
+  const doCsv = (kind: 'rounds' | 'daily') => {
+    if (!csvProfile) return;
+    const { name, text } = parentCreateCsv(csvProfile, kind);
+    downloadText(name, text, 'text/csv;charset=utf-8');
+    setMessage({ kind: 'ok', text: vi.parent.data.csvDone(name) });
   };
 
   const onFile = async (e: Event) => {
@@ -156,6 +164,23 @@ export function DataTab() {
             </Button>
           </div>
         </div>
+      )}
+
+      {csvProfile && (
+        <section aria-labelledby="csv-title" data-testid="csv-section">
+          <h2 id="csv-title" class="parent-h2">
+            {vi.parent.data.csvTitle}
+          </h2>
+          <p class="parent-note">{vi.parent.data.csvText(csvProfile.name)}</p>
+          <div class="parent-actions">
+            <Button variant="secondary" onClick={() => doCsv('rounds')} data-testid="csv-rounds">
+              {vi.parent.data.csvRoundsButton}
+            </Button>
+            <Button variant="secondary" onClick={() => doCsv('daily')} data-testid="csv-daily">
+              {vi.parent.data.csvDailyButton}
+            </Button>
+          </div>
+        </section>
       )}
 
       {message && (
