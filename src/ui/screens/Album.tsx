@@ -410,6 +410,8 @@ export function Album() {
       </div>
 
       <section id="album-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+        {/* Tiêu đề cấp 2 (ẩn) để thứ bậc h1 → h2 → h3 không nhảy cấp ở các tab có tên thẻ là h3 (axe: heading-order) */}
+        <h2 class="visually-hidden">{vi.album.tabs[tab]}</h2>
         {tab === 'stickers' && <StickersTab p={p} />}
         {tab === 'outfits' && <OutfitsTab p={p} />}
         {tab === 'backgrounds' && <BackgroundsTab p={p} />}

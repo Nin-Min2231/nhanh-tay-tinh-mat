@@ -38,6 +38,19 @@
   font-weight: 800;
 }
 
+/* Chỉ trình đọc màn hình thấy (tiêu đề cấp 2 không cần hiện ra) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---------- Nút “kẹo” ---------- */
 .btn {
   display: inline-flex;

@@ -284,6 +284,44 @@ test.describe('Accessibility – vùng chạm, giảm chuyển động, tương 
     await page.emulateMedia({ reducedMotion: 'reduce' }); // vừa kiểm reduced-motion vừa đo màu ở trạng thái tĩnh
   });
 
+  test('Album: thứ bậc tiêu đề không nhảy cấp (h1 → h2 → h3) ở cả 4 tab (axe heading-order)', async ({
+    page,
+  }) => {
+    const p = makeProfile('An', {
+      totalStars: 310,
+      unlocked: [
+        'frame-rainbow',
+        'outfit-pilot',
+        'bg-candy',
+        'sound-percussion',
+        'outfit-hero',
+        'bg-sea',
+        'mascot-owl',
+        'badge-gold',
+      ],
+    });
+    await seedProfiles(page, [p]);
+    await page.goto(E2E_URL);
+    await page.getByTestId('open-album').click();
+    for (const tab of ['stickers', 'outfits', 'backgrounds', 'special']) {
+      await page.getByTestId(`tab-${tab}`).click();
+      const levels = await page.evaluate(() =>
+        [...document.querySelectorAll('main h1, main h2, main h3, main h4')].map((h) =>
+          Number(h.tagName.slice(1)),
+        ),
+      );
+      expect(levels[0], `${tab}: tiêu đề đầu tiên phải là h1`).toBe(1);
+      expect(levels.length, `${tab}: có tiêu đề h1 + tiêu đề tab (h2)`).toBeGreaterThanOrEqual(2);
+      levels.forEach((level, i) => {
+        if (i === 0) return;
+        expect(
+          level - (levels[i - 1] ?? 1),
+          `${tab}: tiêu đề thứ ${i + 1} nhảy cấp`,
+        ).toBeLessThanOrEqual(1);
+      });
+    }
+  });
+
   test('hồ sơ: tạo hồ sơ đầu tiên', async ({ page }) => {
     const issues: Issues = { touch: [], motion: [], contrast: [] };
     await page.goto(E2E_URL);
