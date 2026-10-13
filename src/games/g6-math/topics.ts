@@ -23,6 +23,11 @@ export interface TopicDef {
   inRange(c: Core): boolean;
   /** Cho phép dạng tìm số thiếu (`? + 8 = 15`). */
   canMiss: boolean;
+  /**
+   * Số thiếu lớn nhất cho phép: nếu số bị ẩn lớn hơn mức này thì câu quay về dạng thường (`a op b = ?`).
+   * M11 giới hạn 99 để không ra `? : 5 = 57` (đáp án 285).
+   */
+  maxMissing?: number;
   /** Luôn là dạng tìm số thiếu (M13). */
   forceMissing?: boolean;
 }
@@ -376,6 +381,8 @@ const GEN: Record<string, (rng: Rng, easy: boolean) => Core> = {
 };
 
 const NO_MISS = new Set(['M03', 'M13', 'M14']);
+/** Giới hạn số thiếu theo chủ đề (xem TopicDef.maxMissing). */
+const MAX_MISSING: Record<string, number> = { M11: 99 };
 
 export const TOPICS: Record<string, TopicDef> = Object.fromEntries(
   Object.keys(GEN).map((code) => [
@@ -386,6 +393,7 @@ export const TOPICS: Record<string, TopicDef> = Object.fromEntries(
       inRange: (c: Core) => isConsistent(c) && (RANGE[code] as (c: Core) => boolean)(c),
       canMiss: !NO_MISS.has(code),
       forceMissing: code === 'M13',
+      maxMissing: MAX_MISSING[code],
     } satisfies TopicDef,
   ]),
 );

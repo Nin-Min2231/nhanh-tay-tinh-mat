@@ -230,7 +230,7 @@
 | M14 | 3 | Gấp / giảm một số lần | Gấp 4 lên 3 lần = ? |  |
 
 **Độ lớn số**: cấp 1–3 dùng “nửa dễ” của chủ đề (số hạng nhỏ hơn, vd M06 chỉ cộng có nhớ với số hạng ≤ 50); cấp 4+ dùng toàn bộ phạm vi.
-**Tìm số thiếu**: từ cấp 8, một phần câu đổi dạng `? + 8 = 15`, `4 × ? = 28`.
+**Tìm số thiếu**: từ cấp 8, một phần câu đổi dạng `? + 8 = 15`, `4 × ? = 28`. **M11 giới hạn (TASK-10):** chỉ ra dạng tìm số thiếu khi số cần tìm ≤ 99; nếu lớn hơn (vd `? : 5 = 57` → 285) thì hỏi dạng thường `285 : 5 = ?`.
 **M03 So sánh**: đáp án luôn là 3 quả `>`, `<`, `=`.
 
 **Đáp án nhiễu** (bắt buộc hợp lý, không đoán mò được): ứng viên = đáp án ±1, ±2, ±10 (lỗi nhớ), đảo chữ số, kết quả của phép tính ngược (cộng ↔ trừ), với phép nhân: a × (b ± 1). Lọc: ≥ 0, khác nhau, khác đáp án; thiếu thì bổ sung số gần. Vị trí đáp án đúng ngẫu nhiên.
@@ -278,7 +278,7 @@ Từ cấp 5, ô “?” có thể ở giữa dãy.
 
 **Đáp án nhiễu**: khác đáp án đúng **đúng 1 thuộc tính** (để buộc quan sát), không trùng nhau; bộ kiểm tra bảo đảm chỉ 1 đáp án thỏa quy luật.
 
-**Phản hồi sai**: tô sáng đơn vị lặp lại / hiện mũi tên “+2” giữa các số, rồi cho thử lại (cấp 1–5, đúng lần 2 được ½ điểm) hoặc hiện đáp án (cấp 6+).
+**Phản hồi sai**: tô sáng đơn vị lặp lại / hiện mũi tên “+2” giữa các số, rồi cho thử lại (cấp 1–5, đúng lần 2 được ½ điểm) hoặc hiện đáp án (cấp 6+). **Cấp 5 (mẫu 2 thuộc tính)** có lời giải thích riêng (TASK-10): hai thanh – thanh dưới nhóm theo chu kỳ **màu**, thanh trên nhóm theo chu kỳ **hình** (nhóm kề nhau đổi nét liền/nét sọc) – kèm câu “Thanh dưới: màu lặp mỗi N ô. Thanh trên: hình lặp mỗi M ô.”.
 
 **score** = tổng điểm câu / 8
 

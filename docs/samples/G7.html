@@ -208,6 +208,39 @@ h2{margin:28px 0 10px;padding:6px 14px;border:var(--border);border-radius:999px;
   background: #fff0d9;
   box-shadow: 0 6px 0 #ff8a3d;
 }
+/* Cấp 5 (mẫu 2 thuộc tính): thanh dưới = nhóm lặp của màu, thanh trên = nhóm lặp của hình.
+   Nhóm kề nhau đổi giữa nét liền và nét sọc nên phân biệt được cả khi không thấy màu. */
+.g7-cell[class*='ds-']::before,
+.g7-cell[class*='dc-']::after {
+  content: '';
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  height: 7px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+}
+.g7-cell[class*='ds-']::before {
+  top: -14px;
+}
+.g7-cell[class*='dc-']::after {
+  bottom: -14px;
+}
+.g7-cell.ds-a::before {
+  background: #3ddc6e;
+}
+.g7-cell.ds-b::before {
+  background: repeating-linear-gradient(135deg, #3ddc6e 0 4px, #ffffff 4px 8px);
+}
+.g7-cell.dc-a::after {
+  background: #29a3f0;
+}
+.g7-cell.dc-b::after {
+  background: repeating-linear-gradient(135deg, #29a3f0 0 4px, #ffffff 4px 8px);
+}
+.g7-stage.is-explain .g7-seq:has(.ds-a) {
+  row-gap: 34px;
+}
 .g7-cell.has-step::before {
   content: attr(data-step);
   position: absolute;

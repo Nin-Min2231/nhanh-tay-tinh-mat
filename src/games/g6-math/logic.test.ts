@@ -168,6 +168,41 @@ describe('G6 đáp án và đáp án nhiễu', () => {
     }
   }
 
+  it('M11: số thiếu không bao giờ quá 99 (không ra `? : 5 = 57` → 285), nhưng vẫn có dạng tìm số thiếu', () => {
+    expect(TOPICS.M11!.maxMissing).toBe(99);
+    let missing = 0;
+    let big = 0;
+    const kinds = new Set<string>();
+    for (let seed = 1; seed <= 4000; seed++) {
+      const rng = mulberry32(seed * 7919);
+      const core = TOPICS.M11!.gen(rng, seed % 3 === 0);
+      const q = buildQuestion(rng, 'M11', core, { optionCount: 4, missingRatio: 0.4 });
+      if (q.hidden === 'r') continue;
+      missing++;
+      kinds.add(`${core.op}-${q.hidden}`);
+      if (q.answer > 99) big++;
+      expect(q.options.filter((o) => satisfies(q, o))).toHaveLength(1); // vẫn đúng 1 đáp án
+    }
+    expect(big).toBe(0);
+    expect(missing).toBeGreaterThan(300); // vẫn xuất hiện thường xuyên (≈ 40% × phần câu còn được ẩn)
+    // vẫn đủ các dạng: nhân (ẩn thừa số thứ nhất/thứ hai), chia (ẩn số chia; ẩn số bị chia khi nó ≤ 99, vd `22 : 2`)
+    for (const k of ['mul-a', 'mul-b', 'div-b']) expect(kinds.has(k), k).toBe(true);
+  });
+
+  it('chủ đề khác M11 không bị giới hạn số thiếu (vd M09 vẫn ra số thiếu 3 chữ số)', () => {
+    expect(TOPICS.M09!.maxMissing).toBeUndefined();
+    let big = 0;
+    for (let seed = 1; seed <= 600; seed++) {
+      const rng = mulberry32(seed);
+      const q = buildQuestion(rng, 'M09', TOPICS.M09!.gen(rng, false), {
+        optionCount: 4,
+        missingRatio: 0.4,
+      });
+      if (q.hidden !== 'r' && q.answer > 99) big++;
+    }
+    expect(big).toBeGreaterThan(50);
+  });
+
   it('dạng tìm số thiếu xuất hiện đúng tỷ lệ ~30% (M05, 3000 câu)', () => {
     let missing = 0;
     const total = 3000;

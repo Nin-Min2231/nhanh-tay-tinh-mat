@@ -111,6 +111,10 @@ export function buildQuestion(
   if (core.op !== 'cmp' && def) {
     if (def.forceMissing || (def.canMiss && !core.word && rng() < params.missingRatio)) {
       hidden = rng() < 0.5 ? 'a' : 'b';
+      // số thiếu quá lớn (vd M11 `? : 5 = 57` → 285) thì hỏi dạng thường `a op b = ?` (không đổi sang số còn lại
+      // để tỷ lệ các dạng khác – vd tìm số chia – không bị lệch)
+      const limit = def.maxMissing;
+      if (limit !== undefined && hiddenValue(core, hidden) > limit) hidden = 'r';
     }
   }
   const base = { topic, core, hidden, key: factKey(core), retry };
