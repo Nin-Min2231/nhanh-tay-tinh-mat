@@ -105,12 +105,20 @@ export function dailyCsv(daily: readonly DailyAggregate[]): string {
   return buildCsv(header, rows);
 }
 
+// Dấu kết hợp Unicode (U+0300–U+036F) và chữ có gạch ngang (U+0110, U+0111): dựng bằng mã ký tự để mã nguồn
+// không chứa chữ tiếng Việt cứng ngoài vi.ts (quy tắc 16).
+const COMBINING_MARKS = new RegExp(
+  `[${String.fromCharCode(0x300)}-${String.fromCharCode(0x36f)}]`,
+  'g',
+);
+const D_STROKE = new RegExp(`[${String.fromCharCode(0x110, 0x111)}]`, 'g');
+
 /** Tên bé → chữ thường không dấu, chỉ a–z0–9 và gạch ngang (tối đa 20 ký tự); rỗng → “be”. */
 export function slugName(name: string): string {
   const s = name
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/gi, 'd')
+    .replace(COMBINING_MARKS, '')
+    .replace(D_STROKE, 'd')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
