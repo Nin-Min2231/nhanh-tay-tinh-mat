@@ -267,6 +267,8 @@ function afterRound(g: GameProgress, score: number, countsForAdaptive: boolean):
 
 Sticker: 40 hình SVG tự vẽ, chủ đề động vật – trái cây – vũ trụ – phương tiện. Đặt tên `stk-01` … `stk-40`, độ hiếm khai báo trong `rewards.ts`.
 
+Phần thưởng mở khóa theo sao (v0.9.3): Khung avatar Cầu Vồng và Huy hiệu Vàng **tự áp dụng**; trang phục, hình nền, **bộ âm thanh** và **linh vật thứ 2** **không tự mặc khi mở khóa** – bé (hoặc phụ huynh) chọn ở Album (trang phục / hình nền ở tab của chúng; **bộ âm thanh + linh vật ở tab Đặc biệt**, có nút “Nghe thử” và “Dùng / Đang dùng”; màn Kết quả và hộp quà nhắc “Vào Album → Đặc biệt” khi vừa mở khóa). Lựa chọn lưu **theo từng hồ sơ** (`outfitId`, `backgroundId`, `soundSetId`, `mascotId`; mục 5). **Trang phục chỉ dành cho Sóc Bo** (Cú Mèo chưa có trang phục). Id lạ hoặc phần thưởng chưa mở khóa → tự về mặc định (Sóc Bo / âm gốc), không báo lỗi.
+
 ## 8. Thời gian chơi (F07)
 
 - Giới hạn theo **hồ sơ / ngày**: `dailyMinutes` (mặc định 15, chỉnh 5–60) + `bonusMs` PH tặng hôm nay.
@@ -307,11 +309,12 @@ Khóa PH (F08): phép nhân `a × b` với a ∈ [12, 49], b ∈ [3, 9]; bàn ph
 
 ## 12. Âm thanh, rung, đồ họa
 
-- **Linh vật**: “Sóc Bo” – sóc nhỏ màu cam, đuôi to, mắt tròn; SVG tự vẽ với 5 biểu cảm (chào, vui, cổ vũ, ngạc nhiên, ngủ). Linh vật thứ 2 “Cú Mèo Thông Thái” mở khóa ở 230 sao.
+- **Linh vật**: “Sóc Bo” – sóc nhỏ màu cam, đuôi to, mắt tròn; SVG tự vẽ với 5 biểu cảm (chào, vui, cổ vũ, ngạc nhiên, ngủ). Linh vật thứ 2 “Cú Mèo Thông Thái” (SVG tự vẽ, cũng 5 biểu cảm, kính tròn) mở khóa ở 230 sao và **dùng được từ v0.9.3**: bé chọn ở Album → Đặc biệt; khi chọn, Cú thay Sóc ở Home, Nghỉ, Kết quả, G6, G7 và các lớp phủ (mục 7).
 - **Bảng màu** (rực rỡ, nhiều tông nổi bật; chữ luôn tối `#263238` trên nền sáng/vừa để đạt tương phản AA; màu luôn kèm hình dạng): nền chuyển sắc trời → kem → hồng nhạt `#BDE9FF → #FFF1C7 → #FFD9EC`; xanh trời `#29B6F6`, xanh lá `#3DDC6E`, vàng `#FFD93D`, cam `#FF8A3D`, hồng `#FF5FA2`, tím `#8E6CF0`, ngọc `#18C9B9`, đỏ `#FF4D5E`; mỗi màu có bản nhạt (`*-soft`) cho nền thẻ. Mỗi game có tông riêng trên Home: G1 cam, G3 vàng, G5 hồng, G2 tím, G4 xanh trời, G6 xanh lá, G7 ngọc. Nút chính dạng “kẹo” (chuyển sắc cam + bóng đổ). Chi tiết ở `src/ui/theme.css`.
 - **G1 mã hóa màu + hình**: xanh = tròn + mặt cười; đỏ = vuông + dấu ✕; vàng = tam giác + dấu !; nâu = thoi + dấu ~.
 - **Âm thanh**: Web Audio tổng hợp: chạm đúng (ding cao), sai (bụp nhỏ, trầm nhẹ – không chê), sao (arpeggio), lên cấp (fanfare ngắn), 9 nốt cho G4/G5 (âm giai ngũ cung C D E G A).
   Mở khóa AudioContext ở lần chạm đầu (`resume()` trong `pointerdown`).
+  **Bộ âm thanh (v0.9.3)** là dữ liệu thuần (`app/audioSets.ts`): bộ gốc giữ nguyên các âm trên; bộ **Nhạc Cụ Gõ** (mở khóa ở 80 sao) dùng tiếng đàn gõ / mộc cầm / tam giác trên cùng âm giai ngũ cung, **sai = tiếng “cộp” gỗ nhẹ** (vẫn không chê). Chọn ở Album → Đặc biệt, lưu theo hồ sơ (`soundSetId`).
 - **Rung**: `navigator.vibrate(30)` đúng, `[15,40,15]` sai (điện thoại). Tablet Samsung thường không có mô-tơ rung → **luôn** kèm hiệu ứng lắc hình (CSS shake 150ms) trên mọi thiết bị.
 - **Hiệu ứng**: sao bay, confetti khi 3 sao/lên cấp; tôn trọng `prefers-reduced-motion` (giảm hạt).
 - Cỡ chữ: thân ≥ 18px, nút ≥ 22px, tiêu đề ≥ 28px.

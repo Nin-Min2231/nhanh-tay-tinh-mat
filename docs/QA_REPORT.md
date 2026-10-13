@@ -1,6 +1,6 @@
 # QA_REPORT – TASK-09 (kiểm thử tự động & rà soát chất lượng)
 
-> Phiên bản app: **0.9.1** · Ngày: 2026-10-11 · Làm trên nhánh `claude/handover-task-continuation-aaaede` (xuất phát từ `main` = `cd9aa62`, v0.9.0).
+> Phiên bản app khi viết báo cáo: **0.9.1** · Ngày: 2026-10-11 · Làm trên nhánh `claude/handover-task-continuation-aaaede` (xuất phát từ `main` = `cd9aa62`, v0.9.0). *Các đoạn “Cập nhật sau TASK-10” bên dưới bổ sung số liệu cho **0.9.2** và **0.9.3** (2026-10-13).*
 > Báo cáo này viết cho chủ dự án: phần 1 là kết luận, phần 2 là bảng 35 test case, phần 8 là **việc anh cần tự thử trên máy thật**.
 
 ## 1. Kết luận ngắn
@@ -16,6 +16,8 @@
 | Rủi ro còn lại | Mục 8 – chủ yếu là việc cần máy thật (cài PWA, 2 ngón thật, FPS thật, Samsung Internet) |
 
 **Cập nhật sau TASK-10 (v0.9.2):** unit **529** pass (+6) · e2e **417 pass + 15 bỏ qua có chủ ý** (432 test; `zoom.spec.ts` chỉ chạy ở khung `phone`, `home-layout.spec.ts` chỉ ở khung phù hợp), **0 lỗi, 0 chập chờn** (một lượt chạy bị 3 test hỏng vì **máy ngủ giữa chừng**, đã chạy lại toàn bộ pass) · 35 TC không đổi kết quả · chi tiết ở `docs/PROGRESS.md` (nhật ký TASK-10).
+
+**Cập nhật sau TASK-10 đợt 2 (v0.9.3, 2026-10-13):** unit **569** pass, 1 bỏ qua (+40 so với 0.9.2) · e2e **474 pass + 15 bỏ qua có chủ ý = 489 test** (từ 432: +57, gồm `special.spec.ts` mới), **0 lỗi, 0 chập chờn** (12,6 phút, `--workers=3`; lượt đủ bộ đầu tiên trên mã cuối có **1 test đỏ giả** – test xuất CSV ở khung tablet dọc: giờ gieo dữ liệu lấy từ một bộ đếm dùng chung nên hai lượt cùng ngày đảo thứ tự khi bộ đếm quay vòng (lỗi của test, không phải của app); đã sửa test (`aa0d1d3`; chạy lặp 10 lần × 3 khung hình: 30/30 pass) rồi chạy lại đủ bộ: xanh hết) · 35 TC không đổi kết quả (TC-028 vẫn pass sau khi bóng G1 chuyển sang sprite) · gói chính **121,9 KB gzip** (0.9.2: 116,9) · FPS G1 vẫn 60 (mục 6) · Lighthouse + axe đã chạy lại (mục 5) · chi tiết ở `docs/PROGRESS.md` (nhật ký TASK-10 đợt 2).
 
 **Có thể cho bé dùng bản 0.9.1 không?** Về mặt kiểm thử tự động: có – không còn test đỏ, không có lỗi chặn. Trước khi giao cho bé dùng lâu dài nên làm hết mục 8 (đặc biệt: sao lưu → khôi phục thật, cài PWA, thử G5/G3 trên Galaxy Tab).
 
@@ -76,6 +78,7 @@ Chú thích loại: **Tự động** = test chạy được hoàn toàn bằng m
 | 7 | Hiệu năng | G5 chậm ở màn hình lớn khi CPU yếu (CPU ×4, tablet dọc: **29 fps**) | Mỗi khung hình tô lại 4 dải gradient cao ~1000px | Nền các làn vẽ **một lần** vào canvas riêng nằm dưới (vẽ lại khi đổi kích thước) | CPU ×4: điện thoại 57 → **60**, tablet ngang 40 → **59**, tablet dọc 29 → **59 fps**; so điểm ảnh trước/sau: lệch tối đa 2/255 |
 | 8 | Lỗi nhỏ | G5: lúc đếm ngược 3-2-1 **không thấy làn nào** (canvas trống) dù mã ghi “hiện sẵn làn” | Lần đặt lại kích thước đầu tiên xóa canvas mà không vẽ lại | Đã hết nhờ canvas nền ở #7 | Ảnh chụp trước/sau |
 | 9 | Accessibility | Nút hộp quà ở Home: tên truy cập (“Con có 1 hộp quà đang chờ!”) không chứa chữ hiển thị (WCAG 2.5.3, axe: mức nghiêm trọng) | `aria-label` khác chữ hiển thị | Có chữ hiển thị thì không đặt `aria-label` (trình duyệt lấy tên từ nội dung); biến thể chỉ có biểu tượng vẫn giữ | axe-core: hết vi phạm này |
+| 10 | Accessibility (v0.9.3) | axe-core 4.14 chạy lại ở 0.9.3 báo mức vừa **`heading-order`** ở Album › **Trang phục** và **Hình nền** (tên thẻ là `h3` ngay sau `h1`, nhảy qua `h2`) | Hai tab này không có tiêu đề nhóm nên tên thẻ nối thẳng vào tiêu đề trang (có từ trước đợt này; tab Đặc biệt có tiêu đề nhóm `h2` nên không bị) | Mỗi tab Album có một `h2` ẩn (`.visually-hidden`) trùng tên tab | Test e2e mới ở `a11y.spec.ts` kiểm thứ bậc tiêu đề ở cả 4 tab (**đỏ khi bỏ bản sửa**); axe chạy lại: 0 vi phạm / 46 lượt |
 
 ## 4. Rà soát 17 quy tắc (CLAUDE.md mục 5)
 
@@ -112,7 +115,10 @@ Kiểm tự động (`tests/e2e/a11y.spec.ts`, 3 khung hình, bật `prefers-red
 - **Giảm chuyển động:** 0 hoạt ảnh lặp vô hạn đang chạy (trước đó 31).
 - **Tương phản chữ/nền (WCAG AA, tính từ màu thật đang hiển thị, nền gradient lấy trường hợp xấu nhất):** 0 vi phạm. Bộ quét đo **4–151 chữ mỗi màn hình** (có test chống “xanh giả”); sát ngưỡng nhất: chữ lớn 3,5:1 (yêu cầu 3:1), chữ thường 4,6:1 (yêu cầu 4,5:1). Chữ “muted” `#4d6270` trên trắng ≈ 6,4:1.
 - **axe-core 4.14** (chạy **một lần** bằng gói tải riêng, **không thêm vào dự án**) trên các màn hình chính ở 360×740 và 1280×800: **42 lượt quét** (21 màn hình × 2 khung hình) lúc đầu có **2 loại vi phạm**: (1) `meta-viewport` – `user-scalable=no` (ở cả 42 lượt, mức vừa; **chờ anh quyết định**, xem dưới); (2) `label-content-name-mismatch` mức nghiêm trọng ở **nút hộp quà trên Home** (tên đọc cho người khiếm thị không chứa chữ “Hộp quà” hiển thị) → **đã sửa**. Sau khi sửa chỉ còn mục (1).
-- **~~Đã biết, chưa đổi~~ → đã xử lý ở TASK-10 (v0.9.2):** viewport từng có `user-scalable=no` (từ TASK-01, để bé không lỡ phóng to khi chạm nhanh) nên Lighthouse/axe trừ điểm. Nay viewport **cho phóng to bằng 2 ngón** ở mọi màn trừ màn chơi: cả màn chơi (`.play`) có `touch-action: none`; nếu bé phóng to ở màn khác rồi vào game thì game **tự tạm dừng và nhắc chụm 2 ngón để thu nhỏ**. Kiểm bằng cử chỉ 2 ngón thật (CDP) ở `tests/e2e/zoom.spec.ts` và test quét viewport ở `src/qa/rules.test.ts`. Chưa chạy lại axe-core/Lighthouse.
+- **~~Đã biết, chưa đổi~~ → đã xử lý ở TASK-10 (v0.9.2):** viewport từng có `user-scalable=no` (từ TASK-01, để bé không lỡ phóng to khi chạm nhanh) nên Lighthouse/axe trừ điểm. Nay viewport **cho phóng to bằng 2 ngón** ở mọi màn trừ màn chơi: cả màn chơi (`.play`) có `touch-action: none`; nếu bé phóng to ở màn khác rồi vào game thì game **tự tạm dừng và nhắc chụm 2 ngón để thu nhỏ**. Kiểm bằng cử chỉ 2 ngón thật (CDP) ở `tests/e2e/zoom.spec.ts` và test quét viewport ở `src/qa/rules.test.ts`. (Đã chạy lại axe-core + Lighthouse ở v0.9.3: xem ngay dưới.)
+- **Cập nhật TASK-10 đợt 2 (v0.9.3) – Lighthouse + axe chạy lại sau khi bỏ `user-scalable=no`** (bản build giống GitHub Pages: `BASE_PATH=/nhanh-tay-tinh-mat/`, `vite preview`, công cụ cài **ngoài dự án** trong thư mục tạm, không đụng `package.json`):
+  - **Lighthouse 13.5.0** (di động, 4G chậm mô phỏng, lần tải đầu – màn tạo hồ sơ): Performance **83–84** (2 lần đo) · **Accessibility 100** (TASK-08: 93; mục `meta-viewport` đã đạt nhờ bỏ `user-scalable=no`) · Best Practices **81** (chỉ còn “không dùng HTTPS” vì đo trên localhost; bản Pages có HTTPS) · SEO **60** (chỉ còn `is-crawlable` vì cố ý `noindex`). Lighthouse 13 có thêm nhóm “Agentic Browsing”: 100.
+  - **axe-core 4.14.0**: 46 lượt quét (23 màn × 2 khung 360×740 và 1280×800: tạo hồ sơ, Home có chấm nhắc sao lưu (Sóc Bo), Home với Cú Mèo + Nhạc Cụ Gõ, Album 4 tab, Giới thiệu 7 game, đang chơi G2, tạm dừng, khóa phụ huynh, 6 tab khu phụ huynh). Lượt đầu có **1 loại vi phạm mức vừa: `heading-order`** (tên thẻ `h3` ngay sau `h1` ở Album › Trang phục và Hình nền, 4 lượt) → **đã sửa** (mỗi tab Album có tiêu đề `h2` ẩn; test e2e mới kiểm thứ bậc tiêu đề ở cả 4 tab, và đã thử bỏ bản sửa thì test đỏ); chạy lại: **0 vi phạm / 46 lượt**. Mục `meta-viewport` (còn lại của TASK-09) không còn xuất hiện.
 
 ## 6. Hiệu năng và kích thước
 
@@ -153,6 +159,16 @@ Kiểm tự động (`tests/e2e/a11y.spec.ts`, 3 khung hình, bật `prefers-red
 
 Cả 18 tổ hợp: **60 fps, 0% khung > 20 ms**. Đo thêm riêng G3 với CPU chậm hơn nữa: **×6 và ×8 vẫn 60 fps** ở tablet ngang và tablet dọc (main thread bận 47–53% ở ×6, 63–65% ở ×8) và điện thoại ×4 60 fps (bận 30–34%). Kết luận: **không có điểm nghẽn riêng của G3 trong mã** (ở ×4 G3 chiếm main thread 30–37%, hơn G1 khoảng 5–12 điểm phần trăm và gần mức G5 24–30%), nên **không sửa game**. Lưu ý: GPU Intel Iris Xe mạnh hơn GPU của Galaxy Tab dòng A rất nhiều, nên đây là bằng chứng “mã không lãng phí”, **không thay được số đo thật** trên máy anh (`?debug=1`).
 
+**Cập nhật TASK-10 đợt 2 (v0.9.3) – đo lại G1 sau khi bóng/khối chuyển sang sprite bóng bẩy** (`npm run perf -- --gpu --games=G1`: cùng Chrome 155 có GPU, bản build thật, cấp 10, 6 giây × 2 lượt; cột “bận” = % thời gian main thread làm việc; trong ngoặc là số của 0.9.2 để so):
+
+| Khung hình | G1: CPU thường (fps · bận) | G1: CPU ×4 (fps · bận) |
+|---|---|---|
+| Điện thoại 360×740 | 60,1 · 5% (0.9.2: 60,1 · 5%) | 60,2 · 26% (60,1 · 21%) |
+| Tablet ngang 1280×800 | 60,1 · 5% (60,1 · 4%) | 60,1 · 28% (60,2 · 25%) |
+| Tablet dọc 800×1280 | 60,2 · 5% (60,2 · 4%) | 60,1 · 30% (60,2 · 26%) |
+
+Cả 6 tổ hợp: **60 fps, 0% khung > 20 ms** (p99 ≈ 17 ms, lâu nhất 17,5 ms). Main thread bận tăng nhẹ ở CPU ×4 (+3 đến +5 điểm phần trăm; hình bóng chi tiết hơn) nhưng vẫn rất xa giới hạn → **không cần tối ưu thêm**. G3 và G5 không đổi mã ở 0.9.3 nên không đo lại (số ở trên của 0.9.2 vẫn đúng). Vẫn cần xem FPS thật bằng `?debug=1` trên Galaxy Tab.
+
 ## 7. Độ bền dữ liệu
 
 - Đọc `ntm.rounds.*`, `ntm.daily.*`, `ntm.state` và file sao lưu đều qua `validate.ts` (mục 3 #4).
@@ -169,11 +185,12 @@ Cả 18 tổ hợp: **60 fps, 0% khung > 20 ms**. Đo thêm riêng G3 với CPU 
 | 4 | Vuốt cử chỉ Quay lại của Android khi đang chơi và ở Home; chia đôi màn hình/cửa sổ nổi trên Galaxy Tab | Mô phỏng bằng `page.goBack()` và đổi cỡ cửa sổ | TC-033, 034 |
 | 5 | Tablet Samsung: chạm bóng đỏ G1 → khung lắc + âm “bụp” | Mô phỏng chỉ kiểm không gọi rung | TC-035 |
 | 6 | Chụp màn hình G1 cấp ≥ 8, chuyển ảnh đen trắng (hoặc bật bộ lọc thang xám của Android) | Mô phỏng đọc hình bóng từ canvas | TC-028 |
-| 7 | Bật `?debug=1` trên máy thật xem FPS G1/G3/G5 (G3 đã đo lại ở TASK-10 bằng Chrome có GPU: 60 fps tới CPU ×8) | GPU máy dev mạnh hơn nhiều so với Galaxy Tab dòng A; chỉ máy thật mới cho số cuối cùng | NF Hiệu năng |
+| 7 | Bật `?debug=1` trên máy thật xem FPS G1/G3/G5 (G3 đã đo lại ở TASK-10 bằng Chrome có GPU: 60 fps tới CPU ×8; **G1 sau khi đổi sang bóng bóng bẩy ở 0.9.3 cũng đã đo lại: 60 fps**) | GPU máy dev mạnh hơn nhiều so với Galaxy Tab dòng A; chỉ máy thật mới cho số cuối cùng | NF Hiệu năng |
 | 8 | **Sao lưu → xóa dữ liệu trang → khôi phục** trên bản Pages thật; thử Samsung Internet | Lưu/mở file trên Android, trình duyệt khác | TC-025, NF07 |
 | 9 | ~~Quyết định giữ/bỏ `user-scalable=no`~~ → **đã bỏ ở 0.9.2**: thử trên máy thật: phóng to ở Home bằng 2 ngón (được), vào một game khi đang phóng (game tạm dừng + nhắc thu nhỏ), đang chơi chụm 2 ngón (không phóng) | Cử chỉ thật của Chrome Android/Samsung Internet có thể khác Chromium giả lập | – |
+| 10 | **(0.9.3)** Album → tab **Đặc biệt**: “Nghe thử” rồi “Dùng” **Nhạc Cụ Gõ** (nghe tiếng đúng/sai/được sao), “Dùng” **Cú Mèo** (Home, G6, G7 hiện Cú); **chấm đỏ** trên nút Phụ huynh ở Home khi chưa sao lưu; **xuất CSV** mở bằng Excel/Google Trang tính; bóng/khối G1 mới vẫn thấy rõ ✕ / ! / ~ | Tiếng, hình và Excel thật chỉ anh nghe/nhìn/mở được | – |
 
-Rủi ro kỹ thuật còn lại (không chặn): (a) ~~G3 trên tablet 44–57 fps khi giả lập CPU ×4~~ → là do Chromium thử nghiệm không có GPU, đã đo lại 60 fps bằng Chrome có GPU (mục 6, TASK-10); chỉ còn việc xem FPS thật trên Galaxy Tab; (b) khu phụ huynh chưa có xuất CSV; (c) bộ đếm “sai 3 lần” của khóa phụ huynh nằm trong bộ nhớ (tải lại trang là thử lại được); (d) `AppState.installedVersion` chưa cập nhật khi lên bản mới (không ảnh hưởng chức năng).
+Rủi ro kỹ thuật còn lại (không chặn): (a) ~~G3 trên tablet 44–57 fps khi giả lập CPU ×4~~ → là do Chromium thử nghiệm không có GPU, đã đo lại 60 fps bằng Chrome có GPU (mục 6, TASK-10); chỉ còn việc xem FPS thật trên Galaxy Tab; (b) ~~khu phụ huynh chưa có xuất CSV~~ → đã làm ở 0.9.3 (dòng đầu `sep=,` của file CSV giúp Excel tách cột đúng, **chưa kiểm bằng Google Trang tính thật**); (c) bộ đếm “sai 3 lần” của khóa phụ huynh nằm trong bộ nhớ (tải lại trang là thử lại được); (d) ~~`AppState.installedVersion` chưa cập nhật~~ → đã làm ở 0.9.3.
 
 ## 9. Cách chạy lại
 
@@ -185,6 +202,10 @@ npm run perf                                      # đo FPS G1/G3/G5 (build bả
 npm run perf -- --gpu                             # như trên nhưng dùng Chrome/Edge cài sẵn có GPU (sát thiết bị thật hơn); hoặc --chrome=<đường dẫn> / biến CHROME_PATH
 npm run perf -- --games=G5 --cpu=4 --no-build     # lọc: --games, --viewports, --cpu
 PLAYWRIGHT_JSON_OUTPUT_NAME=kq.json npx playwright test --reporter=line,json && node scripts/qa-table.mjs kq.json   # bảng TC
+# axe-core + Lighthouse: KHÔNG nằm trong package.json – cài vào một thư mục tạm riêng bằng: npm install --ignore-scripts axe-core lighthouse
+npm run build:pages   # rồi (PowerShell): $env:BASE_PATH='/nhanh-tay-tinh-mat/'; npx vite preview --port 4190 --strictPort --host 127.0.0.1
+node scripts/qa-axe.mjs http://127.0.0.1:4190/nhanh-tay-tinh-mat/ <thư mục cài> [kq.json]   # axe-core, 46 lượt (23 màn × 2 khung)
+$env:CHROME_PATH='C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'; node scripts/qa-lighthouse.mjs http://127.0.0.1:4190/nhanh-tay-tinh-mat/ <thư mục cài> [kq.json]
 ```
 
 Lưu ý: **không chạy hai lệnh Playwright cùng lúc trong một thư mục** (lệnh sau xóa `test-results` của lệnh trước làm test đang chạy báo lỗi “không mở được file trace”).

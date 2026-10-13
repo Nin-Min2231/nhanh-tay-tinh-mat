@@ -1,81 +1,74 @@
 # HANDOVER – Bàn giao sang phiên làm việc mới
 
-> Viết ngày 2026-10-11, cập nhật 2026-10-13. `main` = **v0.9.2 đang live** (TASK-00 → TASK-10 đợt 1). **Công việc dở dang nằm trên nhánh `claude/task-10-part2` (chưa gộp `main`)** – chủ dự án bảo dừng giữa chừng để bàn giao: xem **mục 0b ngay bên dưới**. Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
-> Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) làm tiếp **TASK-10 đợt 2 – hoàn tất tồn đọng** mà không phải đoán lại ngữ cảnh. Báo cáo QA đầy đủ: **`docs/QA_REPORT.md`**.
-> ⚠️ **Phiên mới thường được tạo từ `main`, nên sẽ KHÔNG thấy mục 0b mới nhất này.** Việc đầu tiên: `git fetch origin` rồi `git switch claude/task-10-part2` (và `npm ci`). Bộ nhớ dự án cũng ghi điều này.
+> Viết ngày 2026-10-11, cập nhật 2026-10-13 (hết TASK-10 đợt 2). `main` = **v0.9.2 đang live** (TASK-00 → TASK-10 đợt 1). **TASK-10 đợt 2 đã làm XONG trên nhánh `origin/claude/task-10-part2` (v0.9.3), CHƯA gộp `main`, CHƯA deploy** – chỉ còn chờ chủ dự án “Đồng ý” gộp: xem **mục 0b ngay bên dưới**. Đọc file này **sau** `CLAUDE.md` và `docs/PROGRESS.md`.
+> Mục đích: để phiên mới (Claude Code Desktop, tab Code, Local) biết chính xác đang ở đâu mà không phải đoán lại ngữ cảnh: (1) anh đã đồng ý gộp → làm bước gộp ở mục 0b; (2) anh gửi danh sách lỗi/góp ý từ máy thật → **TASK-10 đợt 3**. Báo cáo QA đầy đủ: **`docs/QA_REPORT.md`**.
+> ⚠️ **Phiên mới thường được tạo từ `main`, nên có thể KHÔNG thấy bản mới nhất của file này.** Việc đầu tiên: `git fetch origin`; nếu `main` chưa chứa 0.9.3 thì đọc file này ở nhánh `origin/claude/task-10-part2` (`git show origin/claude/task-10-part2:docs/HANDOVER.md`) và làm việc trên một nhánh mới tách từ đó (`git switch -c <tên mới> origin/claude/task-10-part2`, rồi `npm ci`). Bộ nhớ dự án cũng ghi điều này.
 
 ---
 
 ## 0. Trạng thái git
 
 - **TASK-00 → TASK-10 đợt 1 đều đã ở `main` và `origin/main`** (gộp fast-forward ngày 2026-10-13, anh “Đồng ý”; `git log origin/main -1` cho commit cuối), **bản 0.9.2 chạy trên GitHub Pages sau lần deploy tự động**: https://nin-min2231.github.io/nhanh-tay-tinh-mat/ – **mỗi lần push `main` là một lần deploy**, kể cả commit chỉ sửa tài liệu. Bản 0.9.1 (`ac285bc`) là bản deploy ngay trước đó.
-- **Nhánh `claude/task-10-part2` (đã push lên origin) = `main` (0.9.2) + 11 commit của TASK-10 đợt 2, CHƯA gộp `main`, CHƯA deploy** (xem mục 0b). Nhánh `claude/handover-task-handoff-6bd5eb` (TASK-10 đợt 1) chỉ còn là bản sao của `main` – không cần dùng nữa. Cách gộp đã dùng (khi chủ dự án đồng ý): ở thư mục gốc (đang ở nhánh `main`, sạch) `git merge --ff-only <nhánh>` rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main`.
-- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`, `claude/task-07-parent-area`, `claude/task-09-qa`, `claude/handover-task-continuation-aaaede`, `claude/handover-task-handoff-6bd5eb`) chỉ còn là bản sao cũ của `main`/tài liệu – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. **Phiên mới tạo nhánh/worktree mới từ `main`** (gợi ý `claude/task-10-fixes-2`; worktree mới chưa có `node_modules` → `npm ci`).
+- **Nhánh `origin/claude/task-10-part2` = `main` (0.9.2) + các commit của TASK-10 đợt 2 (v0.9.3), CHƯA gộp `main`, CHƯA deploy** (xem mục 0b). Nhánh `claude/handover-task-handoff-6bd5eb` (TASK-10 đợt 1) chỉ còn là bản sao của `main` – không cần dùng nữa. Cách gộp (khi chủ dự án đồng ý): ở thư mục gốc (đang ở nhánh `main`, sạch) `git fetch origin`, `git merge --ff-only origin/claude/task-10-part2`, rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main`. (Dùng `origin/…`: nhánh local `claude/task-10-part2` đang mở ở worktree `handover-task-handoff-6bd5eb` và có thể tụt hậu.)
+- Các nhánh cũ (`claude/handover-next-task-8f81b2`, `claude/handover-continuation-f32d2a`, `claude/task-06-handover-09db84`, `claude/handover-file-task-5ad07c`, `claude/task-07-parent-area`, `claude/task-09-qa`, `claude/handover-task-continuation-aaaede`, `claude/handover-task-handoff-6bd5eb`, `claude/doc-handover-read-95f83c`) chỉ còn là bản sao cũ của `main`/tài liệu – không cần dùng; đừng xóa nếu chưa hỏi chủ dự án. `claude/task-10-part2-finish` là nhánh local đã dùng để hoàn tất đợt 2 (đã đẩy lên `origin/claude/task-10-part2`). **Việc mới thì tạo nhánh/worktree mới** (từ `main` sau khi gộp 0.9.3; gợi ý `claude/task-10-fixes-3`; worktree mới chưa có `node_modules` → `npm ci`).
 - **Máy chủ `npm run dev` của chủ dự án chạy ở thư mục gốc (nhánh `main`, cổng 5173, `--host`, địa chỉ LAN `192.168.1.14`)** và tự cập nhật khi `main` đổi. Khi cần dev server của worktree: dùng **cổng khác** (`npm run dev -- --port 5174 --strictPort`; thêm một mục tạm trong `.claude/launch.json` để dùng `preview_start`, **đừng commit mục này**).
-- Việc còn chờ chủ dự án (không chặn TASK-10 đợt 2): **toàn bộ danh sách thử trên máy thật ở `docs/QA_REPORT.md` mục 8** (cài PWA, “Cập nhật”, 2 ngón thật G5, cử chỉ Quay lại, chia đôi màn hình, tablet không rung, đen trắng G1, **FPS thật G3/G5 bằng `?debug=1`**, sao lưu → khôi phục thật, Samsung Internet, **phóng to 2 ngón ở Home rồi vào game**); duyệt icon PWA, chữ R13, nội dung mẫu G6/G7, 40 sticker + trang phục + hình nền, **icon thẻ G1/G2 mới**; quyết định **Nhạc Cụ Gõ + Cú Mèo**; **gửi danh sách lỗi/góp ý** từ lần thử máy thật.
+- Việc còn chờ chủ dự án (không chặn gì): **toàn bộ danh sách thử trên máy thật ở `docs/QA_REPORT.md` mục 8** (cài PWA, “Cập nhật”, 2 ngón thật G5, cử chỉ Quay lại, chia đôi màn hình, tablet không rung, đen trắng G1, **FPS thật G3/G5 bằng `?debug=1`**, sao lưu → khôi phục thật, Samsung Internet, **phóng to 2 ngón ở Home rồi vào game**); duyệt icon PWA, chữ R13, nội dung mẫu G6/G7, 40 sticker + trang phục + hình nền, **icon thẻ G1/G2 mới**, **bóng G1 mới, hình Cú Mèo, tiếng Nhạc Cụ Gõ (0.9.3)**; **gửi danh sách lỗi/góp ý** từ lần thử máy thật.
 
 ---
 
-## 0b. VIỆC CÒN LẠI – TASK-10 đợt 2 (checklist sống: cập nhật mỗi khi xong một mục)
+## 0b. TASK-10 đợt 2 – ĐÃ XONG (v0.9.3), chờ chủ dự án “Đồng ý” gộp `main`
 
-Chủ dự án (2026-10-13, sau khi 0.9.2 đã deploy) dặn: **“Viết handover để qua session mới rồi thực hiện các việc còn lại cho xong luôn.”** → coi là lệnh **“làm luôn”**: **không chờ duyệt kế hoạch** từng mục (vẫn ghi rõ các quyết định tự chọn vào `docs/PROGRESS.md` để anh góp ý), nhưng **gộp/push `main` vẫn phải hỏi** (= deploy công khai). Chủ dự án chưa gửi danh sách lỗi từ máy thật nên đợt này làm hết **tồn đọng đã ghi nhận**.
+Chủ dự án (2026-10-13) dặn **“thực hiện các việc còn lại cho xong luôn”** → lệnh **“làm luôn”**: không chờ duyệt kế hoạch từng mục (vẫn ghi quyết định tự chọn vào `docs/PROGRESS.md` để anh góp ý), **nhưng gộp/push `main` vẫn phải hỏi** (= deploy công khai). Anh chưa gửi danh sách lỗi từ máy thật nên đợt này làm hết **tồn đọng đã ghi nhận**. Phiên đầu làm A1–D, E1, F rồi bị dừng giữa chừng để bàn giao; phiên sau (cùng ngày) làm nốt **E2 → G → H**.
 
-- **Nhánh làm việc:** `claude/task-10-part2` (xuất phát từ `main` = `f2af811` = v0.9.2; đã push lên origin). Version mục tiêu **0.9.3** (patch, theo mẫu TASK-10). Worktree mới chưa có `node_modules` → `npm ci`. *(Nếu nhánh này chưa ở `main`, phiên mới phải `git fetch` rồi `git switch claude/task-10-part2` – bộ nhớ dự án cũng ghi điều này.)*
-- **Cách làm:** mỗi mục = 1 commit (mã + test); sau mỗi mục chạy `npm run lint` + `npm test` + e2e liên quan; giao diện thì chụp ảnh 3 khung hình bằng spec tạm `tests/e2e/tmp-*.spec.ts` (**xóa trước khi commit**); cuối cùng chạy **e2e đầy đủ** (giữ máy thức bằng `request_keep_awake`), cập nhật docs, push nhánh, rồi **hỏi chủ dự án** gộp `main`. Quyết định tự chọn → ghi vào PROGRESS (mục “Quyết định khi làm”).
+- **Nhánh:** `origin/claude/task-10-part2` = `main` (`f2af811`, 0.9.2) + các commit đợt 2; `package.json` / `package-lock.json` đã **0.9.3**. **CHƯA gộp `main`, CHƯA deploy** (`main` vẫn 0.9.2). Nhánh local `claude/task-10-part2` đang mở ở worktree `handover-task-handoff-6bd5eb` và có thể **tụt hậu** so với origin → luôn dùng `origin/claude/task-10-part2`.
+- **Việc tiếp theo, theo thứ tự:**
+  1. **Hỏi/đợi anh “Đồng ý” gộp** (nêu rõ: push `main` = deploy công khai, bé dùng thật; kèm tóm tắt + cách thử ở PROGRESS).
+  2. Khi anh đã đồng ý: ở **thư mục gốc** (nhánh `main`, cây sạch) chạy `git fetch origin`, `git merge --ff-only origin/claude/task-10-part2`, rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main`; đợi CI + Deploy xanh (đọc API công khai Actions); đánh dấu **“đã gộp”** trong `docs/PROGRESS.md`, file này và bộ nhớ dự án; nhắn anh bấm **“Cập nhật”** trên app đã cài (~2 phút sau push) rồi vào Khu phụ huynh → Dữ liệu xem “Phiên bản 0.9.3”.
+  3. Khi anh gửi danh sách lỗi/góp ý từ máy thật → **TASK-10 đợt 3** (mẫu lặp lại ở `docs/03_TASKS.md` mục TASK-10): tìm nguyên nhân → đề xuất → chờ duyệt → sửa + test.
 
-| # | Việc | Tiêu chí xong | Trạng thái |
+| # | Việc | Commit | Trạng thái |
 |---|---|---|---|
-| A1 | **Dữ liệu cho 2 phần thưởng mốc sao**: `Profile.mascotId` + `Profile.soundSetId` (`null` = mặc định: Sóc Bo / âm gốc); `schemaVersion` **3** + migration 2→3 + `validate.ts` + SPEC mục 5; `canEquip`/`equipReward` mở rộng cho `soundSet` và `mascot` (không tự mặc khi mở khóa) | unit test migration, validate, canEquip, khứ hồi sao lưu | ☑ `41467a3` |
-| A2 | **Bộ âm thanh Nhạc Cụ Gõ** (mốc 80 sao): `app/audioSets.ts` (dữ liệu thuần: đàn gõ/mộc cầm/tam giác, không chê) + `createAudio` đọc bộ đang chọn; “Nghe thử” ở Album | unit test dữ liệu bộ âm; e2e bắt `OscillatorNode` đổi theo bộ đang chọn | ☑ `df49ec1` (+ e2e ở `d371b89`) |
-| A3 | **Linh vật Cú Mèo Thông Thái** (mốc 230 sao): `ui/components/Owl.tsx` 5 biểu cảm bóng bẩy (chuyển sắc, vệt sáng, kính tròn); `Mascot` chọn Sóc/Cú theo hồ sơ (Home, Rest, Result, G6, G7, Overlays); trang phục chỉ dành cho Sóc Bo | ảnh 3 khung hình đẹp, e2e Home hiện Cú sau khi dùng | ☑ `d371b89` |
-| A4 | **Album → tab Đặc biệt**: nút “Dùng/Đang dùng” cho bộ âm + linh vật (kèm thẻ mặc định “Âm thanh gốc”, “Linh vật Sóc Bo”), “Nghe thử”; bỏ chữ “Dùng được ở bản sau” | e2e: mở khóa → dùng → tải lại vẫn giữ, tách theo hồ sơ | ☑ `d371b89` (+ lời nhắc “Vào Album → Đặc biệt” ở màn Kết quả/hộp quà) |
-| B | **Bóng/khối G1 trong game bóng bẩy** (vẽ sprite một lần khi resize, `drawImage` mỗi khung; giữ hình dạng + dấu ✕/!/~ cho mù màu) | TC-028 (đọc hình bóng) vẫn pass; `npm run perf -- --gpu` G1 vẫn 60 fps; ảnh đẹp | ☑ `8c06986` (`games/g1-balls/art.ts`; **chưa chạy lại `perf --gpu`** → làm ở mục G) |
-| C | **G7 cấp 5** (mẫu 2 thuộc tính): lời giải thích riêng “màu lặp mỗi 2 ô, hình lặp mỗi 3 ô” khi sai | unit test (kind giải thích) + e2e G7 | ☑ `47a52ee` (`Explain {kind:'dual', colorLen, shapeLen}`) |
-| D | **G6 M11** (nhân/chia số 2–3 chữ số): giới hạn dạng “tìm số thiếu” cho đỡ ra số quá lớn | unit test 1.000 câu vẫn đúng 1 đáp án, số thiếu ≤ ngưỡng | ☑ `8581d54` (`maxMissing` M11 = 99) |
-| E1 | **Khu PH: xuất CSV** (tab Dữ liệu): lịch sử từng lượt + tổng hợp theo ngày của hồ sơ đang xem (UTF-8 có BOM để Excel đọc tiếng Việt) | unit test `toCsv`; e2e tải file | ☑ `32f5b5d` + sửa `96d36e8` (`app/csv.ts`, tab Dữ liệu) |
-| E2 | **Nhắc sao lưu từ Home**: chấm cảnh báo trên nút khóa phụ huynh khi `backupOverdue` (không có chữ cho bé) | e2e + nhãn truy cập | ☐ |
-| F | **`installedVersion`** cập nhật khi lên bản mới (mở app) | unit test | ☑ `7ec8650` (`app/version.ts`, gọi ở `store.ts` lúc khởi động) |
-| G | **QA cuối**: lint, unit, **e2e đầy đủ**, a11y spec, `npm run perf -- --gpu`; chạy lại **Lighthouse + axe** (bản Pages build, ghi số vào QA_REPORT) | tất cả pass, số liệu ghi vào PROGRESS/QA_REPORT | ☐ |
-| H | **Hoàn tất**: docs (SPEC, PROGRESS nhật ký + Changelog 0.9.3, QA_REPORT, HANDOVER này), version **0.9.3**, bộ nhớ dự án, push nhánh, **hỏi chủ dự án gộp `main` + deploy** | CI xanh | ☐ |
+| A1 | Dữ liệu hồ sơ: `Profile.mascotId` + `soundSetId`, **schema 3** + migration 2→3 + `validate.ts` + SPEC mục 5; `canEquip`/`equipReward` cho `soundSet`/`mascot` (mở khóa không tự mặc) | `41467a3` | ☑ |
+| A2 | Bộ âm **Nhạc Cụ Gõ** (80 sao): `app/audioSets.ts` (dữ liệu thuần) + `createAudio` đọc bộ đang chọn + “Nghe thử” | `df49ec1` | ☑ |
+| A3 | Linh vật **Cú Mèo Thông Thái** (230 sao): `ui/components/Owl.tsx` 5 biểu cảm; `Mascot` chọn Sóc/Cú theo hồ sơ; trang phục chỉ cho Sóc Bo | `d371b89` | ☑ |
+| A4 | Album → tab **Đặc biệt**: “Dùng / Đang dùng” + “Nghe thử”; nhắc “Vào Album → Đặc biệt” ở Kết quả/hộp quà | `d371b89` | ☑ |
+| B | Bóng/khối **G1** bóng bẩy: sprite vẽ một lần khi đổi cỡ (`games/g1-balls/art.ts`), mỗi khung `drawImage` | `8c06986` | ☑ (đã đo lại 60 fps ở G) |
+| C | **G7 cấp 5**: lời giải thích riêng “màu lặp mỗi 2 ô, hình lặp mỗi 3 ô” (`Explain {kind:'dual'}`) | `47a52ee` | ☑ |
+| D | **G6 M11**: dạng “tìm số thiếu” không hỏi số > 99 (`MAX_MISSING`) | `8581d54` | ☑ |
+| E1 | Khu PH → Dữ liệu: **xuất CSV** (từng lượt + tổng hợp theo ngày; UTF-8 BOM) | `32f5b5d` + `96d36e8` | ☑ |
+| E2 | **Chấm đỏ nhắc sao lưu** trên nút Phụ huynh ở Home (chỉ khi có hồ sơ có sao + quá 14 ngày/chưa từng sao lưu; không chữ cho bé) | `8873e6f` | ☑ |
+| F | `AppState.installedVersion` theo bản app mở dữ liệu (`app/version.ts`) | `7ec8650` | ☑ |
+| G | **QA cuối**: lint, unit, build, e2e đủ bộ, a11y, `perf --gpu`, Lighthouse + axe (số liệu bên dưới và ở `docs/QA_REPORT.md`) | – (không đổi mã) | ☑ |
+| H | Version **0.9.3**, docs (SPEC, PROGRESS + Changelog, QA_REPORT, file này), bộ nhớ dự án, push nhánh | commit `docs:` cuối của nhánh | ☑ |
 
-### Trạng thái khi dừng (2026-10-13 – chủ dự án bảo “Dừng xử lý đến hiện tại. Viết handover để qua session mới xử lý tiếp”)
+### Kết quả QA cuối của đợt 2 (đo ở mã 0.9.3)
 
-- Nhánh `claude/task-10-part2`; **commit mã cuối = `7ec8650`** (sau đó chỉ có commit tài liệu bàn giao). Cây làm việc sạch. **Nhánh đã được push lên origin** → phiên mới: `git fetch origin`, `git switch claude/task-10-part2`, `npm ci`.
-- Đã kiểm tra tại `7ec8650`: `tsc --noEmit` + ESLint sạch; **568 unit test pass** (1 bỏ qua có chủ ý). **Chưa chạy lại sau mục B–F:** `npm run build`, **e2e đầy đủ của cả nhánh**, `perf --gpu`, Lighthouse/axe → làm ở mục G (các spec e2e mới/đổi của đợt này: `special.spec.ts` (mới), `rewards.spec.ts`, `a11y.spec.ts`, `games3.spec.ts`, `parent.spec.ts`).
-- `package.json` / `package-lock.json` vẫn **0.9.2** (nâng 0.9.3 ở mục H). `main` vẫn là **0.9.2 đang live – không bị đụng**; **chưa gộp, chưa deploy** bất cứ gì của đợt 2.
-- Cạm bẫy đã gặp (đừng lặp lại): (1) commit `32f5b5d` (E1) tự nó có 1 unit test đỏ – quy tắc 16 quét thấy chữ Việt cứng trong `app/csv.ts` – và `96d36e8` mới sửa; hai commit đi cùng nhau, gộp fast-forward nguyên nhánh là ổn. Khi chạy `npm test` hãy lọc `Test Files|Tests |FAIL`, **đừng chỉ nhìn vài dòng cuối**. (2) Công cụ Edit có thể đổi `\uXXXX` trong chuỗi thành ký tự thật → với regex chữ Việt hãy dựng bằng `String.fromCharCode` như `app/csv.ts`. (3) Đừng đặt dấu backtick trong chuỗi lệnh shell (bị hiểu là thay thế lệnh); sửa file bằng Edit/Write. (4) Máy ngủ giữa chừng làm e2e “hết hạn 30 giây” hàng loạt → dùng `request_keep_awake`, chạy lại rồi mới kết luận.
+- `npm run lint` pass · **569 unit test** pass (1 bỏ qua có chủ ý; từ 529 ở 0.9.2: +40) · `npm run build` OK: gói chính 397,12 KB = **121,96 KB gzip** (0.9.2: 116,9; giới hạn 350), CSS 14,09 KB gzip, Chart.js tách riêng 56,62 KB gzip, precache 17 mục ≈ 1,0 MB.
+- **e2e đủ bộ** trên mã cuối (Playwright, 3 khung hình, `--workers=3`, 12,6 phút): **474 pass + 15 bỏ qua có chủ ý = 489 test (0.9.2: 432), 0 lỗi, 0 chập chờn**. *(lượt đủ bộ đầu tiên trên mã cuối có **1 test đỏ giả** – test xuất CSV ở khung tablet dọc: giờ gieo dữ liệu lấy từ một bộ đếm dùng chung nên hai lượt cùng ngày đảo thứ tự khi bộ đếm quay vòng (lỗi của test, không phải của app); đã sửa test (`aa0d1d3`; chạy lặp 10 lần × 3 khung hình: 30/30 pass) rồi chạy lại đủ bộ: xanh hết.)*
+- **FPS G1** (`npm run perf -- --gpu --games=G1`: Chrome 155 có GPU, bản build thật, cấp 10): **60 fps, 0% khung > 20 ms** ở cả 3 khung hình, CPU thường và ×4; main thread bận 5% / 26–30% (0.9.2: 4–5% / 21–26%, tăng nhẹ nhưng còn rất xa giới hạn). G3, G5 không đổi mã nên không đo lại.
+- **Lighthouse 13.5** (bản build giống Pages, di động, lần tải đầu; chạy 2 lần): Performance 83–84 · **Accessibility 100** (TASK-08: 93, `meta-viewport` hết) · Best Practices 81 (chỉ thiếu HTTPS vì đo trên localhost) · SEO 60 (cố ý `noindex`).
+- **axe-core 4.14** (46 lượt: 23 màn × 2 khung): lượt đầu có **1 lỗi mức vừa `heading-order`** ở Album › Trang phục / Hình nền → **đã sửa** (`3339a5f`: `h2` ẩn mỗi tab + test e2e mới); chạy lại **0 vi phạm**. Hai script chạy lại đã lưu trong repo: `scripts/qa-axe.mjs`, `scripts/qa-lighthouse.mjs`.
 
-#### Hướng dẫn chi tiết cho phần còn lại (E2 → G → H)
+### Cạm bẫy đã gặp ở đợt 2 (đừng lặp lại)
 
-**E2 – chấm nhắc sao lưu ở Home**
-1. Nút khóa phụ huynh nằm trong `<nav class="home-actions">` ở `src/ui/screens/Home.tsx` (≈ dòng 116–123, `aria-label={vi.home.parent}`). Điều kiện hiện chấm: `backupOverdue(appState.value.lastBackupAt, Date.now()) && appState.value.profiles.some((p) => p.totalStars > 0)` (`backupOverdue` ở `src/app/backup.ts`; chưa có sao = chưa có gì để mất → không nhắc). Khu phụ huynh đã có băng nhắc riêng (`ParentArea.tsx` ≈ dòng 65 và 96) – không đổi.
-2. Nút giữ nguyên `variant="icon"`; thêm class `has-dot` và một con `<span class="backup-dot" data-testid="backup-dot" aria-hidden="true" />`. `aria-label` đổi thành chuỗi mới `vi.home.parentBackup` **bắt đầu bằng đúng chữ của `vi.home.parent`** (để mọi test cũ dùng `getByRole('button', { name: vi.home.parent })` – khớp chuỗi con – vẫn chạy), nối thêm ý “nên sao lưu dữ liệu”. Không thêm chữ nhìn thấy cho bé (chuỗi mới chỉ nằm ở `src/i18n/vi.ts`).
-3. CSS: `.btn.has-dot { position: relative }`; `.backup-dot` tuyệt đối ở góc trên-phải, tròn ≈ 14 px, màu cảnh báo + viền trắng 2 px. Vùng chạm nút không đổi (≥ 48 px).
-4. Test e2e (trong `tests/e2e/parent.spec.ts` hoặc spec Home): có sao + chưa sao lưu → thấy `backup-dot`; vào khu PH → tab Dữ liệu → sao lưu → về Home → chấm biến mất; hồ sơ chưa có sao → không có chấm. Chạy lại `a11y.spec.ts` và kiểm tra vùng chạm. Ghi 1 dòng vào SPEC (Home / nhắc sao lưu) và PROGRESS (quyết định: chỉ nhắc khi đã có sao).
+1. Commit `32f5b5d` (E1) tự nó có 1 unit test đỏ – quy tắc 16 quét thấy chữ Việt cứng trong `app/csv.ts` – và `96d36e8` mới sửa; hai commit đi cùng nhau (gộp fast-forward nguyên nhánh là ổn). Khi chạy `npm test` hãy lọc `Test Files|Tests |FAIL`, **đừng chỉ nhìn vài dòng cuối**.
+2. Công cụ Edit có thể đổi `\uXXXX` trong chuỗi thành ký tự thật → với regex chữ Việt hãy dựng bằng `String.fromCharCode` như `app/csv.ts`.
+3. Đừng đặt dấu backtick trong chuỗi lệnh shell (bị hiểu là thay thế lệnh); sửa file bằng Edit/Write.
+4. Máy ngủ giữa chừng làm e2e “hết hạn 30 giây” hàng loạt → dùng `request_keep_awake`, chạy lại rồi mới kết luận.
+5. **`cd` trong Bash đổi thư mục làm việc của cả phiên** (đã lỡ `cd` vào thư mục công cụ tạm; phải `cd` lại bằng đường dẫn tuyệt đối). Dùng `npm --prefix`, đường dẫn tuyệt đối hoặc `git -C` thay vì `cd`.
+6. **Nhánh local `claude/task-10-part2` mở ở worktree khác** nên không `git switch` được: tạo nhánh mới từ `origin/claude/task-10-part2` (`git switch -c <tên> origin/claude/task-10-part2`) và khi push dùng `git push origin <tên>:claude/task-10-part2`.
 
-**G – QA cuối** (đều chạy ở worktree này, sau khi E2 xong)
-1. `npm run lint`, `npm test` (lọc `Test Files|Tests |FAIL`), `npm run build` (gói chính phải ≤ 350 KB gzip; 0.9.2 là 116,9 KB).
-2. `request_keep_awake` rồi `npm run test:e2e -- --workers=3` (≈ 12 phút). Mong đợi 0 lỗi (con số cũ của 0.9.2: 417 pass + 15 bỏ qua có chủ ý; nay nhiều hơn vì có thêm `special.spec.ts` và các test mới). Chạy xong lọc `passed|failed|skipped|flaky`.
-3. `npm run perf -- --gpu` (dùng Chrome cài trên máy: `C:\Program Files (x86)\Google\Chrome\Application\chrome.exe`) – kiểm **G1 vẫn ≈ 60 fps** sau khi đổi bóng sang sprite (mục B). Chromium của Playwright không có GPU nên số FPS canvas ở đó thấp là hiện tượng của môi trường, không phải lỗi.
-4. Lighthouse + axe trên bản build giống Pages (`BASE_PATH=/nhanh-tay-tinh-mat/` khi build, rồi `npm run preview`), dùng Chrome hệ thống qua `CHROME_PATH`, chạy trong PowerShell. Công cụ cài **ngoài dự án** (thư mục tạm riêng; **không** sửa `package.json`). Mục đích: xác nhận sau khi bỏ `user-scalable=no` (0.9.2) điểm Accessibility/`meta-viewport` đã sạch, và màn Album/Home mới không phát sinh vi phạm. Ghi số vào `docs/QA_REPORT.md` + PROGRESS.
-
-**H – hoàn tất**
-1. Nâng version **0.9.3**: `package.json` dòng 3, `package-lock.json` dòng 3 và dòng 9 (đừng đụng các dòng `"version"` khác của gói con).
-2. `docs/PROGRESS.md`: đổi hàng trạng thái TASK-10 đợt 2 thành “xong, chờ duyệt gộp”, hoàn thiện nhật ký (E2, G: số liệu), thêm dòng Changelog **0.9.3**; `docs/QA_REPORT.md`: số liệu mới (unit, e2e, perf G1, Lighthouse/axe); `docs/01_SPEC.md` mục 7 (bảng mốc mở khóa) và mục 12 (Linh vật / Âm thanh): ghi rõ **bộ âm + linh vật được chọn ở Album → Đặc biệt, không tự mặc khi mở khóa; trang phục chỉ dành cho Sóc Bo** (mục 5 đã có hai trường `mascotId`, `soundSetId`); file này: tick E2/G/H và đổi đầu trang sang “đợt 3”.
-3. Cập nhật bộ nhớ dự án (`project-handover.md`, `MEMORY.md`), commit `docs: …`, **push nhánh**, chờ CI xanh (đọc API công khai Actions, không cần `gh`).
-4. **HỎI chủ dự án** có gộp `main` + deploy 0.9.3 không (nêu rõ: push `main` = deploy công khai). Chỉ khi anh đồng ý: ở **thư mục gốc** (nhánh `main`, sạch) `git merge --ff-only claude/task-10-part2` rồi `GIT_TERMINAL_PROMPT=0 timeout 90 git push origin main`; sau đó đánh dấu “đã gộp” trong PROGRESS/HANDOVER/bộ nhớ.
-
-#### Bản đồ mã mới của đợt 2 (để tìm nhanh)
+### Bản đồ mã mới của đợt 2 (để tìm nhanh)
 
 - Dữ liệu / thưởng: `src/app/types.ts`, `profile.ts`, `validate.ts`, `storage.ts` (`CURRENT_SCHEMA = 3`, migration 2→3); `src/app/rewards.ts` (`EquipKind`, `canEquip`, `needsPicking`, `activeMascot`, `activeSoundSet`, `MASCOT_OWL_ID`, `SOUND_PERCUSSION_ID`); `src/app/store.ts` (`equipReward(kind, id)`, signal `mascotKind` đồng bộ bằng `effect`, `createAudio(...)` đọc bộ âm của hồ sơ, `withInstalledVersion` lúc khởi động); `src/app/version.ts`.
 - Âm thanh: `src/app/audioSets.ts` (`SOUND_SETS`, `ToneSpec`, `soundSet`, `soundLength`) + `audio.ts` (`AudioApi.preview(id)`).
 - Linh vật: `src/app/mascotKind.ts`, `src/ui/components/Owl.tsx` (id SVG `ow-*`), `Mascot.tsx` (prop `kind?`), `src/ui/stickers/Gallery.tsx` (xem Cú ở `?gallery=1&view=rewards`).
 - Album / nhắc mở khóa: `src/ui/screens/Album.tsx` (`SpecialTab`, `UseButton`, `data-testid`: `equip-sound-*`, `listen-sound-*`, `equip-mascot-*`, `outfit-owl-note`, `special-grid`), `Result.tsx` + `GiftBox.tsx` (`result-unlock-hint`, `gift-unlock-hint`), `src/ui/rewards.css`.
 - Game: `src/games/g1-balls/art.ts` + `view.ts` (sprite bóng; dựng **trước** `createCanvasStage` vì quy tắc TDZ), `src/games/g7-patterns/puzzles.ts` + `view.ts` (`Explain` kind `dual`), `src/games/g6-math/topics.ts` (`MAX_MISSING`) + `question.ts`.
-- Khu phụ huynh: `src/app/csv.ts` (+ `csv.test.ts`), `parentStore.ts` (`parentCreateCsv`), `src/ui/parent/DataTab.tsx` (`downloadText`).
-- Test mới/đổi: `tests/e2e/special.spec.ts` (mới), `rewards.spec.ts`, `a11y.spec.ts`, `games3.spec.ts`, `parent.spec.ts`; unit: `audioSets.test.ts`, `rewards.test.ts`, `storage.test.ts`, `backup.test.ts`, `validate.test.ts`, `version.test.ts`, `csv.test.ts`, G6/G7 `logic.test.ts`.
+- Khu phụ huynh / sao lưu: `src/app/csv.ts` (+ `csv.test.ts`), `parentStore.ts` (`parentCreateCsv`), `src/ui/parent/DataTab.tsx` (`downloadText`); **Home: `backupReminderDue` (`app/backup.ts`) → chấm `.backup-dot` trên nút Phụ huynh (`Home.tsx`, `data-testid` `open-parent` / `backup-dot`, nhãn `vi.home.parentBackup` luôn bắt đầu bằng `vi.home.parent`; CSS ở `app.css`)**.
+- Test mới/đổi: `tests/e2e/special.spec.ts` (mới), `rewards.spec.ts`, `a11y.spec.ts`, `games3.spec.ts`, `parent.spec.ts` (+ 2 test chấm nhắc sao lưu); unit: `audioSets.test.ts`, `rewards.test.ts`, `storage.test.ts`, `backup.test.ts`, `validate.test.ts`, `version.test.ts`, `csv.test.ts`, G6/G7 `logic.test.ts`.
 
-**Việc em không làm thay được (chờ chủ dự án):** thử máy thật (danh sách ở `docs/QA_REPORT.md` mục 8 + “Cách thử thủ công” của TASK-10 trong PROGRESS), Samsung Internet, **gửi danh sách lỗi/góp ý** (→ TASK-10 đợt 3), duyệt hình mới (Cú Mèo, icon G1/G2, bóng G1), quyết định gộp/deploy.
+**Việc em không làm thay được (chờ chủ dự án):** thử máy thật (danh sách ở `docs/QA_REPORT.md` mục 8 + “Cách thử thủ công” của TASK-10 trong PROGRESS), Samsung Internet, **gửi danh sách lỗi/góp ý** (→ TASK-10 đợt 3), duyệt hình mới (Cú Mèo, icon G1/G2, bóng G1), nghe thử tiếng Nhạc Cụ Gõ, quyết định gộp/deploy.
 
 **Tiến độ chi tiết + quyết định tự chọn của đợt này:** xem nhật ký mới nhất trong `docs/PROGRESS.md` (“TASK-10 đợt 2”).
 
@@ -86,10 +79,10 @@ Chủ dự án (2026-10-13, sau khi 0.9.2 đã deploy) dặn: **“Viết handov
 Chủ dự án (PM, không phải lập trình viên, xưng “anh”, trao đổi **tiếng Việt**) chỉ cần nhắn:
 
 ```
-Làm tiếp TASK-10 đợt 2 theo docs/HANDOVER.md mục 0b
+Đọc docs/HANDOVER.md mục 0b rồi làm tiếp
 ```
 
-(hoặc “Đọc handover và thực hiện task tiếp theo”). Quy trình bắt buộc (CLAUDE.md mục 6) – đã áp dụng ở mọi TASK trước:
+(hoặc “Đọc handover và thực hiện task tiếp theo”). Tùy tình hình: anh đã “Đồng ý” gộp 0.9.3 → làm bước gộp ở mục 0b; anh gửi danh sách lỗi/góp ý từ máy thật → **TASK-10 đợt 3**. Quy trình bắt buộc (CLAUDE.md mục 6) – đã áp dụng ở mọi TASK trước:
 
 1. Đọc `CLAUDE.md`, `docs/PROGRESS.md`, rồi tài liệu TASK yêu cầu (với TASK-10: `docs/03_TASKS.md` mục TASK-10, `docs/QA_REPORT.md` – nhất là mục 8 –, `CLAUDE.md` mục 5 (17 quy tắc) và **mục 6 của file này**).
 2. **Trình bày kế hoạch ngắn và chờ “Đồng ý”** rồi mới sửa mã (chủ dự án đã duyệt kế hoạch TASK-09 đúng cách này). *Lưu ý:* ở TASK-07 chủ dự án đã dặn **“làm luôn không cần hỏi”** và **lặp lại ở TASK-10 đợt 2 (2026-10-13: “thực hiện các việc còn lại cho xong luôn”)** nên hai lần đó bỏ bước chờ duyệt kế hoạch; mỗi lần chủ dự án lặp lại thì cứ làm luôn (vẫn ghi rõ các quyết định tự chọn), còn không thì theo CLAUDE.md. **Gộp `main` + push luôn phải hỏi** (push `main` = deploy công khai).
@@ -108,12 +101,12 @@ Làm tiếp TASK-10 đợt 2 theo docs/HANDOVER.md mục 0b
 | TASK-07 Khu phụ huynh | **Xong, đã gộp `main`** (chờ chủ dự án thử trên máy thật) |
 | TASK-09 QA | **Xong, đã gộp `main`** (v0.9.1, deploy 2026-10-12) |
 | TASK-10 đợt 1 | **Xong, đã gộp `main` + deploy v0.9.2** (2026-10-13, chủ dự án “Đồng ý”); chờ chủ dự án thử máy thật |
-| TASK-10 đợt 2 (hoàn tất tồn đọng) | **Làm dở, dừng giữa chừng 2026-10-13, nằm trên nhánh `claude/task-10-part2` (CHƯA gộp `main`, chưa deploy):** xong A1–A4, B, C, D, E1, F; **còn E2, G, H** → mục 0b |
-| Tiếp theo | Làm nốt E2 → G → H của đợt 2, hỏi anh gộp `main` (0.9.3); sau đó **TASK-10 đợt 3**: sửa lỗi theo góp ý của chủ dự án sau khi thử máy thật (mẫu lặp lại, `docs/03_TASKS.md`) |
+| TASK-10 đợt 2 (hoàn tất tồn đọng) | **Xong, v0.9.3 – nằm trên nhánh `origin/claude/task-10-part2` (CHƯA gộp `main`, chưa deploy); chờ chủ dự án “Đồng ý” gộp** → mục 0b |
+| Tiếp theo | **(1)** hỏi/đợi anh “Đồng ý” gộp `main` (0.9.3) + deploy; **(2)** sau đó **TASK-10 đợt 3**: sửa lỗi theo góp ý của chủ dự án sau khi thử máy thật (mẫu lặp lại, `docs/03_TASKS.md`) |
 
 - Repo: https://github.com/Nin-Min2231/nhanh-tay-tinh-mat (công khai), remote `origin`, Pages `https://nin-min2231.github.io/nhanh-tay-tinh-mat/` (`BASE_PATH=/nhanh-tay-tinh-mat/`). Máy đã đăng nhập GitHub sẵn nên `git push` chạy thẳng (dùng `GIT_TERMINAL_PROMPT=0 timeout 90 git push` để không bị treo). Xem trạng thái workflow không cần `gh`: đọc API công khai `https://api.github.com/repos/Nin-Min2231/nhanh-tay-tinh-mat/actions/runs`.
 - Git user riêng cho repo: `Nin-Min2231` / `nguyennc1357@gmail.com`. Commit kèm dòng `Co-Authored-By: …` theo nhắc trong phiên.
-- Chất lượng hiện tại (v0.9.2): `npm run lint` pass · **529 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (gói chính 378,6 KB = **116,9 KB gzip** theo số Vite báo – dựng lại 0.9.1 cùng cách cho 116,2 KB; Chart.js tách riêng 56,6 KB gzip; giới hạn 350 KB gzip; precache 17 mục ≈ 1,0 MB) · **e2e Playwright: 417 pass + 15 bỏ qua có chủ ý = 432 test** (project `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280; `zoom.spec.ts` chỉ chạy ở `phone`, `home-layout.spec.ts` chỉ ở khung phù hợp), 0 lỗi, 0 chập chờn, ≈ 12 phút với `--workers=3`. **Hai test chập chờn cũ (G1 TC-004, G3 TC-013) đã ổn định** từ TASK-09. Nếu thấy vài test “hết hạn 30 giây” **cùng lúc** và thời gian chạy dài bất thường thì nghi **máy ngủ giữa chừng** (đã gặp ở TASK-10): chạy lại rồi mới kết luận; chạy bộ dài nên giữ máy thức.
+- Chất lượng hiện tại (v0.9.3, trên nhánh đợt 2): `npm run lint` pass · **569 unit test** (Vitest; 1 test sinh file mẫu bị bỏ qua khi chạy thường) · `npm run build` OK (gói chính 397,12 KB = **121,96 KB gzip** theo số Vite báo; 0.9.2 là 116,9; Chart.js tách riêng 56,62 KB gzip; giới hạn 350 KB gzip; precache 17 mục ≈ 1,0 MB) · **e2e Playwright: 474 pass + 15 bỏ qua có chủ ý = 489 test** (project `phone` 360×740 / `tablet` 1280×800 / `tablet-portrait` 800×1280; `zoom.spec.ts` chỉ chạy ở `phone`, `home-layout.spec.ts` chỉ ở khung phù hợp), 0 lỗi, 0 chập chờn, ≈ 13 phút với `--workers=3` (0.9.2: ≈ 12 phút). **Hai test chập chờn cũ (G1 TC-004, G3 TC-013) đã ổn định** từ TASK-09. Nếu thấy vài test “hết hạn 30 giây” **cùng lúc** và thời gian chạy dài bất thường thì nghi **máy ngủ giữa chừng** (đã gặp ở TASK-10): chạy lại rồi mới kết luận; chạy bộ dài nên giữ máy thức (`request_keep_awake`).
 - Home: **cả 7 game chơi được**; nhiệm vụ, hộp quà, album, trang phục, hình nền, nghỉ đúng giờ (TASK-06); PWA cài được + offline + nút Cập nhật (TASK-08); khu phụ huynh đầy đủ + bài đo tuần (TASK-07); **QA + sửa lỗi (TASK-09)**.
 
 ---
@@ -150,7 +143,7 @@ src/
     e2e.ts                 # cờ ?e2e=1 / ?debug=1 / ?freeze=1 / ?gallery=1 / ?update=1 / ?sw=1 (chỉ dev hoặc build VITE_E2E)
     pwa.ts                 # (TASK-08) initPwa(): đăng ký service worker qua virtual:pwa-register, onNeedRefresh → updateAvailable,
                            #   kiểm bản mới mỗi giờ/khi quay lại app (chỉ gọi lại sw.js cùng nguồn); applyUpdate() = nút ở Home
-    version.ts             # APP_VERSION (từ package.json lúc build) – hiện trong khu PH, tab Dữ liệu
+    version.ts             # APP_VERSION (từ package.json lúc build) – hiện trong khu PH, tab Dữ liệu; (0.9.3) withInstalledVersion: ghi AppState.installedVersion lúc mở app
     daily.ts               # (TASK-07) THUẦN + test: DailyAggregate (syncDaily: tính lại ngày có lượt chi tiết, giữ ngày cũ; KHÔNG gồm lượt bài đo),
                            #   pruneRounds (> 120 ngày; giữ lượt bài đo), PROGRESS_METRICS/BENCHMARK_METRIC (khóa chỉ số + “thấp hơn là tốt”),
                            #   buildSeries (dữ liệu biểu đồ: game × chỉ số × thiết bị × khoảng ngày), recentRounds
@@ -158,7 +151,11 @@ src/
     parentGate.ts          # (TASK-07) THUẦN + test: phép nhân a×b, sai 3 lần khóa 30 giây (rng + đồng hồ truyền vào)
     parentOps.ts           # (TASK-07) THUẦN + test: giveBonusTime/giveBoxes (+ rewardLog), setLimits, patchGameSettings, setGameOption, setGrade,
                            #   toggleMathTopic, removeProfileFromState, deleteConfirmed
-    backup.ts              # (TASK-07) THUẦN + test: createBackup/parseBackup/stateForRestore/backupOverdue, tên file nhanhtay-backup-YYYYMMDD.json
+    backup.ts              # (TASK-07) THUẦN + test: createBackup/parseBackup/stateForRestore/backupOverdue, tên file nhanhtay-backup-YYYYMMDD.json;
+                           #   (0.9.3) backupReminderDue = quá hạn VÀ có hồ sơ có sao → chấm đỏ trên nút Phụ huynh ở Home
+    csv.ts                 # (0.9.3) THUẦN + test: xuất CSV lịch sử từng lượt / tổng hợp theo ngày (UTF-8 BOM, CRLF, dòng sep=,)
+    audioSets.ts           # (0.9.3) THUẦN + test: các bộ âm thanh là DỮ LIỆU (ToneSpec): bộ gốc + Nhạc Cụ Gõ; audio.ts phát theo bộ đang chọn của hồ sơ
+    mascotKind.ts          # (0.9.3) signal `mascotKind` (squirrel | owl) do store.ts cập nhật; Mascot đọc nó (không import store)
     parentStore.ts         # (TASK-07) nối thuần ↔ store: parentUnlocked, benchmarkMode, startBenchmark, parentGive*/parentPatch*/parentSet*,
                            #   parentAdd/Edit/DeleteProfile, parentCreateBackup, parentRestore
     rng.ts                 # mulberry32 có seed + randInt, pick, shuffle
@@ -175,6 +172,7 @@ src/
                            # HintBubble, hud.ts, sparkles.ts, Countdown, PauseOverlay
     g1-balls … g7-patterns/   # mỗi game: config.ts · logic.ts (thuần, có test) · view.ts · index.ts (G6/G7 có thêm các file sinh câu hỏi)
                            #   (G5: nền các làn vẽ một lần ở canvas `.g5-underlay` nằm dưới canvas chính – TASK-09)
+                           #   (G1, 0.9.3: art.ts vẽ sprite bóng/khối bóng bẩy MỘT LẦN mỗi khi đổi cỡ; view.ts chỉ drawImage)
     samples.test.ts        # sinh docs/samples/* khi GEN_SAMPLES=1 (`npm run samples`); bình thường bị bỏ qua
   ui/
     App.tsx                # chọn màn hình + redirect hợp lệ; gắn <GiftModal /> ở gốc
@@ -183,13 +181,13 @@ src/
                            #   ngang < 1200px (bố cục xếp dọc như cũ); ở ngang ≥ 1200px (`@media` trong app.css) = lưới 2 cột + 3 nhóm game đứng cạnh nhau (`--n` = số thẻ của nhóm)
     parent/                # (TASK-07) 6 tab khu PH: ProgressTab (+ chartRender.ts = Chart.js tải sau), BenchmarkTab, SettingsTab (+ gameOptions.ts),
                            #   ProfilesTab, RewardsTab, DataTab + state.ts (hồ sơ đang xem, định dạng số/ngày). Style: ui/parent.css
-    components/            # Button, Mascot (Sóc Bo 5 biểu cảm + prop outfit), Outfits (3 lớp: back/body/head), Scenes (hình nền),
+    components/            # Button, Mascot (Sóc Bo 5 biểu cảm + prop outfit; 0.9.3: chọn Sóc hoặc Owl.tsx = Cú Mèo theo hồ sơ), Outfits (3 lớp: back/body/head), Scenes (hình nền),
                            # GiftBox (hình hộp + cửa sổ mở hộp), GiftButton, RewardIcons (huy hiệu, Nhạc Cụ Gõ), Avatar (12 + khung Cầu Vồng),
                            # GameIcon, IntroAnimation, DebugPanel, DebugRewards, Confetti, StarBurst, ProgressBar, Overlays…
     stickers/              # Sticker.tsx (khung theo độ hiếm + nền chủ đề) · kit.tsx (Lin, Rad, Shine, Sparkle, Eye, Cheek…) ·
                            #   animals/fruits/space/vehicles.tsx (mỗi file 10 hình `stk-xx`) · Gallery.tsx (chỉ dev)
     theme.css / app.css / games.css / games2.css / rewards.css   # bảng màu rực rỡ + style (rewards.css = TASK-06)
-tests/e2e/                 # helpers.ts + framework / games / games2 / games3 / rewards / parent / pwa / qa / a11y / zoom / home-layout .spec.ts
+tests/e2e/                 # helpers.ts + framework / games / games2 / games3 / rewards / special / parent / pwa / qa / a11y / zoom / home-layout .spec.ts
 scripts/                   # make-icons.mjs (icon PWA) · perf-fps.mjs (npm run perf; thêm --gpu để dùng Chrome cài sẵn có GPU) · qa-table.mjs (bảng TC từ báo cáo Playwright)
 docs/                      # SPEC, GAMES, TASKS, ACCEPTANCE, PROGRESS, QA_REPORT, data/levels.json, samples/, HANDOVER (file này)
 ```
@@ -257,8 +255,11 @@ Chủ dự án chưa gửi danh sách lỗi từ máy thật nên chọn “làm
 - **Icon thẻ G1 và G2** (`GameIcon.tsx`) vẽ lại có chuyển sắc, vệt sáng, đổ bóng: G1 = bóng xanh mặt cười + khối đỏ dấu ✕ + ngôi sao lấp lánh; G2 = bảng 3×3 dùng **đúng 5 màu ô của game** (`g2-c0…c4`), số xáo trộn, ô “1” viền vàng. Màu vẫn kèm hình dạng/số. Id gradient `gi1g`, `gi1r`, `gi20…gi24`.
 - **G3 FPS**: **không sửa mã** – số 44–57 fps ở CPU ×4 là do **Chromium của Playwright không có GPU** (vẽ canvas bằng phần mềm: hồ sơ CPU cho thấy ~87% thời gian main thread ở “(program)”, JS chỉ ~10%). Đo bằng Chrome cài sẵn có GPU (`npm run perf -- --gpu`): G3 **60 fps ở CPU ×4, ×6 và ×8** (tablet ngang/dọc, điện thoại; main thread bận 30% ở ×4, 65% ở ×8) – tương đương G1/G5. `scripts/perf-fps.mjs` nay có `--gpu` / `--chrome=<đường dẫn>` / `CHROME_PATH` và cột “main thread bận %”.
 
-### Việc cần làm: TASK-10 đợt 2
-Chủ dự án thử trên máy thật rồi gửi góp ý/lỗi (mẫu trong `docs/03_TASKS.md` mục TASK-10). Với mỗi lỗi: tìm nguyên nhân → đề xuất → chờ duyệt → sửa + thêm test để không lặp lại; góp ý độ khó → sửa `docs/data/levels.json` (không sửa số trong code) và ghi lý do vào PROGRESS; xong tăng version patch + CHANGELOG trong PROGRESS + deploy (hỏi trước). Ứng viên đã biết (chưa ai yêu cầu): **Nhạc Cụ Gõ + Cú Mèo** (chủ dự án chưa quyết định); **bóng/khối G1 trong game vẫn phẳng** trong khi icon đã bóng bẩy (vẽ sprite một lần); **FPS thật G3/G5 trên Galaxy Tab** bằng `?debug=1`; nếu thử máy thật thấy bé hay phóng nhầm ở Home thì chuyển sang chặn phóng ở các màn của bé (`touch-action: pan-x pan-y`) và chỉ cho phóng ở khu phụ huynh (nhớ xử lý trạng thái “đang phóng mà đổi màn”).
+### TASK-10 đợt 2 đã làm gì (hoàn tất tồn đọng, v0.9.3 – trên nhánh `origin/claude/task-10-part2`, chờ gộp `main`)
+Chi tiết từng mục + commit ở **mục 0b**; nhật ký và quyết định tự chọn ở `docs/PROGRESS.md`. Tóm tắt để biết khi đụng vào: **Nhạc Cụ Gõ + Cú Mèo dùng được** (Album → Đặc biệt, lưu theo hồ sơ `soundSetId`/`mascotId`, schema 3; **không tự mặc khi mở khóa**; trang phục chỉ cho Sóc Bo); **bóng/khối G1 bóng bẩy** (sprite vẽ một lần); **G7 cấp 5** có lời giải thích riêng; **G6 M11** không hỏi số thiếu > 99; **khu PH xuất CSV**; **chấm đỏ nhắc sao lưu** trên nút Phụ huynh ở Home; **`installedVersion`** theo bản app. QA cuối: số liệu ở mục 0b và `docs/QA_REPORT.md`.
+
+### Việc cần làm: TASK-10 đợt 3
+Chủ dự án thử trên máy thật rồi gửi góp ý/lỗi (mẫu trong `docs/03_TASKS.md` mục TASK-10). Với mỗi lỗi: tìm nguyên nhân → đề xuất → chờ duyệt → sửa + thêm test để không lặp lại; góp ý độ khó → sửa `docs/data/levels.json` (không sửa số trong code) và ghi lý do vào PROGRESS; xong tăng version patch + CHANGELOG trong PROGRESS + deploy (hỏi trước). Ứng viên đã biết (chưa ai yêu cầu): **FPS thật G3/G5/G1 trên Galaxy Tab** bằng `?debug=1`; **trang phục cho Cú Mèo** (hiện chỉ Sóc Bo mặc được); nếu thử máy thật thấy bé hay phóng nhầm ở Home thì chuyển sang chặn phóng ở các màn của bé (`touch-action: pan-x pan-y`) và chỉ cho phóng ở khu phụ huynh (nhớ xử lý trạng thái “đang phóng mà đổi màn”); so sánh nhiều bé trong khu phụ huynh; tách gói `ui/parent/*` tải sau nếu gói chính quá nặng.
 
 ## 6b. TASK-07 đã làm gì (khu phụ huynh – để biết khi đụng vào)
 
@@ -336,6 +337,14 @@ Chủ dự án thử trên máy thật rồi gửi góp ý/lỗi (mẫu trong `d
 - **Máy ngủ giữa lượt chạy dài làm test “đỏ giả”**: lượt e2e đầy đủ đầu tiên của TASK-10 có đúng 3 test (đang chạy song song trên 3 luồng) cùng kéo dài ≈ 3380 giây rồi báo hết hạn 30 giây, trong khi 414 test còn lại bình thường → đồng hồ nhảy vì máy ngủ, không phải lỗi mã (chạy lại riêng 3 test pass, chạy lại toàn bộ pass). Cách nhận biết: phân tích `duration` từng test trong báo cáo JSON (`PLAYWRIGHT_JSON_OUTPUT_NAME`). Phòng ngừa: gọi công cụ **`request_keep_awake`** của Claude Desktop (công cụ hoãn tải: `ToolSearch select:mcp__ccd_host__request_keep_awake`) trước khi chạy bộ dài (e2e đầy đủ ≈ 12 phút, `npm run perf` ≈ 15–20 phút).
 - Trong PowerShell, `… | Select-String -Pattern "…"` làm đầu ra hiện **từng đợt** và **mất các dòng không khớp** (vd dòng `JSON:`) – khi cần chờ một dòng cụ thể thì đừng lọc nó đi, hoặc ghi ra file rồi đọc.
 
+**(TASK-10 đợt 2) Điều mới học**
+- **Chấm/biểu tượng phụ chỉ có nghĩa nhờ nhãn truy cập:** chấm đỏ nhắc sao lưu là `aria-hidden`, còn nghĩa nằm ở `aria-label` của nút. Chuỗi nhãn mới phải **bắt đầu bằng đúng tên cũ** (`vi.home.parentBackup` bắt đầu bằng `vi.home.parent`) để mọi chỗ tìm nút theo tên cũ (test `getByRole('button', { name })` khớp chuỗi con, trình đọc màn hình) vẫn thấy. Kiểm bằng `toHaveAccessibleName(chuỗi)` (khớp CHÍNH XÁC).
+- **Logic phụ thuộc thời gian ("quá 14 ngày") → hàm thuần nhận `nowMs`** (`backupReminderDue(state, nowMs)`): unit test kiểm hết các ranh giới, còn e2e chỉ cần hai trạng thái chắc chắn (chưa từng sao lưu / vừa sao lưu) mà không phải giả đồng hồ.
+- **`a11y.spec.ts` chỉ quét đúng trạng thái mà hồ sơ gieo đang có:** Home được quét với hồ sơ 130 sao chưa sao lưu nên tự phủ cả chấm nhắc. Khi thêm trạng thái mới của Home, đảm bảo hồ sơ trong test quét đang ở trạng thái đó (hoặc thêm một lượt quét riêng).
+- **Công cụ QA ngoài dự án (axe-core, Lighthouse):** cài vào một thư mục tạm riêng bằng `npm install --ignore-scripts axe-core lighthouse` (**không** thêm vào `package.json`). Hai script chạy lại đã nằm trong repo: **`scripts/qa-axe.mjs`** (46 lượt: 23 màn × 2 khung) và **`scripts/qa-lighthouse.mjs`** (cách chạy ở đầu mỗi file và `docs/QA_REPORT.md` mục 9). Chạy trên bản build giống Pages: `npm run build:pages`, rồi **trong PowerShell** `$env:BASE_PATH='/nhanh-tay-tinh-mat/'; npx vite preview --port 4190 --strictPort --host 127.0.0.1` — **đừng chạy bằng Git Bash**: nó đổi `/nhanh-tay-tinh-mat/` thành đường dẫn Windows và máy chủ trả 404. `TaskStop` chỉ dừng lớp vỏ lệnh; tiến trình `vite preview` con vẫn giữ cổng → tắt bằng `Stop-Process` theo PID lấy từ `Get-NetTCPConnection -LocalPort 4190`. Lighthouse cần `CHROME_PATH` (Chrome cài sẵn).
+- **Chờ lệnh chạy lâu:** trong môi trường này lệnh foreground bắt đầu bằng `sleep`/`Start-Sleep` bị chặn → chạy lệnh dài bằng `run_in_background` rồi chờ thông báo, hoặc dùng công cụ **Monitor** với vòng `until`.
+- **Nghe thử âm thanh tuân theo cài đặt `sound` chung** (`audio.preview` đi qua `play()` như mọi âm khác): phụ huynh đã tắt âm thanh thì “Nghe thử” cũng im lặng.
+
 ---
 
 ## 8. Việc cần chủ dự án tự làm / còn chờ (chưa có ai kiểm trên máy thật)
@@ -344,32 +353,33 @@ Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
 - **TASK-07** (đã gộp + deploy 0.9.0): thử khu PH trên máy thật (khóa, biểu đồ, bài đo tuần, cài đặt, thưởng, **sao lưu → xóa dữ liệu trang → khôi phục**); **duyệt chữ R13**.
 - **TASK-08**: cài thử PWA lên điện thoại/Galaxy Tab bằng Chrome + chế độ máy bay (TC-001, 002, 012), mở thử bằng Samsung Internet; **TC-029** (mở app đã cài → “Có bản mới – Cập nhật” → thấy “Phiên bản 0.9.0”, dữ liệu còn nguyên); **duyệt icon**.
 - **Duyệt nội dung G6/G7** bằng `docs/samples/`.
-- **Duyệt hình TASK-06**: 40 sticker, 2 trang phục, 2 hình nền (`?gallery=1`); quyết định **Nhạc Cụ Gõ + Cú Mèo** (làm ở TASK-10 hay bỏ).
+- **Duyệt hình TASK-06**: 40 sticker, 2 trang phục, 2 hình nền (`?gallery=1`); **(0.9.3)** hình **Cú Mèo** + nghe thử **Nhạc Cụ Gõ** (đã làm, chờ duyệt – xem mục “TASK-10 đợt 2” bên dưới).
 - Thử trên **điện thoại Android** và **tablet Samsung**: cảm giác chơi G1–G7, **FPS thật** của G1/G3/G5 bằng `?debug=1`, TC-007 (2 ngón vào nốt đôi G5), TC-032, TC-033 (vuốt Quay lại), TC-034 (chia đôi màn hình/cửa sổ nổi), TC-035 (tablet không rung → lắc hình + âm “bụp”), TC-028 (G1 đen trắng); **hộp quà + album + nhiệm vụ + nghỉ đúng giờ** (cách thử từng bước ở PROGRESS, TASK-06).
 - **(TASK-09)** Danh sách đầy đủ, đánh số, kèm lý do vì sao cần máy thật: `docs/QA_REPORT.md` mục 8. Nổi bật: **bấm “Cập nhật” ở app đã cài (TC-029, bản 0.9.1 là lần deploy thứ 3)**, **FPS thật G3/G5 trên Galaxy Tab bằng `?debug=1`**.
 - **(TASK-10 đợt 1, 0.9.2)** Thử trên máy thật: **Home xoay ngang trên Galaxy Tab** (3 nhóm game cạnh nhau, 7 thẻ một hàng, gần như không phải cuộn; xoay dọc về 3 cột như cũ), **icon thẻ G1/G2 mới**, **phóng to 2 ngón ở Home** (được) → vào một game khi đang phóng (game tạm dừng + nhắc thu nhỏ, nút “Chơi tiếp” mờ) → chụm lại (nút sáng) → chơi tiếp; **đang chơi chụm 2 ngón (không phóng)**, G5 bằng 2 ngón vẫn bình thường.
+- **(TASK-10 đợt 2, 0.9.3 – sau khi gộp + deploy)** Thử trên máy thật: **Album → tab Đặc biệt** (Nhạc Cụ Gõ: “Nghe thử” rồi “Dùng”, chơi nghe tiếng đúng/sai/được sao; Cú Mèo: “Dùng” → Home, G6, G7 hiện Cú; mỗi bé một lựa chọn riêng, thoát hẳn app mở lại vẫn giữ), **bóng/khối G1 mới** (vẫn thấy rõ ✕ / ! / ~, chơi mượt; FPS bằng `?debug=1`), **G7 cấp 5** (cố ý chọn sai → lời giải thích “màu lặp… hình lặp…”), **Khu phụ huynh → Dữ liệu → xuất CSV** (mở bằng Excel / Google Trang tính: tiếng Việt đúng dấu), **chấm đỏ nhỏ trên nút Phụ huynh ở Home** khi chưa sao lưu > 14 ngày (bấm vào vẫn ra khóa phụ huynh; sao lưu xong thì chấm biến mất). Muốn thử nhanh sao: bản dev `?debug=1` → “+15 sao”.
 
 ---
 
 ## 9. Nợ kỹ thuật / đề xuất đã ghi nhận
 
 - ~~Home tablet ngang phải cuộn~~ → **đã làm ở TASK-10** (3 nhóm cạnh nhau từ 1200px, vừa một màn ở 1280×800). Ngang hẹp 900–1199px vẫn 4 cột và phải cuộn (cố ý).
-- ~~Biểu tượng thẻ G1, G2 phẳng hơn G3–G7~~ → **đã làm ở TASK-10**. Còn lại: **bóng/khối G1 trong game** (canvas) vẫn vẽ phẳng – có thể vẽ sprite một lần cho khớp icon (giữ 60 fps, quy tắc 17).
+- ~~Biểu tượng thẻ G1, G2 phẳng hơn G3–G7~~ → **đã làm ở TASK-10**. ~~Còn lại: bóng/khối G1 trong game vẽ phẳng~~ → **đã làm ở TASK-10 đợt 2** (sprite vẽ một lần, `games/g1-balls/art.ts`; đo lại 60 fps).
 - ~~G5: vẽ nền tĩnh (làn, vạch) vào lớp canvas riêng~~ → **đã làm ở TASK-09** (`.g5-underlay`).
 - **Kích thước JS** ≈ 99 KB gzip; đã đo khởi động offline FCP ≈ 100 ms (TASK-08) nên **không** tách gói tải sau; riêng Chart.js (TASK-07) nên tải sau.
 - Tên sticker trong Album 16px (nhỏ hơn mức 18px của SPEC) – đã có phóng to khi chạm.
 - Tỷ lệ độ hiếm thật ≈ 66 / 28,3 / 5,7 do “bảo đảm Hiếm” (SPEC không thể đúng cả 70/25/5 lẫn bảo đảm) – nếu cần chỉnh: `rollRarity` trong `rewards.ts`.
-- Bộ âm Nhạc Cụ Gõ + Linh vật Cú Mèo: đã mở khóa nhưng chưa dùng được.
-- G6: M11 tìm số thiếu ra số lớn (chủ đề lớp 3, không mặc định); G7 cấp 5 chưa có lời giải thích riêng cho hai nhịp lặp khác nhau.
-- Khu PH: chưa có xuất CSV; nhắc sao lưu chỉ hiện trong khu PH (chưa nhắc ở Home); bộ đếm “sai 3 lần” nằm trong bộ nhớ (tải lại trang là thử lại được); `ParentArea` dùng nav + `aria-current` (chưa có điều hướng bằng phím mũi tên kiểu tablist).
+- ~~Bộ âm Nhạc Cụ Gõ + Linh vật Cú Mèo: đã mở khóa nhưng chưa dùng được~~ → **đã làm ở TASK-10 đợt 2** (Album → Đặc biệt). Còn lại: **Cú Mèo chưa có trang phục** (chỉ Sóc Bo mặc được; thêm nếu anh muốn).
+- ~~G6: M11 tìm số thiếu ra số lớn; G7 cấp 5 chưa có lời giải thích riêng~~ → **đã làm ở TASK-10 đợt 2** (M11 ≤ 99; G7 cấp 5 giải thích “màu lặp… hình lặp…”).
+- Khu PH: ~~xuất CSV~~ và ~~nhắc sao lưu ở Home~~ → **đã làm ở TASK-10 đợt 2** (nút CSV ở tab Dữ liệu; chấm đỏ trên nút Phụ huynh); còn: so sánh nhiều bé; bộ đếm “sai 3 lần” nằm trong bộ nhớ (tải lại trang là thử lại được); `ParentArea` dùng nav + `aria-current` (chưa có điều hướng bằng phím mũi tên kiểu tablist).
 - Gói chính tăng lên ≈ 114 KB gzip vì giao diện khu PH (6 tab) nằm cùng gói; có thể tách `ui/parent/*` thành gói tải sau nếu TASK-09 thấy cần (Chart.js đã tách).
-- `AppState.installedVersion` chỉ ghi lúc tạo dữ liệu, chưa cập nhật khi app lên phiên bản mới (khu PH dùng `APP_VERSION` từ `version.ts`, không dùng trường này; nếu muốn biết “phiên bản đã từng cài”, thêm cập nhật khi mở app + test).
+- ~~`AppState.installedVersion` chỉ ghi lúc tạo dữ liệu~~ → **đã làm ở TASK-10 đợt 2** (`withInstalledVersion`, cập nhật khi mở app lên bản mới; khu PH vẫn hiện `APP_VERSION`).
 - Chưa kiểm trên **Samsung Internet** thật (TASK-08 chỉ kiểm bằng Chromium/Playwright); `gh` CLI chưa đăng nhập (chưa cần).
 - Thư viện cài ngoài danh sách CLAUDE.md đã được chấp nhận: `@types/node`, `@eslint/js`, `typescript-eslint`, `globals`, `eslint-config-prettier`. Phiên bản mới nhất: Vite 8, Preact 11, TypeScript 6, ESLint 10, Vitest 5, vite-plugin-pwa 2 (chạy ổn).
 - ~~**(TASK-09)** G3 ở tablet khi giả lập CPU ×4: 44–57 fps~~ → **đã điều tra ở TASK-10**: do Chromium thử nghiệm không có GPU; Chrome có GPU cho 60 fps tới CPU ×8, main thread bận 30% ở ×4 (xem mục 6 và `docs/QA_REPORT.md` mục 6). Vẫn cần xem FPS thật bằng `?debug=1` trên Galaxy Tab.
-- ~~**(TASK-09)** `user-scalable=no` trong viewport~~ → **đã bỏ ở TASK-10** (màn chơi vẫn chặn phóng, vào game khi đang phóng thì tạm dừng + nhắc). Cần thử máy thật; chưa chạy lại axe/Lighthouse sau thay đổi.
-- **(TASK-09)** `AppState.installedVersion` vẫn chưa cập nhật khi lên bản mới; khu PH chưa có xuất CSV; bộ đếm “sai 3 lần” nằm trong bộ nhớ.
-- **(TASK-09)** Chưa chạy lại Lighthouse sau TASK-09 (số cuối cùng vẫn là của TASK-08: Performance 83 · Accessibility 93 · Best Practices 81 · SEO 60); axe-core chỉ còn 1 mục (`user-scalable`).
+- ~~**(TASK-09)** `user-scalable=no` trong viewport~~ → **đã bỏ ở TASK-10** (màn chơi vẫn chặn phóng, vào game khi đang phóng thì tạm dừng + nhắc). Cần thử máy thật; **axe + Lighthouse đã chạy lại ở 0.9.3**: Accessibility 93 → 100, mục `meta-viewport` hết (xem `docs/QA_REPORT.md` mục 5).
+- **(TASK-09)** ~~`installedVersion` chưa cập nhật; chưa có xuất CSV~~ → đã làm ở TASK-10 đợt 2; bộ đếm “sai 3 lần” vẫn nằm trong bộ nhớ.
+- ~~**(TASK-09)** Chưa chạy lại Lighthouse sau TASK-09~~ → **đã chạy lại ở TASK-10 đợt 2 (0.9.3)**: Lighthouse 13.5 Performance 83 · Accessibility **100** · Best Practices 81 (chỉ thiếu HTTPS vì đo trên localhost) · SEO 60 (cố ý `noindex`); axe-core 4.14: **0 vi phạm / 46 lượt** (sau khi sửa `heading-order` ở Album). Chi tiết `docs/QA_REPORT.md` mục 5.
 
 ---
 
@@ -379,14 +389,16 @@ Ghi trong `docs/PROGRESS.md` từng TASK, tóm tắt:
 npm install            # (worktree mới: npm ci)
 npm run dev            # http://localhost:5173 (+ địa chỉ Network cho điện thoại/tablet)
 npm run lint           # eslint + tsc --noEmit
-npm test               # Vitest (529 test ở main/0.9.2; 568 test trên nhánh claude/task-10-part2)
+npm test               # Vitest (569 test ở nhánh đợt 2 / 0.9.3; 529 ở main 0.9.2)
 npm run build          # production
 npm run build:pages    # production với BASE_PATH=/nhanh-tay-tinh-mat/ (giống bản deploy)
 npm run icons          # vẽ lại icon PWA vào public/icons/ (cần `npx playwright install chromium`)
-npm run test:e2e       # Playwright 3 khung hình, 432 test (417 chạy + 15 bỏ qua có chủ ý; tự build dist-e2e + dist-e2e-base)
+npm run test:e2e       # Playwright 3 khung hình, 489 test (474 chạy + 15 bỏ qua có chủ ý; tự build dist-e2e + dist-e2e-base)
 npm run samples        # sinh docs/samples/G6.md, G7.md, G7.html
 npm run perf           # đo FPS G1/G3/G5 (build bản thật vào dist-perf); lọc: -- --games=G5 --viewports=tablet-portrait --cpu=4 --no-build
 npm run perf -- --gpu  # như trên nhưng bằng Chrome/Edge cài sẵn CÓ GPU (sát thiết bị thật; Chromium của Playwright không GPU nên fps ở CPU ×4 bi quan)
+node scripts/qa-axe.mjs <url> <thư mục cài axe-core> [kq.json]          # axe-core trên 23 màn × 2 khung (bản build giống Pages; xem đầu file script)
+node scripts/qa-lighthouse.mjs <url> <thư mục cài lighthouse> [kq.json]  # Lighthouse di động (cần biến CHROME_PATH)
 node scripts/qa-table.mjs <kq.json>   # bảng TC từ báo cáo JSON của Playwright
 npx playwright test rewards --project=phone --reporter=line   # chạy 1 file / 1 khung hình
 git add -A && git commit -m "feat: …" && GIT_TERMINAL_PROMPT=0 timeout 90 git push
