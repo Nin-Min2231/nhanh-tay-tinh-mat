@@ -31,6 +31,7 @@ import { freshSeed, mulberry32 } from './rng';
 import { starsForScore } from './scoring';
 import { isOutOfTime } from './session';
 import { storage } from './storage';
+import { withInstalledVersion } from './version';
 import type {
   AppState,
   GameId,
@@ -68,7 +69,8 @@ export function maintainRounds(profileId: string, now: Date = new Date()): Round
 }
 
 const loadedState = storage.loadState();
-const startState = reconcileUnlocks(loadedState);
+// đối chiếu mốc mở khóa + ghi nhận phiên bản app đang chạy; chỉ ghi lại khi có gì đổi
+const startState = withInstalledVersion(reconcileUnlocks(loadedState));
 if (startState !== loadedState) storage.saveState(startState);
 for (const p of startState.profiles) maintainRounds(p.id);
 
