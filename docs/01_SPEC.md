@@ -1,6 +1,6 @@
 # 01_SPEC – Đặc tả hệ thống “Nhanh Tay Tinh Mắt” (v1.2)
 
-> Nguồn: Excel `Game_NhanhTayTinhMat_PhanTich_KeHoach_v1.2.xlsx` (sheet 1–7). Mã yêu cầu F/NF/UI trùng với Excel.
+> Nguồn: Excel `Game_NhanhTayTinhMat_PhanTich_KeHoach_v1.2.xlsx` (sheet 1–7; để ở `docs/ke-hoach/`, chỉ có trên máy chủ dự án, không đẩy lên GitHub). Mã yêu cầu F/NF/UI trùng với Excel.
 > Ngày: 10/10/2026. Người dùng chính: bé 8 tuổi (Lớp 2) + phụ huynh. Có anh chị em dùng chung máy.
 > Thiết bị: điện thoại Android + máy tính bảng Samsung Galaxy Tab, trình duyệt Chrome. Không hỗ trợ iPad/iPhone.
 
