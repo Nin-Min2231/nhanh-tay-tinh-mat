@@ -74,6 +74,17 @@ Chủ dự án (2026-10-13) dặn **“thực hiện các việc còn lại cho 
 
 ---
 
+## 0c. 1.1.0 – mỗi chế độ (Dễ / Vừa / Tự động / Khó) một cấp riêng (2026-10-20, anh yêu cầu trực tiếp ở Claude Code)
+
+- **Luật** (chi tiết `docs/01_SPEC.md` mục 6, F04/F12): mỗi game có **4 sổ cấp** `GameProgress.tracks` (`ModeTrack {level, stars, recent}`), mỗi sổ bắt đầu cấp 1. **2 lượt 3 sao liên tiếp → sổ đó +1 cấp; 3 lượt liên tiếp chỉ 1 sao → −1 cấp** (số lượt ở `levels.json` → `adaptive.upStreak / downStreak`). Nội dung chơi = cấp của sổ + chênh (Dễ −2, Khó +2, kẹp 1–10). Lượt thứ 3 (sau 2 lượt 1 sao) màn Giới thiệu hiện **lời nhắc vui** (`dropWarning`), không chê/không trừ sao (quy tắc 3). Chế độ Cố định và bài đo vẫn không tính.
+- **Dữ liệu: schema 4** – `GameProgress` đổi `recentScores`/`bestStars` → `tracks` + `lastChoice` (`types.ts`, `profile.ts` `createModeTrack`, `validate.ts` `repairTrack`, `storage.ts` migration 3→4 `migrateGameV3`); `RoundRecord.trackLevel?` (cấp bé thấy; `level` vẫn là cấp nội dung thật). `GameProgress.level` giờ **chỉ là cấp cố định** (chế độ Cố định của phụ huynh).
+- **Mã:** `app/adaptive.ts` (`KID_CHOICES`, `trackLevel`, `levelForRound(g, choice)`, `applyRound(g, choice, stars, counts)`, `dropWarning`), `app/parentOps.ts` (`patchGameSettings` kẹp cả 4 sổ), `app/store.ts` (`recordRound` nhận `choice`; `LastResult.levelChange/choice/newLevel`), `ui/screens/{GameIntro,Home,Result,Play}.tsx`, `ui/parent/{SettingsTab,ProgressTab}.tsx`, `ui/components/{DebugPanel,starMeter}`, `app/csv.ts` (cột “Cấp của chế độ”), chuỗi mới trong `i18n/vi.ts` (`intro.dropWarning/modeLevel`, `result.levelUpDetail/levelDown`, `home.fixedLevel/cardLevel`, `parent.settings.currentLevels`).
+- **Giao diện:** nút chế độ hiện “Cấp n · ★★☆” (2 dòng); màn Giới thiệu mở sẵn chế độ chơi gần nhất (`lastChoice`) và **tự cuộn** để lời nhắc + nút Bắt đầu cùng hiện trên điện thoại (nút Bắt đầu dính đáy bị loại vì che lời nhắc); thẻ game ở Home hiện chế độ gần nhất (tên chế độ ở dòng trên nếu khác Tự động); khu phụ huynh hiện cấp của cả 4 chế độ.
+- **Test:** `adaptive.test.ts` viết lại (25 test); migration/validate/backup/csv/parentOps cập nhật; e2e `games.spec.ts` (TC-009/016/017 + thẻ Home), `parent.spec.ts` (min–max 4 sổ). Helper mới `withTrack(profile, game, choice, track, lastChoice?)`; `withGame({level})` ở chế độ Tự động đặt cấp của sổ “Tự động”.
+- **Bẫy đã gặp:** (1) `seedProfiles` luôn ghi `schemaVersion: 1` nên **mọi migration chạy lại trên dữ liệu gieo sẵn** → migration 3→4 phải **bỏ qua game đã có `tracks`** (nếu không sẽ ghi đè sổ cấp gieo trong test); (2) nút “Bắt đầu” `position: sticky` che mất lời nhắc ở lần mở đầu → dùng `scrollIntoView` khi có lời nhắc; (3) chip ở Home dùng `white-space: nowrap` và thẻ hẹp ≈155px (tablet ngang): tên chế độ để **dòng riêng** (`.game-meta.has-mode`) thay vì nối vào cùng dòng; (4) **`docs/HANDOVER_COWORK.md` vẫn ghi “schema 3”** – không sửa trong đợt này vì file đó đang bị xóa trong thư mục gốc của anh (chưa commit): sửa/gộp sẽ làm `merge --ff-only` bị từ chối.
+
+---
+
 ## 1. Cách bắt đầu phiên mới
 
 Chủ dự án (PM, không phải lập trình viên, xưng “anh”, trao đổi **tiếng Việt**) chỉ cần nhắn:
@@ -137,7 +148,7 @@ src/
     rewards.ts             # THUẦN + test: nhiệm vụ, hộp theo sao, giới hạn ngày, độ hiếm + bảo đảm, trùng, mở khóa theo sao,
                            #   nghỉ đúng giờ, grantParentBoxes (cho TASK-07). Danh mục STICKERS (stk-01…40) và UNLOCKS (8 mốc) ở đây
     session.ts             # RoundClock (chỉ cộng giờ khi Running, nhắc 2 phút, hết giờ +90s) + giờ chơi trong ngày
-    adaptive.ts / scoring.ts  # độ khó thích ứng (SPEC mục 6) / sao
+    adaptive.ts / scoring.ts  # độ khó thích ứng: 4 sổ cấp theo chế độ của bé (SPEC mục 6, mục 0c bên trên) / sao
     mathFacts.ts           # SỔ LỖI TOÁN (F19) thuần, có test
     router.ts + routes.ts  # ngăn xếp màn hình tự quản + hash route; backButton.ts = nút Quay lại Android
     e2e.ts                 # cờ ?e2e=1 / ?debug=1 / ?freeze=1 / ?gallery=1 / ?update=1 / ?sw=1 (chỉ dev hoặc build VITE_E2E)
