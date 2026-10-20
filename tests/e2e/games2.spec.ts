@@ -20,6 +20,7 @@ import {
   startGame,
   tapEmptySpot,
   withGame,
+  withTrack,
 } from './helpers';
 
 const FREEZE_URL = '/?e2e=1&seed=12345&freeze=1';
@@ -352,8 +353,13 @@ test.describe('G5 – nốt nhạc rơi', () => {
 // ------------------------------------------------------------------ Độ khó thích ứng trên game mới
 
 test.describe('Độ khó thích ứng với G3/G4/G5', () => {
-  test('G4 chọn “Khó” → chơi ở cấp +2 mà cấp tự động không đổi', async ({ page }) => {
-    const p = withGame(makeProfile('An'), 'G4', { level: 3 });
+  test('G4 chọn “Khó” → chơi ở cấp +2 so với cấp của sổ Khó; sổ Tự động và sổ Khó không đổi khi thoát', async ({
+    page,
+  }) => {
+    // sổ Tự động cấp 3 (bé chưa đụng tới Khó) và sổ Khó cấp 3: Khó chơi nội dung cấp 3 + 2 = 5
+    const p = withTrack(withGame(makeProfile('An'), 'G4', { level: 3 }), 'G4', 'hard', {
+      level: 3,
+    });
     await seedProfiles(page, [p]);
     await page.goto('/?e2e=1&seed=12345');
     await page.getByTestId('game-G4').click();
@@ -364,7 +370,9 @@ test.describe('Độ khó thích ứng với G3/G4/G5', () => {
     );
     expect(params).toMatchObject({ level: 5, pads: 6 });
     await leaveRound(page);
-    expect((await readState(page)).profiles[0]!.games.G4.level).toBe(3);
+    const g4 = (await readState(page)).profiles[0]!.games.G4;
+    expect(g4.tracks.auto.level).toBe(3); // thoát giữa chừng: lượt không lưu → các sổ nguyên vẹn
+    expect(g4.tracks.hard.level).toBe(3);
   });
 
   test('tùy chọn phụ huynh G3 “Nhím: bật” ở cấp 1 → có 1 Nhím', async ({ page }) => {

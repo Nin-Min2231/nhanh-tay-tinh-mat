@@ -9,7 +9,15 @@ import {
   type Note,
 } from '../../src/games/g5-notes/logic';
 import { vi } from '../../src/i18n/vi';
-import type { AppState, DayUsage, GameId, Profile, RoundRecord } from '../../src/app/types';
+import type {
+  AppState,
+  DayUsage,
+  GameId,
+  KidChoice,
+  ModeTrack,
+  Profile,
+  RoundRecord,
+} from '../../src/app/types';
 
 /** Mở app ở chế độ test: lượt G1 rút còn 6 giây, seed cố định (cần build với VITE_E2E=true). */
 export const E2E_URL = '/?e2e=1&seed=12345';
@@ -39,13 +47,36 @@ export function makeProfile(
   return { ...p, ...patch, days: { [todayKey()]: day } };
 }
 
-/** Hồ sơ có G1/G2 ở cấp/chế độ chỉ định. */
+/**
+ * Hồ sơ có game ở cấp/chế độ chỉ định. Khi game ở chế độ Tự động của phụ huynh, `level` đặt luôn cấp của sổ “Tự động”
+ * (mỗi lựa chọn Dễ / Vừa / Tự động / Khó của bé có sổ cấp riêng – xem `withTrack`); Cố định thì `level` là cấp cố định.
+ */
 export function withGame(
   profile: Profile,
   id: GameId,
   patch: Partial<Profile['games'][GameId]>,
 ): Profile {
-  return { ...profile, games: { ...profile.games, [id]: { ...profile.games[id], ...patch } } };
+  const next = { ...profile.games[id], ...patch };
+  if (patch.level !== undefined && patch.tracks === undefined && next.mode !== 'fixed') {
+    next.tracks = { ...next.tracks, auto: { level: patch.level, stars: 0, recent: [] } };
+  }
+  return { ...profile, games: { ...profile.games, [id]: next } };
+}
+
+/** Đặt sổ cấp của MỘT lựa chọn (Dễ / Vừa / Tự động / Khó) trong một game; các sổ khác giữ nguyên. */
+export function withTrack(
+  profile: Profile,
+  id: GameId,
+  choice: KidChoice,
+  track: Partial<ModeTrack>,
+  lastChoice?: KidChoice,
+): Profile {
+  const g = profile.games[id];
+  const tracks = { ...g.tracks, [choice]: { ...g.tracks[choice], ...track } };
+  return {
+    ...profile,
+    games: { ...profile.games, [id]: { ...g, tracks, lastChoice: lastChoice ?? g.lastChoice } },
+  };
 }
 
 /** Gieo sẵn dữ liệu localStorage trước khi app tải (chỉ khi chưa có dữ liệu). */

@@ -225,6 +225,16 @@
   --s: var(--color-pink-soft);
   --sel: var(--color-pink);
 }
+/* Nút chế độ có hai dòng: tên + “Cấp n · ★★☆” (cấp riêng của từng chế độ) */
+.seg-name,
+.seg-level {
+  display: block;
+}
+.seg-level {
+  margin-top: 2px;
+  font-size: var(--font-body);
+  font-weight: 700;
+}
 /* 4 lựa chọn độ khó: 2×2 trên điện thoại hẹp, 1 hàng khi đủ rộng */
 .segmented-wrap {
   flex-wrap: wrap;
@@ -608,12 +618,24 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 12px;
+  /* thẻ hẹp (≈ 157px trên điện thoại): “Cấp 10 · ★★★” không được xuống dòng làm sao rơi xuống dưới */
+  padding: 2px 8px;
+  white-space: nowrap;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.75);
   font-size: var(--font-body);
   font-weight: 700;
   color: var(--color-text);
+}
+/* Chế độ bé chơi gần nhất khác “Tự động”: tên chế độ ở dòng trên, “Cấp n · ★★☆” ở dòng dưới */
+.game-meta.has-mode {
+  flex-direction: column;
+  gap: 0;
+  border-radius: 16px;
+  line-height: 1.25;
+}
+.game-meta-mode {
+  font-weight: 800;
 }
 
 /* ---------- Banner / toast ---------- */
@@ -664,6 +686,17 @@
   max-width: 480px;
   font-size: 20px;
   font-weight: 700;
+}
+/* Nhắc nhẹ nhàng ở lượt cuối trước khi xuống cấp: nền vàng nhạt, chữ rõ, không có màu/âm báo lỗi */
+.intro-warn {
+  margin: 0;
+  max-width: 480px;
+  padding: 8px 14px;
+  border: var(--border);
+  border-radius: 16px;
+  background: var(--color-yellow-soft);
+  font-size: var(--font-body);
+  font-weight: 800;
 }
 .intro-anim {
   position: relative;
@@ -1067,6 +1100,12 @@
 .levelup-detail {
   margin: -8px 0 0;
   font-weight: 800;
+}
+/* Xuống cấp: chỉ là lời động viên, không dùng màu cảnh báo */
+.levelup-detail.level-down {
+  margin: 0;
+  max-width: 480px;
+  font-size: 20px;
 }
 .result-praise,
 .result-metric,

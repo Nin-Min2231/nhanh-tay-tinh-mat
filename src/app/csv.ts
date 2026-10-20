@@ -39,7 +39,7 @@ const gameName = (id: string): string =>
 const deviceName = (d: string): string => vi.parent.progress.devices[d] ?? d;
 const modeName = (m: string): string => vi.parent.progress.modes[m] ?? m;
 
-/** Lịch sử từng lượt: ngày, giờ, game, cấp, chế độ, bài đo, điểm %, sao, thời lượng, thiết bị + mỗi chỉ số một cột. */
+/** Lịch sử từng lượt: ngày, giờ, game, cấp (nội dung thật), cấp của chế độ, chế độ, bài đo, điểm %, sao, thời lượng, thiết bị + mỗi chỉ số một cột. */
 export function roundsCsv(rounds: readonly RoundRecord[]): string {
   const sorted = [...rounds].sort((a, b) => a.startedAt.localeCompare(b.startedAt));
   const keys = metricKeys(sorted);
@@ -49,6 +49,7 @@ export function roundsCsv(rounds: readonly RoundRecord[]): string {
     c.time,
     c.game,
     c.level,
+    c.trackLevel,
     c.mode,
     c.benchmark,
     c.scorePct,
@@ -65,6 +66,7 @@ export function roundsCsv(rounds: readonly RoundRecord[]): string {
       valid ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}` : '',
       gameName(r.gameId),
       r.level,
+      r.trackLevel, // trống ở lượt cũ, bài đo và chế độ Cố định
       modeName(r.mode),
       r.benchmark ? c.yes : c.no,
       Math.round(r.score * 100),

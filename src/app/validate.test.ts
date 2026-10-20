@@ -45,9 +45,14 @@ function richProfile(id = 'pa'): Profile {
     level: 4,
     minLevel: 2,
     maxLevel: 8,
-    recentScores: [0.6, 0.9, 0.85],
+    tracks: {
+      easy: { level: 3, stars: 2, recent: [3] },
+      normal: { level: 1, stars: 0, recent: [] },
+      auto: { level: 5, stars: 3, recent: [2, 3, 3] },
+      hard: { level: 2, stars: 1, recent: [1, 1] },
+    },
+    lastChoice: 'hard',
     options: { grid: 4, order: 'backward' },
-    bestStars: 3,
     plays: 7,
   };
   p.math = {
@@ -175,7 +180,19 @@ describe('repairProfile – trường thiếu hoặc sai kiểu', () => {
       stickers: { a: 2, b: 'x', c: Number.NaN },
       boxes: { pending: -4, openedTotal: null },
       limits: { dailyMinutes: 'x' },
-      games: { G1: { level: 99, mode: 'lạ', recentScores: [0.5, 'x', null, 2], options: [] } },
+      games: {
+        G1: {
+          level: 99,
+          mode: 'lạ',
+          tracks: {
+            auto: { level: 99, stars: 'x', recent: [3, 'x', null, 2, 7, 1, 3, 3] },
+            easy: { level: 2.6, stars: 9 },
+            hard: 'hỏng',
+          },
+          lastChoice: 'lạ',
+          options: [],
+        },
+      },
       days: { 'không-phải-ngày': {}, '2026-10-10': 'hỏng', '2026-10-09': { playMs: 'x' } },
       rewardLog: [{ at: 1 }, null, { at: 'a', kind: 'time', amount: 5, reason: 'khác' }],
     };
@@ -189,8 +206,15 @@ describe('repairProfile – trường thiếu hoặc sai kiểu', () => {
     expect(p.games.G1).toMatchObject({
       level: 10,
       mode: 'auto',
-      recentScores: [0.5, 2],
+      lastChoice: 'auto', // giá trị lạ → mặc định
       options: {},
+    });
+    // sổ cấp: cấp 1–10 (làm tròn), sao 0–3, chỉ giữ sao hợp lệ 1–3 và tối đa 3 lượt gần nhất; sổ hỏng → mặc định
+    expect(p.games.G1.tracks).toEqual({
+      easy: { level: 3, stars: 3, recent: [] },
+      normal: { level: 1, stars: 0, recent: [] },
+      auto: { level: 10, stars: 0, recent: [1, 3, 3] },
+      hard: { level: 1, stars: 0, recent: [] },
     });
     expect(Object.keys(p.days)).toEqual(['2026-10-09']);
     expect(p.days['2026-10-09']!.playMs).toBe(0);
@@ -282,7 +306,16 @@ function expectProfileShape(p: Profile) {
     expect(g.level).toBeGreaterThanOrEqual(1);
     expect(g.level).toBeLessThanOrEqual(10);
     expect(g.minLevel).toBeLessThanOrEqual(g.maxLevel);
-    expect(g.recentScores.every(Number.isFinite)).toBe(true);
+    expect(['easy', 'normal', 'auto', 'hard']).toContain(g.lastChoice);
+    for (const t of Object.values(g.tracks)) {
+      expect(Number.isInteger(t.level)).toBe(true);
+      expect(t.level).toBeGreaterThanOrEqual(1);
+      expect(t.level).toBeLessThanOrEqual(10);
+      expect(t.stars).toBeGreaterThanOrEqual(0);
+      expect(t.stars).toBeLessThanOrEqual(3);
+      expect(t.recent.length).toBeLessThanOrEqual(3);
+      expect(t.recent.every((s) => s === 1 || s === 2 || s === 3)).toBe(true);
+    }
   }
   for (const [k, d] of Object.entries(p.days)) {
     expect(k).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -314,6 +347,16 @@ describe('sanitizeRound / sanitizeDaily', () => {
   it('lượt hợp lệ giữ nguyên', () => {
     const r = round({ benchmark: true, mode: 'fixed', level: 7, stars: 3, deviceClass: 'tablet' });
     expect(sanitizeRound(r)).toEqual(r);
+  });
+
+  it('cấp của chế độ (trackLevel, từ 1.1.0): giữ khi hợp lệ, kẹp 1–10, không bịa cho lượt cũ', () => {
+    const withTrack = round({ trackLevel: 4 });
+    expect(sanitizeRound(withTrack)).toEqual(withTrack);
+    expect(sanitizeRound({ ...round(), trackLevel: 99 })!.trackLevel).toBe(10);
+    expect(sanitizeRound({ ...round(), trackLevel: -3 })!.trackLevel).toBe(1);
+    // lượt cũ / sai kiểu: không có khóa trackLevel (không thêm giá trị giả)
+    expect(sanitizeRound(round())).not.toHaveProperty('trackLevel');
+    expect(sanitizeRound({ ...round(), trackLevel: 'x' })).not.toHaveProperty('trackLevel');
   });
 
   it('thiếu thông tin cốt lõi → bỏ', () => {

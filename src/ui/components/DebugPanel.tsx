@@ -1,5 +1,6 @@
 // Bảng chỉnh nhanh độ khó/tùy chọn game – chỉ hiện khi chạy dev với ?debug=1 (xem src/app/e2e.ts).
 // Giao diện phụ huynh thật sẽ làm ở TASK-07.
+import { KID_CHOICES } from '../../app/adaptive';
 import { DEBUG } from '../../app/e2e';
 import { activeProfile, setGameProgress } from '../../app/store';
 import type { GameId, GameProgress } from '../../app/types';
@@ -63,11 +64,17 @@ export function DebugPanel({ gameId }: { gameId: GameId }) {
           ]}
           onChange={(v) => set({ mode: v === 'fixed' ? 'fixed' : 'auto' })}
         />
+        {/* Cố định: cấp cố định. Tự động: cấp của sổ “Tự động” (3 sổ còn lại giữ nguyên). */}
         <Select
           label={vi.debug.level}
-          value={String(g.level)}
+          value={String(g.mode === 'fixed' ? g.level : g.tracks.auto.level)}
           options={levelOptions}
-          onChange={(v) => set({ level: Number(v) })}
+          onChange={(v) =>
+            set({
+              level: Number(v),
+              tracks: { ...g.tracks, auto: { level: Number(v), stars: 0, recent: [] } },
+            })
+          }
         />
         <Select
           label={vi.debug.minLevel}
@@ -242,7 +249,11 @@ export function DebugPanel({ gameId }: { gameId: GameId }) {
         )}
       </div>
       <p class="debug-note" data-testid="debug-recent">
-        {vi.debug.recent(g.recentScores)}
+        {vi.debug.tracks(
+          KID_CHOICES.map(
+            (c) => [vi.intro[c], g.tracks[c].level, g.tracks[c].stars, g.tracks[c].recent] as const,
+          ),
+        )}
       </p>
     </section>
   );

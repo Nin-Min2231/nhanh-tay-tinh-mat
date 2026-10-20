@@ -92,6 +92,11 @@ export const vi = {
     outOfTime: 'Hôm nay con đã chơi đủ rồi!',
     goRest: 'Đến góc nghỉ',
     bestStars: (n: number) => `Sao tốt nhất: ${n}`,
+    /** Chip dưới tên game khi phụ huynh đặt cấp cố định. */
+    fixedLevel: (n: number) => `Cấp ${n} · Cố định`,
+    /** Nhãn truy cập của thẻ game: chế độ bé chơi gần nhất, cấp và số sao ở cấp đó. */
+    cardLevel: (mode: string, level: number, stars: number) =>
+      `${mode}, cấp ${level}, ${stars} sao`,
     updateAvailable: 'Có bản mới – Cập nhật',
     gift: 'Hộp quà',
     giftWaiting: (n: number) => `Con có ${n} hộp quà đang chờ!`,
@@ -253,6 +258,12 @@ export const vi = {
     replay: 'Xem lại hướng dẫn',
     benchmark: 'Thử thách tuần',
     benchmarkNote: 'Con cố gắng hết sức nhé!',
+    /** Nhắc nhẹ nhàng ở lượt cuối trước khi xuống cấp (không chê bé, không trừ sao). */
+    dropWarning:
+      'Lượt này con cố lên nhé! Nếu vẫn còn khó, game sẽ cho con chơi cấp nhẹ hơn để luyện tiếp.',
+    /** Nhãn truy cập của nút chế độ: tên, cấp và số sao ở cấp đó. */
+    modeLevel: (name: string, level: number, stars: number) =>
+      `${name}, cấp ${level}, ${stars} sao`,
   },
   play: {
     pause: 'Tạm dừng',
@@ -274,7 +285,9 @@ export const vi = {
       3: 'Tuyệt vời! Con thật siêu!',
     } as Record<number, string>,
     levelUp: 'Lên cấp!',
-    levelUpDetail: (n: number) => `Bây giờ con ở cấp ${n}`,
+    levelUpDetail: (mode: string, n: number) => `Chế độ ${mode}: bây giờ con ở cấp ${n}`,
+    /** Xuống cấp: chỉ đổi cấp và động viên, không chê, không âm thanh buồn, không trừ sao. */
+    levelDown: (mode: string, n: number) => `Mình luyện thêm ở cấp ${n} của chế độ ${mode} nhé!`,
     missionsProgress: (n: number) => `Nhiệm vụ hôm nay: ${n}/3`,
     missionDone: (name: string) => `Xong nhiệm vụ ${name}!`,
     giftEarned: 'Con nhận được hộp quà!',
@@ -550,7 +563,9 @@ export const vi = {
       autoHint: 'Tự động: độ khó tăng/giảm theo kết quả của bé, trong khoảng cấp đã chọn.',
       fixedHint: 'Cố định: luôn chơi ở một cấp, không tự đổi.',
       level: 'Cấp cố định',
-      currentLevel: (n: number) => `Cấp hiện tại: ${n}`,
+      /** Cấp hiện tại của từng chế độ bé chọn: [tên chế độ, cấp][]. */
+      currentLevels: (items: readonly (readonly [string, number])[]) =>
+        `Cấp hiện tại – ${items.map(([name, n]) => `${name}: ${n}`).join(' · ')}`,
       minLevel: 'Cấp thấp nhất',
       maxLevel: 'Cấp cao nhất',
       summaryAuto: (lo: number, hi: number) => `Tự động · cấp ${lo}–${hi}`,
@@ -668,6 +683,7 @@ export const vi = {
         time: 'Giờ',
         game: 'Game',
         level: 'Cấp độ',
+        trackLevel: 'Cấp của chế độ',
         mode: 'Chế độ',
         benchmark: 'Bài đo tuần',
         scorePct: 'Điểm (%)',
@@ -762,9 +778,13 @@ export const vi = {
     addBox: '+1 hộp quà',
     addStars: (n: number) => `+${n} sao`,
     resetDay: 'Làm mới ngày hôm nay',
-    recent: (scores: number[]) =>
-      scores.length === 0
-        ? 'Điểm gần đây: chưa có'
-        : `Điểm gần đây: ${scores.map((s) => s.toFixed(2)).join(', ')}`,
+    /** Sổ cấp của game: [tên chế độ, cấp, sao ở cấp, sao các lượt gần đây][]. */
+    tracks: (items: readonly (readonly [string, number, number, readonly number[]])[]) =>
+      `Sổ cấp – ${items
+        .map(
+          ([name, level, stars, recent]) =>
+            `${name}: cấp ${level}, ${stars} sao, gần đây [${recent.join(',')}]`,
+        )
+        .join(' | ')}`,
   },
 } as const;

@@ -1,5 +1,5 @@
 import { GAME_IDS, levelsConfig } from '../games/levels';
-import type { DayUsage, GameId, GameProgress, Grade, Profile } from './types';
+import type { DayUsage, GameId, GameProgress, Grade, ModeTrack, Profile } from './types';
 
 export const MAX_PROFILES = 5;
 export const NAME_MAX_LENGTH = 12;
@@ -26,15 +26,25 @@ export function getDay(profile: Profile, key: string): DayUsage {
   return profile.days[key] ?? emptyDay();
 }
 
+/** Sổ cấp mới của một chế độ: cấp 1, chưa có sao, chưa có lượt nào. */
+export function createModeTrack(level = 1): ModeTrack {
+  return { level, stars: 0, recent: [] };
+}
+
 export function createGameProgress(): GameProgress {
   return {
     mode: 'auto',
     level: 1,
     minLevel: 1,
     maxLevel: 10,
-    recentScores: [],
+    tracks: {
+      easy: createModeTrack(),
+      normal: createModeTrack(),
+      auto: createModeTrack(),
+      hard: createModeTrack(),
+    },
+    lastChoice: 'auto',
     options: {},
-    bestStars: 0,
     plays: 0,
   };
 }

@@ -78,11 +78,13 @@ export interface MathTopic {
 export interface LevelsConfig {
   version: string;
   adaptive: {
-    window: number;
-    upAvg: number;
-    downAvg: number;
-    twoLowBelow: number;
+    /** Số lượt 3 sao liên tiếp (cùng chế độ, cùng cấp) để lên 1 cấp. */
+    upStreak: number;
+    /** Số lượt liên tiếp chỉ 1 sao để xuống 1 cấp (lượt kế cuối nhắc bé nhẹ nhàng). */
+    downStreak: number;
+    /** Chênh cấp nội dung của chế độ Dễ so với số cấp của chế độ (âm = nhẹ hơn). */
     kidEasyDelta: number;
+    /** Chênh cấp nội dung của chế độ Khó so với số cấp của chế độ. */
     kidHardDelta: number;
   };
   stars: { two: number; three: number };

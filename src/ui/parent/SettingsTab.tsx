@@ -1,6 +1,7 @@
 // Tab Cài đặt (F07, F09, F11, F12, F17): thời gian/ngày, hộp quà, âm thanh/nhạc/rung, quyền chọn độ khó của bé,
 // độ khó từng game (Tự động min–max / Cố định + tùy chọn riêng), toán G6 (lớp + chủ đề), nhóm dạng câu G7.
 import { vi } from '../../i18n/vi';
+import { KID_CHOICES, trackLevel } from '../../app/adaptive';
 import { DAILY_MINUTES_STEP } from '../../app/parentOps';
 import {
   parentPatchGame,
@@ -190,7 +191,7 @@ function GamePanel({ profile, gameId }: { profile: Profile; gameId: GameId }) {
               />
             </div>
             <p class="parent-note" data-testid={`current-${gameId}`}>
-              {S.currentLevel(g.level)}
+              {S.currentLevels(KID_CHOICES.map((c) => [vi.intro[c], trackLevel(g, c)] as const))}
             </p>
           </>
         )}

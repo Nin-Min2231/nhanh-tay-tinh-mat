@@ -71,15 +71,10 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
     // Bài đo tuần (F16): cấp cố định theo levels.json, tùy chọn mặc định, toán theo chủ đề mặc định của lớp.
     const benchmark = pending.benchmark === true;
     const level = benchmark ? benchmarkLevel(gameId) : levelForRound(progress, pending.choice);
-    // Cố định > lựa chọn của bé. Chỉ lượt Tự động + bé chọn “Tự động” mới tính vào độ khó thích ứng.
-    const mode: RoundMode = benchmark
-      ? 'fixed'
-      : progress.mode === 'fixed'
-        ? 'fixed'
-        : pending.choice === 'auto'
-          ? 'auto'
-          : pending.choice;
-    const countsForAdaptive = progress.mode === 'auto' && pending.choice === 'auto' && !benchmark;
+    // Cố định > lựa chọn của bé. Game ở chế độ Tự động của phụ huynh: mọi lựa chọn của bé (Dễ / Vừa / Tự động / Khó)
+    // đều tính vào sổ cấp RIÊNG của lựa chọn đó; bài đo tuần và chế độ Cố định thì không tính.
+    const mode: RoundMode = benchmark || progress.mode === 'fixed' ? 'fixed' : pending.choice;
+    const countsForAdaptive = progress.mode === 'auto' && !benchmark;
     const gameOptions = benchmark ? {} : progress.options;
 
     const settle = (result: RoundResult | null): void => {
@@ -92,6 +87,7 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
           gameId,
           level,
           mode,
+          choice: pending.choice,
           startedAt,
           result,
           playedMs: clock.playedMs,
@@ -104,7 +100,8 @@ export function PlayScreen({ gameId }: { gameId: GameId }) {
           score: result.score,
           stars,
           metrics: result.metrics,
-          leveledUp: change === 'up',
+          levelChange: change,
+          choice: pending.choice,
           newLevel,
           outOfTime: clock.remainingMs <= 0,
           rewards,

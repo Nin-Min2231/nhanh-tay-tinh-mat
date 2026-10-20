@@ -2,7 +2,8 @@
 // Mục tiêu: dữ liệu hỏng, thiếu trường hay bị sửa tay KHÔNG làm app sập. Với dữ liệu hợp lệ, mọi hàm ở đây
 // trả về đúng nội dung cũ (idempotent) – chỉ phần sai kiểu/thiếu mới bị thay bằng giá trị mặc định.
 import { GAME_IDS } from '../games/levels';
-import { createGameProgress, createProfile, emptyDay } from './profile';
+import { KID_CHOICES } from './adaptive';
+import { createGameProgress, createModeTrack, createProfile, emptyDay } from './profile';
 import type {
   AppState,
   DailyAggregate,
@@ -13,6 +14,7 @@ import type {
   GlobalSettings,
   Grade,
   MathFact,
+  ModeTrack,
   Profile,
   RewardLogEntry,
   RewardReason,
@@ -86,6 +88,8 @@ export function sanitizeRound(v: unknown): RoundRecord | null {
     gameId: v.gameId,
     startedAt: v.startedAt,
     level: num(v.level, 1, 1, 10),
+    // cấp của chế độ: chỉ có ở lượt từ 1.1.0 trở đi → không bịa giá trị cho lượt cũ
+    ...(isFiniteNum(v.trackLevel) ? { trackLevel: num(v.trackLevel, 1, 1, 10) } : {}),
     mode: ROUND_MODES.find((m) => m === v.mode) ?? 'auto',
     benchmark: v.benchmark === true,
     options: cleanOptions(v.options),
@@ -134,18 +138,37 @@ export function sanitizeDaily(list: unknown): DailyAggregate[] {
 
 // ---------------------------------------------------------------- hồ sơ
 
+/** Sổ cấp của một chế độ: cấp 1–10, sao 0–3, tối đa 3 lượt gần nhất (mỗi lượt 1–3 sao). */
+function repairTrack(v: unknown): ModeTrack {
+  const base = createModeTrack();
+  if (!isRec(v)) return base;
+  return {
+    level: Math.round(num(v.level, base.level, 1, 10)),
+    stars: Math.round(num(v.stars, 0, 0, 3)),
+    recent: numArray(v.recent)
+      .filter((s) => s === 1 || s === 2 || s === 3)
+      .slice(-3),
+  };
+}
+
 function repairGame(v: unknown): GameProgress {
   const base = createGameProgress();
   if (!isRec(v)) return base;
   const minLevel = num(v.minLevel, base.minLevel, 1, base.maxLevel);
+  const tracks = isRec(v.tracks) ? v.tracks : {};
   return {
     mode: v.mode === 'fixed' ? 'fixed' : 'auto',
     level: num(v.level, base.level, 1, base.maxLevel),
     minLevel,
     maxLevel: num(v.maxLevel, base.maxLevel, minLevel, base.maxLevel),
-    recentScores: numArray(v.recentScores),
+    tracks: {
+      easy: repairTrack(tracks.easy),
+      normal: repairTrack(tracks.normal),
+      auto: repairTrack(tracks.auto),
+      hard: repairTrack(tracks.hard),
+    },
+    lastChoice: KID_CHOICES.find((c) => c === v.lastChoice) ?? base.lastChoice,
     options: cleanOptions(v.options),
-    bestStars: num(v.bestStars, 0, 0, 3),
     plays: num(v.plays, 0, 0),
   };
 }

@@ -73,7 +73,13 @@ function populated() {
     mode: 'fixed',
     options: { grid: 4 },
     plays: 6,
-    bestStars: 3,
+    // sổ cấp riêng từng chế độ phải khứ hồi nguyên vẹn
+    tracks: {
+      ...a.games.G2.tracks,
+      easy: { level: 3, stars: 2, recent: [3] },
+      hard: { level: 5, stars: 1, recent: [1, 1] },
+    },
+    lastChoice: 'hard',
   };
   a.math.facts = { '8+7': { seen: 3, correct: 2, streak: 1, lastSeenRound: 4, mastered: false } };
   state.profiles = [a, b];
@@ -198,6 +204,37 @@ describe('sao lưu → khôi phục khứ hồi (TC-025)', () => {
     expect(
       parsed.backup.state.profiles.every((p) => p.mascotId === null && p.soundSetId === null),
     ).toBe(true);
+  });
+});
+
+describe('file sao lưu từ bản 1.0.x (schema 3, chưa có sổ cấp theo chế độ)', () => {
+  it('khôi phục được: cấp hiện tại → sổ Tự động, các sổ còn lại cấp 1; lượt chơi và tổng hợp ngày giữ nguyên', () => {
+    const { st, state } = populated();
+    const file = createBackup(st.snapshot(state), new Date('2026-10-15T09:00:00'), '1.0.1');
+    const legacy = JSON.parse(JSON.stringify(file));
+    legacy.state.schemaVersion = 3;
+    for (const p of legacy.state.profiles) {
+      for (const g of Object.values(p.games) as Record<string, unknown>[]) {
+        delete g.tracks;
+        delete g.lastChoice;
+        g.level = 4;
+        g.recentScores = [0.95, 0.4];
+        g.bestStars = 3;
+      }
+    }
+    const r = parseBackup(JSON.stringify(legacy));
+    if (!r.ok) throw new Error('phải đọc được');
+    expect(r.backup.state.schemaVersion).toBe(CURRENT_SCHEMA);
+    const g1 = r.backup.state.profiles[0]!.games.G1;
+    expect(g1.tracks.auto).toEqual({ level: 4, stars: 3, recent: [3, 1] });
+    for (const c of ['easy', 'normal', 'hard'] as const) {
+      expect(g1.tracks[c], c).toEqual({ level: 1, stars: 0, recent: [] });
+    }
+    expect(g1.lastChoice).toBe('auto');
+    expect(g1).not.toHaveProperty('bestStars');
+    expect(g1).not.toHaveProperty('recentScores');
+    expect(r.preview.totalRounds).toBe(4);
+    expect(r.backup.rounds.pa).toHaveLength(3);
   });
 });
 

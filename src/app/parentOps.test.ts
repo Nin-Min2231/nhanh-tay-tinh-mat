@@ -92,11 +92,34 @@ describe('độ khó từng game (F11, TC-015)', () => {
     expect(g).toMatchObject({ mode: 'fixed', level: 5 });
   });
 
-  it('chế độ Tự động: cấp bị kẹp trong [min, max]', () => {
-    let g = patchGameSettings(createGameProgress(), { minLevel: 3, maxLevel: 6 });
-    expect(g.level).toBe(3); // cấp 1 < min → nâng lên 3
-    g = patchGameSettings({ ...g, level: 9 }, {});
-    expect(g.level).toBe(6);
+  it('chế độ Tự động: cả 4 sổ cấp bị kẹp trong [min, max] (sổ bị kẹp thì sao về 0)', () => {
+    const start = createGameProgress();
+    start.tracks.easy = { level: 2, stars: 3, recent: [3] };
+    start.tracks.hard = { level: 9, stars: 2, recent: [2] };
+    const g = patchGameSettings(start, { minLevel: 3, maxLevel: 6 });
+    expect(g.tracks.auto).toEqual({ level: 3, stars: 0, recent: [] }); // cấp 1 < min → nâng lên 3
+    expect(g.tracks.normal.level).toBe(3);
+    expect(g.tracks.easy).toEqual({ level: 3, stars: 0, recent: [] }); // cấp 2 < min
+    expect(g.tracks.hard).toEqual({ level: 6, stars: 0, recent: [] }); // cấp 9 > max
+  });
+
+  it('sổ cấp nằm trong khoảng thì giữ nguyên cấp và sao; đổi khoảng chỉ xóa lịch sử lượt gần đây', () => {
+    const start = createGameProgress();
+    start.tracks.auto = { level: 5, stars: 2, recent: [2, 3] };
+    const g = patchGameSettings(start, { minLevel: 2, maxLevel: 8 });
+    expect(g.tracks.auto).toEqual({ level: 5, stars: 2, recent: [] });
+  });
+
+  it('đổi Tự động → Cố định mà chưa chọn cấp: bắt đầu từ cấp của sổ “Tự động”, các sổ cấp vẫn giữ', () => {
+    const start = createGameProgress();
+    start.tracks.auto = { level: 4, stars: 1, recent: [1] };
+    start.tracks.easy = { level: 3, stars: 0, recent: [] };
+    const g = patchGameSettings(start, { mode: 'fixed' });
+    expect(g).toMatchObject({ mode: 'fixed', level: 4 });
+    expect(g.tracks.easy.level).toBe(3); // không mất tiến độ khi quay lại Tự động
+    expect(g.tracks.auto.level).toBe(4);
+    // chọn cấp cố định rõ ràng thì dùng cấp đó
+    expect(patchGameSettings(start, { mode: 'fixed', level: 7 }).level).toBe(7);
   });
 
   it('min > max → kéo đầu còn lại theo đầu vừa đổi', () => {
@@ -107,11 +130,17 @@ describe('độ khó từng game (F11, TC-015)', () => {
     expect([lowerMax.minLevel, lowerMax.maxLevel]).toEqual([1, 1]);
   });
 
-  it('giá trị ngoài 1–10 bị kẹp; đổi chế độ/cấp thì xóa điểm gần đây', () => {
-    const g0 = { ...createGameProgress(), recentScores: [0.9, 0.8] };
+  it('giá trị ngoài 1–10 bị kẹp; đổi chế độ/cấp thì xóa lịch sử lượt gần đây của mọi sổ', () => {
+    const g0 = createGameProgress();
+    g0.tracks.auto = { level: 1, stars: 3, recent: [3] };
+    g0.tracks.easy = { level: 1, stars: 1, recent: [1, 1] };
     expect(patchGameSettings(g0, { mode: 'fixed', level: 99 }).level).toBe(10);
-    expect(patchGameSettings(g0, { mode: 'fixed' }).recentScores).toEqual([]);
-    expect(patchGameSettings(g0, {}).recentScores).toEqual([0.9, 0.8]); // không đổi gì → giữ
+    const changed = patchGameSettings(g0, { mode: 'fixed' });
+    expect(changed.tracks.auto.recent).toEqual([]);
+    expect(changed.tracks.easy.recent).toEqual([]);
+    const same = patchGameSettings(g0, {}); // không đổi gì → giữ
+    expect(same.tracks.auto.recent).toEqual([3]);
+    expect(same.tracks.easy.recent).toEqual([1, 1]);
   });
 
   it('tùy chọn riêng: “tự động” xóa khóa; mảng rỗng xóa khóa', () => {

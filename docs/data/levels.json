@@ -2,10 +2,8 @@
   "version": "v1.2",
   "note": "Giá trị ban đầu; chỉnh tại đây (TASK-10). Chuỗi mô tả tiếng Việt là nhãn hiển thị cho phụ huynh; code tự ánh xạ sang enum.",
   "adaptive": {
-    "window": 3,
-    "upAvg": 0.85,
-    "downAvg": 0.55,
-    "twoLowBelow": 0.5,
+    "upStreak": 2,
+    "downStreak": 3,
     "kidEasyDelta": -2,
     "kidHardDelta": 2
   },

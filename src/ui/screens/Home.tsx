@@ -1,5 +1,6 @@
 import { vi } from '../../i18n/vi';
 import { useEffect, useMemo } from 'preact/hooks';
+import { trackLevel } from '../../app/adaptive';
 import { backupReminderDue } from '../../app/backup';
 import { navigate } from '../../app/router';
 import { BENCHMARK_ORDER, benchmarkDue, doneRecently } from '../../app/benchmark';
@@ -11,7 +12,7 @@ import { dayAllowanceMs, dayRemainingMs } from '../../app/session';
 import { storage } from '../../app/storage';
 import { activeProfile, appState, updateAvailable } from '../../app/store';
 import { today } from '../../app/today';
-import type { GameId } from '../../app/types';
+import type { GameId, GameProgress } from '../../app/types';
 import { GAME_GROUPS, isGameAvailable } from '../../games/registry';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
@@ -23,6 +24,7 @@ import { Mascot } from '../components/Mascot';
 import { ProgressBar } from '../components/ProgressBar';
 import { BadgeGold } from '../components/RewardIcons';
 import { Scene } from '../components/Scenes';
+import { starMeter } from '../components/starMeter';
 
 const MISSION_ICON: Record<(typeof MISSION_GROUPS)[number], GameId> = {
   reflex: 'G1',
@@ -30,10 +32,30 @@ const MISSION_ICON: Record<(typeof MISSION_GROUPS)[number], GameId> = {
   learn: 'G6',
 };
 
+/**
+ * Chip dưới tên game: cấp và sao ở cấp của chế độ bé chơi gần nhất (Tự động: “Cấp 1 · ★☆☆”; chế độ khác thêm tên
+ * chế độ ở dòng trên). Phụ huynh đặt Cố định: “Cấp 5 · Cố định”.
+ */
+function cardMeta(g: GameProgress): { mode: string | null; text: string; label: string } {
+  if (g.mode === 'fixed') {
+    const text = vi.home.fixedLevel(g.level);
+    return { mode: null, text, label: text };
+  }
+  const c = g.lastChoice;
+  const level = trackLevel(g, c);
+  const stars = g.tracks[c].stars;
+  return {
+    mode: c === 'auto' ? null : vi.intro[c],
+    text: `${vi.common.level(level)} · ${starMeter(stars)}`,
+    label: vi.home.cardLevel(vi.intro[c], level, stars),
+  };
+}
+
 function GameCard({ id, locked }: { id: GameId; locked: boolean }) {
   const p = activeProfile.value;
   const available = isGameAvailable(id);
   const progress = p?.games[id];
+  const meta = progress ? cardMeta(progress) : null;
   const disabled = !available || locked;
   return (
     <button
@@ -47,17 +69,19 @@ function GameCard({ id, locked }: { id: GameId; locked: boolean }) {
         <GameIcon id={id} size={64} />
       </span>
       <span class="game-name">{vi.games[id]?.name}</span>
-      <span class="game-meta">
+      <span class={`game-meta${meta?.mode ? ' has-mode' : ''}`}>
         {!available && vi.common.comingSoon}
         {available && locked && (
           <>
             <IconLock /> {vi.common.locked}
           </>
         )}
-        {available &&
-          !locked &&
-          progress &&
-          `${vi.common.level(progress.level)} · ${'★'.repeat(progress.bestStars)}${'☆'.repeat(3 - progress.bestStars)}`}
+        {available && !locked && meta && (
+          <>
+            {meta.mode && <span class="game-meta-mode">{meta.mode}</span>}
+            <span aria-label={meta.label}>{meta.text}</span>
+          </>
+        )}
       </span>
     </button>
   );

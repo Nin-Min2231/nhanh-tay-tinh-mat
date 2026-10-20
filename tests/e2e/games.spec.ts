@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import type { Profile } from '../../src/app/types';
 import { vi } from '../../src/i18n/vi';
 import {
   E2E_URL,
@@ -17,6 +18,7 @@ import {
   seedProfiles,
   startGame,
   withGame,
+  withTrack,
 } from './helpers';
 
 async function host(page: Page) {
@@ -135,9 +137,11 @@ test.describe('G2 – các chế độ hiển thị', () => {
   });
 });
 
-test.describe('TC-009 – lên cấp', () => {
-  test('2 lượt ≥ 85% rồi lượt thứ 3 cũng tốt → “Lên cấp!”, cấp tăng 1', async ({ page }) => {
-    const p = withGame(makeProfile('An'), 'G1', { level: 3, recentScores: [0.9, 0.9] });
+test.describe('TC-009 – lên cấp: 2 lượt 3 sao liên tiếp, mỗi chế độ một cấp riêng', () => {
+  test('lượt 3 sao thứ hai liên tiếp → “Lên cấp!”, cấp của chế độ tăng 1, lượt kế chơi ở cấp mới', async ({
+    page,
+  }) => {
+    const p = withTrack(makeProfile('An'), 'G1', 'auto', { level: 3, stars: 3, recent: [3] });
     await seedProfiles(page, [p]);
     await page.goto(E2E_URL);
     await startGame(page, 'G1');
@@ -145,15 +149,73 @@ test.describe('TC-009 – lên cấp', () => {
 
     await expect(page.getByTestId('result')).toBeVisible();
     await expect(page.getByTestId('level-up')).toHaveText(vi.result.levelUp);
+    await expect(page.getByTestId('level-up-detail')).toHaveText(
+      vi.result.levelUpDetail(vi.intro.auto, 4),
+    );
     await expect(page.getByTestId('confetti')).toBeVisible();
     const g1 = (await readState(page)).profiles[0]!.games.G1;
-    expect(g1.level).toBe(4);
-    expect(g1.recentScores).toEqual([]);
+    expect(g1.tracks.auto).toEqual({ level: 4, stars: 0, recent: [] }); // đổi cấp → sao và lịch sử về 0
+    expect(g1.lastChoice).toBe('auto');
 
     await page.getByTestId('play-again').click();
+    await expect(page.getByTestId('choice-level-auto')).toContainText(vi.common.level(4));
     await pressStart(page);
     expect((await g1Params(page)).level).toBe(4); // lượt kế tiếp chơi ở cấp mới
     await leaveRound(page);
+  });
+
+  test('1 lượt 3 sao chưa đủ: chưa lên cấp, sao ở cấp này hiện trên nút chế độ', async ({
+    page,
+  }) => {
+    const p = makeProfile('An');
+    await seedProfiles(page, [p]);
+    await page.goto(E2E_URL);
+    await startGame(page, 'G1');
+    await playG1(page, { tapGreen: true });
+
+    await expect(page.getByTestId('result')).toBeVisible();
+    expect((await lastRound(page, p.id)).stars).toBe(3);
+    await expect(page.getByTestId('level-up')).toHaveCount(0);
+    const g1 = (await readState(page)).profiles[0]!.games.G1;
+    expect(g1.tracks.auto).toEqual({ level: 1, stars: 3, recent: [3] });
+
+    await page.getByTestId('play-again').click();
+    await expect(page.getByTestId('choice-level-auto')).toContainText(
+      `${vi.common.level(1)} · ★★★`,
+    );
+  });
+
+  test('Dễ lên cấp riêng (Dễ cấp 3) trong khi Tự động / Vừa / Khó vẫn cấp 1', async ({ page }) => {
+    const p = withTrack(makeProfile('An'), 'G1', 'easy', { level: 2, stars: 3, recent: [3] });
+    await seedProfiles(page, [p]);
+    await page.goto(E2E_URL);
+    await openIntro(page, 'G1');
+    await expect(page.getByTestId('choice-level-easy')).toContainText(vi.common.level(2));
+    await chooseDifficulty(page, 'easy');
+    await pressStart(page);
+    await playG1(page, { tapGreen: true });
+
+    await expect(page.getByTestId('result')).toBeVisible();
+    await expect(page.getByTestId('level-up')).toBeVisible();
+    await expect(page.getByTestId('level-up-detail')).toHaveText(
+      vi.result.levelUpDetail(vi.intro.easy, 3),
+    );
+    const g1 = (await readState(page)).profiles[0]!.games.G1;
+    expect(g1.tracks.easy).toEqual({ level: 3, stars: 0, recent: [] });
+    for (const other of ['auto', 'normal', 'hard'] as const) {
+      expect(g1.tracks[other], other).toEqual({ level: 1, stars: 0, recent: [] });
+    }
+    expect(g1.lastChoice).toBe('easy');
+    // lượt được ghi kèm cấp của chế độ bé đã thấy (Dễ cấp 2 → nội dung cấp 1) để màn Tiến bộ / CSV khớp
+    expect(await lastRound(page, p.id)).toMatchObject({ mode: 'easy', level: 1, trackLevel: 2 });
+
+    // màn Giới thiệu: mỗi nút hiện cấp riêng; mở sẵn chế độ vừa chơi
+    await page.getByTestId('play-again').click();
+    await expect(page.getByTestId('choice-level-easy')).toContainText(vi.common.level(3));
+    for (const other of ['auto', 'normal', 'hard']) {
+      await expect(page.getByTestId(`choice-level-${other}`)).toContainText(vi.common.level(1));
+    }
+    await expect(page.getByTestId('choice-easy')).toHaveAttribute('aria-checked', 'true');
   });
 });
 
@@ -195,35 +257,66 @@ test.describe('TC-015 – G2 chế độ Cố định', () => {
     }
     const g2 = (await readState(page)).profiles[0]!.games.G2;
     expect(g2.level).toBe(5);
-    expect(g2.recentScores).toEqual([]);
+    for (const c of ['easy', 'normal', 'auto', 'hard'] as const) {
+      expect(g2.tracks[c], c).toEqual({ level: 1, stars: 0, recent: [] }); // Cố định: không có sổ nào thay đổi
+    }
     const rounds = await readRounds(page, p.id);
     expect(rounds).toHaveLength(3);
     rounds.forEach((r) => expect(r).toMatchObject({ level: 5, mode: 'fixed' }));
   });
 });
 
-test.describe('TC-016 – bé chọn Dễ / Tự động', () => {
-  test('Dễ → chơi ở cấp 3 và cấp tự động vẫn là 5; chọn lại Tự động → cấp 5', async ({ page }) => {
-    const p = withGame(makeProfile('An'), 'G1', { level: 5, recentScores: [0.7] });
+test.describe('TC-016 – bé chọn Dễ / Vừa / Tự động / Khó: mỗi chế độ một sổ cấp riêng', () => {
+  test('Dễ nhẹ hơn 2 cấp so với cấp của CHÍNH sổ Dễ; sổ Tự động không bị đụng tới', async ({
+    page,
+  }) => {
+    const p = withTrack(
+      withTrack(makeProfile('An'), 'G1', 'auto', { level: 5, stars: 1, recent: [1] }),
+      'G1',
+      'easy',
+      { level: 4 },
+      'auto',
+    );
     await seedProfiles(page, [p]);
     await page.goto(E2E_URL);
     await openIntro(page, 'G1');
+    // mỗi nút hiện cấp riêng của chế độ đó
+    await expect(page.getByTestId('choice-level-auto')).toContainText(vi.common.level(5));
+    await expect(page.getByTestId('choice-level-easy')).toContainText(vi.common.level(4));
+    await expect(page.getByTestId('choice-level-normal')).toContainText(vi.common.level(1));
+    await expect(page.getByTestId('choice-level-hard')).toContainText(vi.common.level(1));
+    await expect(page.getByTestId('choice-auto')).toHaveAttribute(
+      'aria-label',
+      vi.intro.modeLevel(vi.intro.auto, 5, 1),
+    );
+
     await chooseDifficulty(page, 'easy');
     await pressStart(page);
-    expect((await g1Params(page)).level).toBe(3);
+    expect((await g1Params(page)).level).toBe(2); // Dễ cấp 4 → nội dung cấp 4 − 2
     await playG1(page, { tapGreen: true });
 
     await expect(page.getByTestId('result')).toBeVisible();
-    const r = await lastRound(page, p.id);
-    expect(r).toMatchObject({ level: 3, mode: 'easy' });
+    expect(await lastRound(page, p.id)).toMatchObject({ level: 2, trackLevel: 4, mode: 'easy' });
     const g1 = (await readState(page)).profiles[0]!.games.G1;
-    expect(g1.level).toBe(5); // lượt “Dễ” không làm đổi cấp tự động
-    expect(g1.recentScores).toEqual([0.7]); // và không tính vào adaptive
+    expect(g1.tracks.easy).toEqual({ level: 4, stars: 3, recent: [3] }); // lượt Dễ ghi vào sổ Dễ
+    expect(g1.tracks.auto).toEqual({ level: 5, stars: 1, recent: [1] }); // sổ Tự động nguyên vẹn
+    expect(g1.lastChoice).toBe('easy');
 
     await page.getByTestId('play-again').click();
     await chooseDifficulty(page, 'auto');
     await pressStart(page);
     expect((await g1Params(page)).level).toBe(5);
+    await leaveRound(page);
+  });
+
+  test('Khó nặng hơn 2 cấp so với cấp của sổ Khó (kẹp ở 10)', async ({ page }) => {
+    const p = withTrack(makeProfile('An'), 'G1', 'hard', { level: 4 });
+    await seedProfiles(page, [p]);
+    await page.goto(E2E_URL);
+    await openIntro(page, 'G1');
+    await chooseDifficulty(page, 'hard');
+    await pressStart(page);
+    expect((await g1Params(page)).level).toBe(6);
     await leaveRound(page);
   });
 
@@ -239,12 +332,17 @@ test.describe('TC-016 – bé chọn Dễ / Tự động', () => {
   });
 });
 
-test.describe('TC-017 – giảm cấp nhẹ nhàng', () => {
-  test('2 lượt liên tiếp < 50% → giảm 1 cấp, không có thông báo tiêu cực', async ({ page }) => {
-    const p = withGame(makeProfile('An'), 'G1', { level: 5, recentScores: [0.3] });
+test.describe('TC-017 – xuống cấp nhẹ nhàng: 3 lượt liên tiếp chỉ 1 sao, nhắc ở lượt thứ 3', () => {
+  test('lượt thứ 3 chỉ 1 sao → xuống 1 cấp kèm lời động viên; không trừ sao, không tiếng buồn', async ({
+    page,
+  }) => {
+    const p = withTrack(makeProfile('An'), 'G1', 'auto', { level: 5, stars: 1, recent: [1, 1] });
     await seedProfiles(page, [p]);
     await page.goto('/?e2e=1&seed=2'); // seed 2: toàn bóng xanh → không chạm gì thì điểm 0
-    await startGame(page, 'G1');
+    await openIntro(page, 'G1');
+    // lượt thứ 3: màn Giới thiệu nhắc bé nhẹ nhàng (trước khi chơi)
+    await expect(page.getByTestId('drop-warning')).toHaveText(vi.intro.dropWarning);
+    await pressStart(page);
     await playG1(page, { tapGreen: false });
 
     await expect(page.getByTestId('result')).toBeVisible();
@@ -253,9 +351,77 @@ test.describe('TC-017 – giảm cấp nhẹ nhàng', () => {
     expect(r.stars).toBe(1); // vẫn được 1 sao nỗ lực
     await expect(page.getByTestId('praise')).toHaveText(vi.result.praise[1]!);
     await expect(page.getByTestId('level-up')).toHaveCount(0);
-    const g1 = (await readState(page)).profiles[0]!.games.G1;
-    expect(g1.level).toBe(4);
-    expect((await readState(page)).profiles[0]!.totalStars).toBe(1); // sao không bị trừ
+    await expect(page.getByTestId('level-down')).toHaveText(vi.result.levelDown(vi.intro.auto, 4));
+    const st = (await readState(page)).profiles[0]!;
+    expect(st.games.G1.tracks.auto).toEqual({ level: 4, stars: 0, recent: [] });
+    expect(st.totalStars).toBe(1); // sao không bị trừ
+
+    // sau khi xuống cấp: hết nhắc, nút hiện cấp mới
+    await page.getByTestId('play-again').click();
+    await expect(page.getByTestId('drop-warning')).toHaveCount(0);
+    await expect(page.getByTestId('choice-level-auto')).toContainText(vi.common.level(4));
+  });
+
+  test('chỉ nhắc ở chế độ đang có 2 lượt liên tiếp chỉ 1 sao (đổi chế độ thì hết nhắc)', async ({
+    page,
+  }) => {
+    const p = withTrack(makeProfile('An'), 'G1', 'auto', { level: 3, stars: 1, recent: [1, 1] });
+    await seedProfiles(page, [p]);
+    await page.goto(E2E_URL);
+    await openIntro(page, 'G1');
+    await expect(page.getByTestId('drop-warning')).toBeVisible();
+    await chooseDifficulty(page, 'easy');
+    await expect(page.getByTestId('drop-warning')).toHaveCount(0);
+    await chooseDifficulty(page, 'auto');
+    await expect(page.getByTestId('drop-warning')).toBeVisible();
+  });
+
+  test('chưa đủ 2 lượt chỉ 1 sao, hoặc đang cấp thấp nhất, hoặc chế độ Cố định → không nhắc', async ({
+    page,
+  }) => {
+    const base = makeProfile('An');
+    const one = withTrack(base, 'G1', 'auto', { level: 3, stars: 1, recent: [1] });
+    const lowest = withTrack(base, 'G2', 'auto', { level: 1, stars: 1, recent: [1, 1] });
+    const fixed = withGame(
+      withTrack(base, 'G3', 'auto', { level: 3, stars: 1, recent: [1, 1] }),
+      'G3',
+      { mode: 'fixed', level: 3 },
+    );
+    const merged: Profile = {
+      ...base,
+      games: { ...base.games, G1: one.games.G1, G2: lowest.games.G2, G3: fixed.games.G3 },
+    };
+    await seedProfiles(page, [merged]);
+    await page.goto(E2E_URL);
+    for (const id of ['G1', 'G2', 'G3'] as const) {
+      await openIntro(page, id);
+      await expect(page.getByTestId('drop-warning'), id).toHaveCount(0);
+      await page.getByRole('button', { name: vi.common.back }).click();
+      await expect(page.getByTestId('greeting')).toBeVisible();
+    }
+  });
+});
+
+test.describe('Thẻ game ở Home hiện cấp và sao của chế độ bé chơi gần nhất', () => {
+  test('mặc định “Cấp 1 · ☆☆☆”; chơi Dễ rồi thì hiện “Dễ” + cấp và sao ở cấp đó', async ({
+    page,
+  }) => {
+    const p = withTrack(makeProfile('An'), 'G1', 'easy', { level: 3, stars: 2 }, 'easy');
+    await seedProfiles(page, [p]);
+    await page.goto('/');
+    const card = page.getByTestId('game-G1');
+    await expect(card).toContainText(vi.intro.easy);
+    await expect(card).toContainText(`${vi.common.level(3)} · ★★☆`);
+    // game khác chưa chơi: chip không có tên chế độ
+    const g2 = page.getByTestId('game-G2');
+    await expect(g2).toContainText(`${vi.common.level(1)} · ☆☆☆`);
+    await expect(g2.locator('.game-meta-mode')).toHaveCount(0);
+  });
+
+  test('phụ huynh đặt Cố định: hiện “Cấp 5 · Cố định”', async ({ page }) => {
+    await seedProfiles(page, [withGame(makeProfile('An'), 'G1', { mode: 'fixed', level: 5 })]);
+    await page.goto('/');
+    await expect(page.getByTestId('game-G1')).toContainText(vi.home.fixedLevel(5));
   });
 });
 

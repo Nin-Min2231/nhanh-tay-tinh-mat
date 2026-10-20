@@ -1,5 +1,6 @@
 // Thao tác của khu phụ huynh lên dữ liệu hồ sơ – thuần, có test (SPEC mục 9; F02, F07, F11, F15, F17).
 import { levelsConfig } from '../games/levels';
+import { KID_CHOICES } from './adaptive';
 import { MAX_PROFILES, NAME_MAX_LENGTH, emptyDay } from './profile';
 import { MAX_BOXES_PER_DAY_RANGE, grantParentBoxes } from './rewards';
 import type { AppState, GameProgress, Grade, Profile, RewardLogEntry, RewardReason } from './types';
@@ -86,8 +87,10 @@ export interface GameSettingsPatch {
 }
 
 /**
- * Áp dụng cài đặt độ khó của phụ huynh. Giữ min ≤ max (đổi một đầu thì kéo đầu kia theo),
- * cấp nằm trong [1, 10] (Tự động: trong [min, max]); đổi chế độ/cấp/khoảng thì xóa điểm gần đây để thích ứng bắt đầu lại.
+ * Áp dụng cài đặt độ khó của phụ huynh. Giữ min ≤ max (đổi một đầu thì kéo đầu kia theo).
+ * - Cấp cố định nằm trong [1, 10]; đổi từ Tự động sang Cố định mà chưa chọn cấp thì bắt đầu từ cấp “Tự động” hiện tại.
+ * - Cả 4 sổ cấp (Dễ / Vừa / Tự động / Khó) được kẹp vào [min, max]; sổ bị kẹp thì sao về 0.
+ * - Đổi chế độ/cấp/khoảng thì xóa lịch sử lượt gần đây của mọi sổ để thích ứng bắt đầu lại.
  */
 export function patchGameSettings(g: GameProgress, patch: GameSettingsPatch): GameProgress {
   let min = clamp(Math.round(patch.minLevel ?? g.minLevel), 1, 10);
@@ -97,17 +100,23 @@ export function patchGameSettings(g: GameProgress, patch: GameSettingsPatch): Ga
     else min = max;
   }
   const mode = patch.mode ?? g.mode;
-  let level = clamp(Math.round(patch.level ?? g.level), 1, 10);
-  if (mode === 'auto') level = clamp(level, min, max);
+  const startFromAuto = mode === 'fixed' && g.mode === 'auto' && patch.level === undefined;
+  const level = clamp(
+    Math.round(patch.level ?? (startFromAuto ? g.tracks.auto.level : g.level)),
+    1,
+    10,
+  );
   const changed = mode !== g.mode || level !== g.level || min !== g.minLevel || max !== g.maxLevel;
-  return {
-    ...g,
-    mode,
-    level,
-    minLevel: min,
-    maxLevel: max,
-    recentScores: changed ? [] : g.recentScores,
-  };
+  const tracks = { ...g.tracks };
+  for (const choice of KID_CHOICES) {
+    const t = g.tracks[choice];
+    const lv = clamp(t.level, min, max);
+    tracks[choice] =
+      lv !== t.level
+        ? { level: lv, stars: 0, recent: [] }
+        : { ...t, recent: changed ? [] : t.recent };
+  }
+  return { ...g, mode, level, minLevel: min, maxLevel: max, tracks };
 }
 
 /** Đặt/bỏ một tùy chọn riêng của game; 'auto' (hoặc null) = theo bảng cấp độ → xóa khóa. */

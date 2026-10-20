@@ -23,13 +23,17 @@ export function Result() {
   }, []);
   useEffect(() => {
     if (!r) return;
-    if (r.leveledUp) audio.levelUp();
+    // Xuống cấp: vẫn chỉ phát tiếng sao như mọi lượt (không có âm buồn)
+    if (r.levelChange === 'up') audio.levelUp();
     else audio.star();
   }, [r]);
   if (!r) return null;
 
   const lines = vi.games[r.gameId]?.lines?.(r.metrics) ?? [];
-  const celebrate = r.stars === 3 || r.leveledUp;
+  const leveledUp = r.levelChange === 'up';
+  const leveledDown = r.levelChange === 'down';
+  const celebrate = r.stars === 3 || leveledUp;
+  const modeName = vi.intro[r.choice];
   const { rewards } = r;
   const pending = activeProfile.value?.boxes.pending ?? 0;
   const hasGift = rewards.boxesGained > 0 && pending > 0;
@@ -45,13 +49,20 @@ export function Result() {
       />
       <StarBurst count={r.stars} />
       <p class="result-stars">{vi.result.starsEarned(r.stars)}</p>
-      {r.leveledUp && (
+      {leveledUp && (
         <>
           <p class="levelup" data-testid="level-up">
             {vi.result.levelUp}
           </p>
-          <p class="levelup-detail">{vi.result.levelUpDetail(r.newLevel)}</p>
+          <p class="levelup-detail" data-testid="level-up-detail">
+            {vi.result.levelUpDetail(modeName, r.newLevel)}
+          </p>
         </>
+      )}
+      {leveledDown && (
+        <p class="levelup-detail level-down" data-testid="level-down">
+          {vi.result.levelDown(modeName, r.newLevel)}
+        </p>
       )}
       <p class="result-praise" data-testid="praise">
         {vi.result.praise[r.stars]}

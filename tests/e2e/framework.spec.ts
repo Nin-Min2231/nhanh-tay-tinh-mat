@@ -149,7 +149,7 @@ test.describe('TC-011 – giới hạn thời gian', () => {
 test.describe('TC-024 – nhiều hồ sơ', () => {
   test('đổi hồ sơ: sao, cấp và thời gian của từng bé tách riêng', async ({ page }) => {
     const a = makeProfile('A', { totalStars: 7 }, { playMs: 5 * 60_000 });
-    a.games.G1.level = 6;
+    a.games.G1.tracks.auto.level = 6;
     const b = makeProfile('B');
     await seedProfiles(page, [a, b], a.id);
     await page.goto('/');

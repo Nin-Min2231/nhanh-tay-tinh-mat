@@ -5,7 +5,7 @@ import type { AppState, DailyAggregate, RoundRecord } from './types';
 import { repairState, sanitizeDaily, sanitizeRounds } from './validate';
 import { APP_VERSION } from './version';
 
-export const CURRENT_SCHEMA = 3;
+export const CURRENT_SCHEMA = 4;
 export const STATE_KEY = 'ntm.state';
 export const roundsKey = (profileId: string) => `ntm.rounds.${profileId}`;
 export const dailyKey = (profileId: string) => `ntm.daily.${profileId}`;
@@ -46,7 +46,57 @@ export const MIGRATIONS: Record<number, MigrationFn> = {
       })),
     };
   },
+  // 3 → 4 (1.1.0): mỗi game có 4 sổ cấp theo lựa chọn của bé (Dễ / Vừa / Tự động / Khó) thay cho `recentScores` và
+  // `bestStars`. Cấp hiện tại → sổ “Tự động”; ba sổ còn lại bắt đầu ở cấp 1. Điểm cũ (0–1) đổi thành sao theo ngưỡng
+  // của schema 3 (≥ 0,9 → 3 sao, ≥ 0,7 → 2 sao, còn lại 1 sao).
+  3: (state) => {
+    const profiles = Array.isArray(state.profiles)
+      ? (state.profiles as Record<string, unknown>[])
+      : [];
+    return {
+      ...state,
+      profiles: profiles.map((p) => {
+        // hồ sơ không có `games` hợp lệ: để nguyên (repairState sẽ dựng mặc định)
+        if (typeof p.games !== 'object' || p.games === null || Array.isArray(p.games)) return p;
+        const games = p.games as Record<string, unknown>;
+        return {
+          ...p,
+          games: Object.fromEntries(Object.entries(games).map(([id, g]) => [id, migrateGameV3(g)])),
+        };
+      }),
+    };
+  },
 };
+
+const starsOfScoreV3 = (s: unknown): number | null =>
+  typeof s === 'number' && Number.isFinite(s) ? (s >= 0.9 ? 3 : s >= 0.7 ? 2 : 1) : null;
+
+/** Một `GameProgress` schema 3 → schema 4 (giá trị hỏng để `repairState` sửa sau). */
+function migrateGameV3(g: unknown): unknown {
+  if (typeof g !== 'object' || g === null || Array.isArray(g)) return g;
+  const rest: Record<string, unknown> = { ...(g as Record<string, unknown>) };
+  // đã có sổ cấp (dữ liệu dựng bằng mã mới nhưng ghi nhãn schema cũ, vd dữ liệu gieo sẵn trong test): giữ nguyên
+  if (typeof rest.tracks === 'object' && rest.tracks !== null) return rest;
+  const recentScores = rest.recentScores;
+  delete rest.recentScores;
+  delete rest.bestStars;
+  const level = typeof rest.level === 'number' && Number.isFinite(rest.level) ? rest.level : 1;
+  const recent = (Array.isArray(recentScores) ? recentScores : [])
+    .map(starsOfScoreV3)
+    .filter((s): s is number => s !== null)
+    .slice(-3);
+  const fresh = () => ({ level: 1, stars: 0, recent: [] as number[] });
+  return {
+    ...rest,
+    tracks: {
+      easy: fresh(),
+      normal: fresh(),
+      auto: { level, stars: Math.max(0, ...recent), recent },
+      hard: fresh(),
+    },
+    lastChoice: 'auto',
+  };
+}
 
 export function defaultState(): AppState {
   return {

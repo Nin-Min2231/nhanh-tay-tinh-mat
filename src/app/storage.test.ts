@@ -219,6 +219,111 @@ describe('migrateState', () => {
     expect(b).toMatchObject({ id: 'p2', mascotId: 'mascot-owl', soundSetId: null }); // 7 không phải chuỗi → null
   });
 
+  it('migration thật 3 → 4 (1.1.0): cấp hiện tại → sổ Tự động, 3 sổ còn lại cấp 1, điểm cũ → sao, bỏ bestStars/recentScores', () => {
+    const legacy = {
+      schemaVersion: 3,
+      deviceId: 'd',
+      activeProfileId: 'p1',
+      profiles: [
+        {
+          id: 'p1',
+          name: 'An',
+          totalStars: 12,
+          games: {
+            G1: {
+              mode: 'auto',
+              level: 4,
+              minLevel: 2,
+              maxLevel: 9,
+              recentScores: [0.95, 0.75, 0.3],
+              options: { colors: 3 },
+              bestStars: 3,
+              plays: 11,
+            },
+            G2: { mode: 'fixed', level: 6, minLevel: 1, maxLevel: 10, options: {}, plays: 2 },
+          },
+        },
+        { id: 'p2', name: 'Bình' }, // chưa có games → để nguyên (repairState dựng mặc định)
+      ],
+    };
+    const r = migrateState(legacy);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(CURRENT_SCHEMA).toBeGreaterThanOrEqual(4);
+    expect(r.state.schemaVersion).toBe(CURRENT_SCHEMA);
+    const [a, b] = r.state.profiles as unknown as {
+      games?: Record<string, Record<string, unknown>>;
+    }[];
+    // giữ nguyên các trường còn lại
+    expect(a!.games!.G1).toMatchObject({
+      mode: 'auto',
+      level: 4,
+      minLevel: 2,
+      maxLevel: 9,
+      options: { colors: 3 },
+      plays: 11,
+      lastChoice: 'auto',
+    });
+    // trường cũ bị bỏ
+    expect(a!.games!.G1).not.toHaveProperty('recentScores');
+    expect(a!.games!.G1).not.toHaveProperty('bestStars');
+    // cấp hiện tại → sổ Tự động; điểm 0,95 / 0,75 / 0,3 → 3 / 2 / 1 sao; ba sổ còn lại bắt đầu ở cấp 1
+    expect(a!.games!.G1!.tracks).toEqual({
+      easy: { level: 1, stars: 0, recent: [] },
+      normal: { level: 1, stars: 0, recent: [] },
+      auto: { level: 4, stars: 3, recent: [3, 2, 1] },
+      hard: { level: 1, stars: 0, recent: [] },
+    });
+    // chế độ Cố định: cấp cố định giữ nguyên ở `level`, sổ Tự động bắt đầu từ cấp đó (giống hành vi cũ: dùng chung một cấp)
+    expect(a!.games!.G2).toMatchObject({ mode: 'fixed', level: 6 });
+    expect((a!.games!.G2!.tracks as Record<string, { level: number }>).auto!.level).toBe(6);
+    expect(b).toEqual({ id: 'p2', name: 'Bình' });
+  });
+
+  it('migration 3 → 4 chạy lại trên game đã có sổ cấp thì giữ nguyên (không ghi đè)', () => {
+    const tracks = {
+      easy: { level: 7, stars: 1, recent: [1] },
+      normal: { level: 1, stars: 0, recent: [] },
+      auto: { level: 2, stars: 3, recent: [3] },
+      hard: { level: 1, stars: 0, recent: [] },
+    };
+    const r = migrateState({
+      schemaVersion: 3,
+      deviceId: 'd',
+      profiles: [{ id: 'p1', name: 'An', games: { G1: { mode: 'auto', level: 9, tracks } } }],
+    });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const g1 = (r.state.profiles[0] as unknown as { games: Record<string, { tracks: unknown }> })
+      .games.G1!;
+    expect(g1.tracks).toEqual(tracks);
+  });
+
+  it('dữ liệu schema 3 đi qua loadState + repair: không mất cấp, có đủ 4 sổ cấp', () => {
+    const backend = memoryBackend();
+    backend.data.set(
+      STATE_KEY,
+      JSON.stringify({
+        schemaVersion: 3,
+        deviceId: 'd',
+        profiles: [
+          {
+            id: 'p1',
+            name: 'An',
+            games: { G3: { mode: 'auto', level: 5, minLevel: 1, maxLevel: 10, plays: 3 } },
+          },
+        ],
+      }),
+    );
+    const st = createStorage(() => backend).loadState();
+    expect(st.schemaVersion).toBe(CURRENT_SCHEMA);
+    const g3 = st.profiles[0]!.games.G3;
+    expect(g3.tracks.auto.level).toBe(5);
+    expect(g3.tracks.easy).toEqual({ level: 1, stars: 0, recent: [] });
+    expect(g3.lastChoice).toBe('auto');
+    expect(g3.plays).toBe(3);
+  });
+
   it('đọc dữ liệu schema 1 từ localStorage → được nâng lên schema hiện tại', () => {
     const backend = memoryBackend();
     backend.data.set(

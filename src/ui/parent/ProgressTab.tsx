@@ -231,7 +231,7 @@ export function ProgressTab() {
                         : (vi.parent.progress.modes[r.mode] ?? r.mode)}
                     </span>
                   </td>
-                  <td>{r.level}</td>
+                  <td>{r.trackLevel ?? r.level}</td>
                   <td>
                     {Math.round(r.score * 100)}%
                     <span class="cell-sub" aria-label={String(r.stars)}>

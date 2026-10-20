@@ -120,6 +120,7 @@ describe('roundsCsv – lịch sử từng lượt', () => {
       c.time,
       c.game,
       c.level,
+      c.trackLevel,
       c.mode,
       c.benchmark,
       c.scorePct,
@@ -136,13 +137,16 @@ describe('roundsCsv – lịch sử từng lượt', () => {
   });
 
   it('một lượt: ngày + giờ theo giờ máy, tên game/chế độ/thiết bị tiếng Việt, điểm %, thời lượng giây', () => {
-    const rows = parseCsv(roundsCsv([round()]).slice(`${CSV_BOM}sep=,\r\n`.length));
+    const rows = parseCsv(
+      roundsCsv([round({ trackLevel: 5 })]).slice(`${CSV_BOM}sep=,\r\n`.length),
+    );
     expect(rows).toHaveLength(2);
     expect(rows[1]).toEqual([
       '2026-10-10',
       '08:30',
       vi.games.G1!.name,
       '3',
+      '5', // cấp của chế độ bé thấy
       vi.parent.progress.modes.auto,
       c.no,
       '85', // 0,8456 → 85 %
@@ -162,7 +166,8 @@ describe('roundsCsv – lịch sử từng lượt', () => {
       ]).slice(`${CSV_BOM}sep=,\r\n`.length),
     );
     expect(rows.map((r) => r[0])).toEqual([c.date, '2026-10-09', '2026-10-12']);
-    expect(rows[2]![5]).toBe(c.yes);
+    expect(rows[2]![6]).toBe(c.yes);
+    expect(rows[2]![4]).toBe(''); // lượt cũ / bài đo không có “cấp của chế độ”
     expect(rows[2]!.slice(-2)).toEqual(['', '']); // lượt muộn không có chỉ số
   });
 

@@ -20,14 +20,32 @@ export interface GlobalSettings {
   allowKidDifficultyChoice: boolean;
 }
 
-export interface GameProgress {
-  mode: 'auto' | 'fixed';
+/** Lựa chọn độ khó của bé ở màn Giới thiệu. Mỗi lựa chọn có một “sổ cấp” riêng trong mỗi game (schema 4). */
+export type KidChoice = 'easy' | 'normal' | 'auto' | 'hard';
+
+/** Tiến độ của MỘT chế độ trong MỘT game. */
+export interface ModeTrack {
+  /** Cấp của chế độ (1–10). Cấp nội dung thật = cấp này + chênh của chế độ (Dễ −2, Khó +2), xem adaptive.ts. */
   level: number;
+  /** Sao cao nhất đã đạt ở cấp hiện tại (0–3); về 0 khi đổi cấp. */
+  stars: number;
+  /** Sao (1–3) của tối đa 3 lượt gần nhất ở cấp hiện tại; xóa khi đổi cấp. */
+  recent: number[];
+}
+
+export interface GameProgress {
+  /** Phụ huynh: ‘auto’ = bé chọn chế độ, mỗi chế độ một cấp riêng; ‘fixed’ = luôn chơi một cấp (`level`). */
+  mode: 'auto' | 'fixed';
+  /** Cấp cố định – chỉ dùng khi mode = ‘fixed’. */
+  level: number;
+  /** Khoảng cấp phụ huynh cho phép (áp cho cả 4 sổ cấp). */
   minLevel: number;
   maxLevel: number;
-  recentScores: number[];
+  /** Sổ cấp theo lựa chọn của bé. Thêm ở schema 4 (thay `level`/`recentScores` cũ của chế độ Tự động). */
+  tracks: Record<KidChoice, ModeTrack>;
+  /** Chế độ bé chơi gần nhất: hiện trên thẻ game ở Home và mở sẵn ở màn Giới thiệu. Thêm ở schema 4. */
+  lastChoice: KidChoice;
   options: Record<string, unknown>;
-  bestStars: number;
   plays: number;
 }
 
@@ -92,7 +110,10 @@ export interface RoundRecord {
   profileId: string;
   gameId: GameId;
   startedAt: string;
+  /** Cấp nội dung thật đã chơi (bảng levels.json) – dùng cho biểu đồ độ khó. */
   level: number;
+  /** Cấp của chế độ bé thấy lúc chơi (Dễ cấp 3 → level 1). Thiếu ở lượt cũ, bài đo và chế độ Cố định. Thêm ở 1.1.0. */
+  trackLevel?: number;
   mode: RoundMode;
   benchmark: boolean;
   options: Record<string, unknown>;

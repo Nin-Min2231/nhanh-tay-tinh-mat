@@ -16,6 +16,7 @@ import {
   readState,
   seedProfiles,
   startGame,
+  withTrack,
 } from './helpers';
 
 // ---------------------------------------------------------------- tiện ích
@@ -454,10 +455,13 @@ test.describe('Bài đo tuần (F16, TC-027)', () => {
       level: benchmarkLevel('G1'),
     });
     await expect(page.getByTestId('bench-progress')).toContainText('6/7');
-    // cấp thích ứng của G1 không đổi (bài đo không tính adaptive)
+    // sổ cấp của G1 không đổi (bài đo không tính vào sổ cấp nào)
     let st = await readState(page);
-    expect(st.profiles[0]!.games.G1.level).toBe(1);
-    expect(st.profiles[0]!.games.G1.recentScores).toEqual([]);
+    for (const c of ['easy', 'normal', 'auto', 'hard'] as const) {
+      expect(st.profiles[0]!.games.G1.tracks[c], c).toEqual({ level: 1, stars: 0, recent: [] });
+    }
+    expect(st.profiles[0]!.games.G1.lastChoice).toBe('auto');
+    expect(r).not.toHaveProperty('trackLevel'); // bài đo không có “cấp của chế độ”
     expect(st.profiles[0]!.lastBenchmarkAt).toBeNull(); // chưa đủ bộ
     await expect(page.getByTestId('play-again')).toHaveCount(0);
 
@@ -561,21 +565,51 @@ test.describe('Tab Cài đặt (F07, F09, F11, F12, F17)', () => {
     });
   });
 
-  test('Tự động min–max: cấp thấp nhất/cao nhất kéo theo nhau, cấp hiện tại luôn nằm trong khoảng', async ({
+  test('Tự động min–max: cấp thấp nhất/cao nhất kéo theo nhau, cấp hiện tại của cả 4 chế độ luôn nằm trong khoảng', async ({
     page,
   }) => {
-    const p = makeProfile('An');
+    // Dễ đã lên cấp 2, Khó cấp 9; Vừa và Tự động cấp 1
+    const p = withTrack(
+      withTrack(makeProfile('An'), 'G1', 'easy', { level: 2, stars: 2, recent: [3] }),
+      'G1',
+      'hard',
+      { level: 9 },
+    );
     await seedProfiles(page, [p]);
     await page.goto(E2E_URL);
     await openParent(page, 'settings');
     await page.getByTestId('pgame-G1').locator('summary').click();
+    // phụ huynh thấy cấp riêng của từng chế độ
+    await expect(page.getByTestId('current-G1')).toHaveText(
+      vi.parent.settings.currentLevels([
+        [vi.intro.easy, 2],
+        [vi.intro.normal, 1],
+        [vi.intro.auto, 1],
+        [vi.intro.hard, 9],
+      ]),
+    );
     await page.getByTestId('min-G1').selectOption('4');
     let g = (await readState(page)).profiles[0]!.games.G1;
-    expect([g.minLevel, g.maxLevel, g.level]).toEqual([4, 10, 4]); // cấp hiện tại nâng lên cho nằm trong khoảng
+    expect([g.minLevel, g.maxLevel]).toEqual([4, 10]);
+    // cả 4 sổ được nâng lên cho nằm trong khoảng (Khó cấp 9 giữ nguyên)
+    expect([
+      g.tracks.easy.level,
+      g.tracks.normal.level,
+      g.tracks.auto.level,
+      g.tracks.hard.level,
+    ]).toEqual([4, 4, 4, 9]);
     await page.getByTestId('max-G1').selectOption('3'); // thấp hơn min → min kéo theo
     g = (await readState(page)).profiles[0]!.games.G1;
     expect([g.minLevel, g.maxLevel]).toEqual([3, 3]);
-    await expect(page.getByTestId('current-G1')).toContainText('3');
+    expect(Object.values(g.tracks).map((t) => t.level)).toEqual([3, 3, 3, 3]);
+    await expect(page.getByTestId('current-G1')).toHaveText(
+      vi.parent.settings.currentLevels([
+        [vi.intro.easy, 3],
+        [vi.intro.normal, 3],
+        [vi.intro.auto, 3],
+        [vi.intro.hard, 3],
+      ]),
+    );
   });
 
   test('âm thanh / nhạc / rung và quyền chọn độ khó của bé (F12)', async ({ page }) => {
@@ -861,15 +895,18 @@ test.describe('Tab Dữ liệu – xuất CSV (TASK-10)', () => {
     ]);
     expect(header).toContain(vi.parent.metrics.rtMeanMs);
     expect(header).toContain(vi.parent.metrics.timeSec);
+    // cột 3 = cấp nội dung thật, cột 4 = cấp của chế độ bé thấy (1.1.0; trống ở lượt cũ/bài đo)
+    expect(header!.slice(3, 5)).toEqual([vi.parent.data.csv.level, vi.parent.data.csv.trackLevel]);
     expect(rows).toHaveLength(3);
     expect(rows.map((r) => r[2])).toEqual([
       vi.games.G1!.name,
       vi.games.G2!.name,
       vi.games.G1!.name,
     ]);
-    expect(rows[0]![6]).toBe('90'); // điểm %
-    expect(rows[1]![5]).toBe(vi.parent.data.csv.yes); // lượt bài đo
-    expect(rows[1]![9]).toBe(vi.parent.progress.devices.tablet);
+    expect(rows[0]![4]).toBe(''); // lượt gieo không có trackLevel
+    expect(rows[0]![7]).toBe('90'); // điểm %
+    expect(rows[1]![6]).toBe(vi.parent.data.csv.yes); // lượt bài đo
+    expect(rows[1]![10]).toBe(vi.parent.progress.devices.tablet);
     await expect(page.getByTestId('data-message')).toContainText(d1.suggestedFilename());
 
     // tổng hợp theo ngày

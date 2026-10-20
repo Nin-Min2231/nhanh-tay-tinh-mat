@@ -1,65 +1,93 @@
 // Độ khó thích ứng – docs/01_SPEC.md mục 6 (F04, F11, F12). Thuần, có test.
-// Ngưỡng đọc từ docs/data/levels.json → adaptive.
+// Mỗi game có 4 “sổ cấp” độc lập theo lựa chọn của bé (Dễ / Vừa / Tự động / Khó). Ngưỡng đọc từ docs/data/levels.json → adaptive.
 import { levelsConfig } from '../games/levels';
-import type { GameProgress } from './types';
+import type { GameProgress, KidChoice, ModeTrack } from './types';
 
-export type KidChoice = 'easy' | 'normal' | 'auto' | 'hard';
+export type { KidChoice };
 export type LevelChange = 'up' | 'down' | 'none';
 
+export const KID_CHOICES: readonly KidChoice[] = ['easy', 'normal', 'auto', 'hard'];
 export const MIN_LEVEL = 1;
 export const MAX_LEVEL = 10;
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
-const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 
-/**
- * Cấp độ áp dụng cho lượt chơi.
- * - Cố định: luôn là cấp đã đặt; Dễ/Khó của bé không có tác dụng.
- * - Tự động: cấp hiện tại (kẹp trong min–max của phụ huynh); Dễ −2, Khó +2 (kẹp 1–10); Vừa và Tự động giữ nguyên.
- */
-export function levelForRound(g: GameProgress, kidChoice: KidChoice): number {
-  if (g.mode === 'fixed') return clamp(g.level, MIN_LEVEL, MAX_LEVEL);
-  const base = clamp(g.level, g.minLevel, g.maxLevel);
-  if (kidChoice === 'easy')
-    return clamp(base + levelsConfig.adaptive.kidEasyDelta, MIN_LEVEL, MAX_LEVEL);
-  if (kidChoice === 'hard')
-    return clamp(base + levelsConfig.adaptive.kidHardDelta, MIN_LEVEL, MAX_LEVEL);
-  return base;
+/** Chênh cấp nội dung của chế độ so với số cấp của chế độ đó: Dễ −2, Khó +2, còn lại 0 (levels.json). */
+export function choiceOffset(choice: KidChoice): number {
+  if (choice === 'easy') return levelsConfig.adaptive.kidEasyDelta;
+  if (choice === 'hard') return levelsConfig.adaptive.kidHardDelta;
+  return 0;
+}
+
+/** Cấp của chế độ (cấp bé thấy), kẹp trong khoảng min–max của phụ huynh. */
+export function trackLevel(g: GameProgress, choice: KidChoice): number {
+  return clamp(g.tracks[choice].level, g.minLevel, g.maxLevel);
 }
 
 /**
- * Cập nhật tiến độ sau một lượt.
- * `countsForAdaptive` chỉ true với lượt ở chế độ Tự động mà bé chọn “Tự động”, và không phải bài đo chuẩn.
+ * Cấp nội dung (dòng của bảng levels.json) áp dụng cho lượt chơi.
+ * - Cố định: luôn là cấp đã đặt; lựa chọn Dễ/Khó của bé không có tác dụng.
+ * - Tự động (của phụ huynh): cấp của chế độ bé chọn + chênh (Dễ −2, Khó +2), kẹp trong 1–10.
+ */
+export function levelForRound(g: GameProgress, choice: KidChoice): number {
+  if (g.mode === 'fixed') return clamp(g.level, MIN_LEVEL, MAX_LEVEL);
+  return clamp(trackLevel(g, choice) + choiceOffset(choice), MIN_LEVEL, MAX_LEVEL);
+}
+
+/** Số sao của các lượt cuối của sổ có đủ `n` lượt, toàn bằng `star`? */
+function lastAll(recent: readonly number[], n: number, star: number): boolean {
+  return n > 0 && recent.length >= n && recent.slice(-n).every((s) => s === star);
+}
+
+export interface RoundOutcome {
+  progress: GameProgress;
+  change: LevelChange;
+  /** Cấp của chế độ vừa chơi, sau lượt này. */
+  newLevel: number;
+}
+
+/**
+ * Cập nhật tiến độ sau một lượt (chỉ sổ của chế độ vừa chơi):
+ * - `upStreak` lượt 3 sao liên tiếp → lên 1 cấp; `downStreak` lượt liên tiếp chỉ 1 sao → xuống 1 cấp
+ *   (chỉ trong khoảng min–max của phụ huynh). Đổi cấp thì sao và lịch sử của sổ đó về 0.
+ * - `counts` chỉ true khi game ở chế độ Tự động của phụ huynh và không phải bài đo chuẩn.
  */
 export function applyRound(
   g: GameProgress,
-  score: number,
-  countsForAdaptive: boolean,
-): { progress: GameProgress; change: LevelChange } {
-  if (g.mode === 'fixed' || !countsForAdaptive) return { progress: g, change: 'none' };
-  const A = levelsConfig.adaptive;
-  const s = [...g.recentScores, score].slice(-A.window);
-  const avg = mean(s);
-  const twoLow =
-    s.length >= 2 && (s.at(-1) as number) < A.twoLowBelow && (s.at(-2) as number) < A.twoLowBelow;
-
-  let level = g.level;
-  let recentScores = s;
-  if (s.length === A.window && avg >= A.upAvg) {
-    level = Math.min(g.level + 1, g.maxLevel);
-    recentScores = [];
-  } else if ((s.length === A.window && avg <= A.downAvg) || twoLow) {
-    level = Math.max(g.level - 1, g.minLevel);
-    recentScores = [];
+  choice: KidChoice,
+  stars: number,
+  counts: boolean,
+): RoundOutcome {
+  if (g.mode === 'fixed' || !counts) {
+    return { progress: g, change: 'none', newLevel: trackLevel(g, choice) };
   }
-  const change: LevelChange = level > g.level ? 'up' : level < g.level ? 'down' : 'none';
-  return { progress: { ...g, level, recentScores }, change };
+  const A = levelsConfig.adaptive;
+  const before = g.tracks[choice];
+  const level = trackLevel(g, choice);
+  const recent = [...before.recent, stars].slice(-Math.max(A.upStreak, A.downStreak, 1));
+
+  let next: ModeTrack = { level, stars: Math.max(before.stars, stars), recent };
+  let change: LevelChange = 'none';
+  if (lastAll(recent, A.upStreak, 3) && level < g.maxLevel) {
+    next = { level: level + 1, stars: 0, recent: [] };
+    change = 'up';
+  } else if (lastAll(recent, A.downStreak, 1) && level > g.minLevel) {
+    next = { level: level - 1, stars: 0, recent: [] };
+    change = 'down';
+  }
+  return {
+    progress: { ...g, lastChoice: choice, tracks: { ...g.tracks, [choice]: next } },
+    change,
+    newLevel: next.level,
+  };
 }
 
-export function afterRound(
-  g: GameProgress,
-  score: number,
-  countsForAdaptive: boolean,
-): GameProgress {
-  return applyRound(g, score, countsForAdaptive).progress;
+/**
+ * Lượt kế tiếp là lượt cuối trước khi xuống cấp (đã có `downStreak − 1` lượt liên tiếp chỉ 1 sao, và còn cấp để xuống):
+ * màn Giới thiệu nhắc bé nhẹ nhàng.
+ */
+export function dropWarning(g: GameProgress, choice: KidChoice): boolean {
+  if (g.mode === 'fixed') return false;
+  const need = levelsConfig.adaptive.downStreak - 1;
+  return lastAll(g.tracks[choice].recent, need, 1) && trackLevel(g, choice) > g.minLevel;
 }

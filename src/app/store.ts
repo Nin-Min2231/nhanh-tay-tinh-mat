@@ -1,7 +1,7 @@
 // State toàn cục (signals) + các hành động ghi dữ liệu.
 import { computed, effect, signal } from '@preact/signals';
 import type { RoundResult } from '../games/common/types';
-import { applyRound, type KidChoice, type LevelChange } from './adaptive';
+import { applyRound, trackLevel, type KidChoice, type LevelChange } from './adaptive';
 import { benchmarkComplete, benchmarkQueue } from './benchmark';
 import { pruneRounds, syncDaily } from './daily';
 import { createAudio } from './audio';
@@ -176,9 +176,11 @@ export interface LastResult {
   score: number;
   stars: 1 | 2 | 3;
   metrics: Record<string, number>;
-  /** Lượt này làm tăng cấp (hiện “Lên cấp!”). Giảm cấp thì đổi lặng lẽ, không thông báo. */
-  leveledUp: boolean;
-  /** Cấp của game sau lượt này. */
+  /** Lượt này làm đổi cấp của chế độ vừa chơi: lên (hiện “Lên cấp!”), xuống (lời động viên nhẹ nhàng) hoặc không đổi. */
+  levelChange: LevelChange;
+  /** Chế độ bé đã chọn cho lượt này (Dễ / Vừa / Tự động / Khó). */
+  choice: KidChoice;
+  /** Cấp của chế độ đó sau lượt này. */
   newLevel: number;
   /** Lượt kết thúc vì đã hết giờ trong ngày → sau đó sang màn nghỉ. */
   outOfTime: boolean;
@@ -198,11 +200,13 @@ export interface RecordRoundArgs {
   gameId: GameId;
   level: number;
   mode: RoundMode;
+  /** Chế độ bé chọn ở màn Giới thiệu: sổ cấp của chế độ này được cập nhật sau lượt. */
+  choice: KidChoice;
   startedAt: Date;
   result: RoundResult;
   /** Thời gian Running thực tế do RoundClock đo (ms). */
   playedMs: number;
-  /** Có tính vào độ khó thích ứng không (chỉ lượt chế độ Tự động + bé chọn “Tự động”, không phải bài đo). */
+  /** Có tính vào sổ cấp không (game ở chế độ Tự động của phụ huynh và không phải bài đo chuẩn; mọi lựa chọn của bé đều tính). */
   countsForAdaptive: boolean;
   benchmark?: boolean;
   options?: Record<string, unknown>;
@@ -219,12 +223,15 @@ export function recordRound(args: RecordRoundArgs): {
   benchmarkLeft: number;
 } {
   const stars = starsForScore(args.result.score);
+  // Cấp của chế độ bé thấy lúc chơi (chỉ có khi lượt tính vào sổ cấp: không phải Cố định, không phải bài đo)
+  const shown = appState.value.profiles.find((p) => p.id === args.profileId)?.games[args.gameId];
   const record: RoundRecord = {
     id: generateId(),
     profileId: args.profileId,
     gameId: args.gameId,
     startedAt: args.startedAt.toISOString(),
     level: args.level,
+    ...(args.countsForAdaptive && shown ? { trackLevel: trackLevel(shown, args.choice) } : {}),
     mode: args.mode,
     benchmark: args.benchmark ?? false,
     options: args.options ?? {},
@@ -248,9 +255,9 @@ export function recordRound(args: RecordRoundArgs): {
   updateProfile(args.profileId, (p) => {
     const day = p.days[key] ?? emptyDay();
     const before = p.games[args.gameId];
-    const applied = applyRound(before, args.result.score, args.countsForAdaptive);
+    const applied = applyRound(before, args.choice, stars, args.countsForAdaptive);
     change = applied.change;
-    newLevel = applied.progress.level;
+    newLevel = applied.newLevel;
     const played: Profile = {
       ...p,
       // G6: cập nhật sổ lỗi (F19); lastSeenRound = số thứ tự lượt G6
@@ -262,11 +269,7 @@ export function recordRound(args: RecordRoundArgs): {
       lastBenchmarkAt: benchDone ? new Date().toISOString() : p.lastBenchmarkAt,
       games: {
         ...p.games,
-        [args.gameId]: {
-          ...applied.progress,
-          plays: before.plays + 1,
-          bestStars: Math.max(before.bestStars, stars),
-        },
+        [args.gameId]: { ...applied.progress, plays: before.plays + 1 },
       },
     };
     // Nhiệm vụ nhóm, cộng sao (không bao giờ giảm), hộp quà, mở khóa – TASK-06
